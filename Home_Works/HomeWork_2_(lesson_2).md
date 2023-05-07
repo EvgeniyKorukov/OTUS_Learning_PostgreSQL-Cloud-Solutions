@@ -78,7 +78,7 @@
 		* sudo docker run -it --rm --name pg-client jbergknoff/postgresql-client postgresql://postgres:Pass1234@10.129.0.5:5432/postgres
 	* Вариант 2 (использование стороннего контейнера, с использованием link и указанием имени сервера):
 		* sudo docker run -it --rm --name pg-client --link pg-srv jbergknoff/postgresql-client postgresql://postgres:Pass1234@pg-srv:5432/postgres
-* Вариант 3 (создание образа с помощью Dockerfile, явным указанием ip):
+	* Вариант 3 (создание образа с помощью Dockerfile, явным указанием ip):
 		* Содержимое /tmp/PG_Project/Dockerfile_pg-client:
 			* FROM alpine:3.17
 			* RUN apk --no-cache add postgresql14-client
