@@ -22,7 +22,7 @@
 
 
 > развернуть контейнер с PostgreSQL 14 смонтировав в него /var/lib/postgres
-* **_sudo docker run --name pg-srv -p 5432:5432 -v /var/lib/postgres:/var/lib/postgresql/data -e POSTGRES_PASSWORD=Pass1234 -d postgres:14_**
+* **_sudo docker run --name pg-srv -h pg-srv -p 5432:5432 -v /var/lib/postgres:/var/lib/postgresql/data -e POSTGRES_PASSWORD=Pass1234 -d postgres:14_**
 
 
 > развернуть контейнер с клиентом postgres
