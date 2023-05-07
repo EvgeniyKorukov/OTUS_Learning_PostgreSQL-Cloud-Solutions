@@ -30,9 +30,9 @@
 	* Вариант 1 (использование стороннего контейнера):
 		* sudo docker run -dit --name=pg-client1 codingpuss/postgres-client
 	* Вариант 2 (создание образа с помощью Dockerfile):
-		* sudo docker build -t pg-client2 -f /tmp/Dockerfile_pg-client .
+		* sudo docker build -t pg-client2 -f /tmp/PG_Project/Dockerfile_pg-client .
 		* sudo docker run -dit --name=pg-client2 pg-client2
-		* Содержимое /tmp/Dockerfile_pg-client:
+		* Содержимое /tmp/PG_Project/Dockerfile_pg-client:
 			* FROM alpine:3.17
 			* RUN apk --no-cache add postgresql14-client
 			* CMD ["/bin/sh"]
@@ -73,9 +73,36 @@
 
 
 >  подключится снова из контейнера с клиентом к контейнеру с сервером
-* **_Решил_**
-  * Генерируем
-
+* **_На этот раз уже через запуск контейнера с клиентом и потом-удаление контейнера_**
+	* Вариант 1 (использование стороннего контейнера, с явным указанием ip):
+		* sudo docker run -it --rm --name pg-client jbergknoff/postgresql-client postgresql://postgres:Pass1234@10.129.0.5:5432/postgres
+	* Вариант 2 (использование стороннего контейнера, с использованием link и указанием имени сервера):
+		* sudo docker run -it --rm --name pg-client --link pg-srv jbergknoff/postgresql-client postgresql://postgres:Pass1234@pg-srv:5432/postgres
+* Вариант 3 (создание образа с помощью Dockerfile, явным указанием ip):
+		* Содержимое /tmp/PG_Project/Dockerfile_pg-client:
+			* FROM alpine:3.17
+			* RUN apk --no-cache add postgresql14-client
+			* ENV PGHOST=pg-srv
+			* ENV PGPORT=5432
+			* ENV PGUSER=postgres
+			* ENV PGPASSWORD=Pass1234
+			* ENV PGDATABASE=postgres
+			* ENTRYPOINT [ "psql" ]
+		* sudo docker build -t pg-client2 -f /tmp/PG_Project/Dockerfile_pg-client .
+		* sudo docker run -it pg-srv --name pg-client2 pg-client2 -h 10.129.0.5
+	* Вариант 4 (создание образа с помощью Dockerfile, с использованием link и указанием имени сервера):
+		* Содержимое /tmp/PG_Project/Dockerfile_pg-client:
+			* FROM alpine:3.17
+			* RUN apk --no-cache add postgresql14-client
+			* ENV PGHOST=pg-srv
+			* ENV PGPORT=5432
+			* ENV PGUSER=postgres
+			* ENV PGPASSWORD=Pass1234
+			* ENV PGDATABASE=postgres
+			* ENTRYPOINT [ "psql" ]
+		* sudo docker build -t pg-client2 -f /tmp/PG_Project/Dockerfile_pg-client .
+		* sudo docker run -it --rm --link pg-srv --name pg-client2 pg-client2
+	
 
 >  проверить, что данные остались на месте
 * **_Данные на месте т.к. они хрантся на нашей виртуалке. Если бы хранили в контейнере Docker, то они удалялись бы при каждой остановке/запуске контейнера**_**
