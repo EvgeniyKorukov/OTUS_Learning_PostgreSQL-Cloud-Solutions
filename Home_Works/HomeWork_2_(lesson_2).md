@@ -89,7 +89,7 @@
 			* ENV PGDATABASE=postgres
 			* ENTRYPOINT [ "psql" ]
 		* sudo docker build -t pg-client2 -f /tmp/PG_Project/Dockerfile_pg-client .
-		* sudo docker run -it pg-srv --name pg-client2 pg-client2 -h 10.129.0.5
+		* sudo docker run -it --rm --name pg-client2 pg-client2 -h 10.129.0.5
 	* Вариант 4 (создание образа с помощью Dockerfile, с использованием link и указанием имени сервера):
 		* Содержимое /tmp/PG_Project/Dockerfile_pg-client:
 			* FROM alpine:3.17
@@ -111,4 +111,5 @@
 >  оставляйте в ЛК ДЗ комментарии что и как вы делали и как боролись с проблемами
   1. В моем решении с postgres_client есть одна особенность, контенер с клиентом всегда остается запущенным, что не есть правильно. Но в заднии было создать контейнер с клиентом. А правильно было бы-запусить контейнер с клиентом, поработать с ним и потом удалить его (run --rm)
   2. В Dockerfile можно было бы использовать 'ENTRYPOINT [ "psql" ]' вместо 'CMD ["/bin/sh"]'. В этом случаем можно убрать psql из строки с запуском контейнера и это подходит для случая, когда контейнер запускается, а после работы с ним - удаляется. У меня не получилось сделать так, чтобы с 'ENTRYPOINT [ "psql" ]' котейнер с клиентом оставался рабочим, после run, чтобы работать с ним через exec.
+  3. При изменении Docker-file (/tmp/PG_Project/Dockerfile_pg-client), не разбрался как обновлять образ 'sudo docker build -t pg-client2 -f /tmp/PG_Project/Dockerfile_pg-client .'. При каждом build, он создает новый образ, а не обновляет текущий. Обновлять пока получается только через удаление существующего образа.
 
