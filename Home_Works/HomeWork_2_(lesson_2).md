@@ -27,23 +27,37 @@
 
 > развернуть контейнер с клиентом postgres
 * **_Подразумевается только развернуть контейнер т.е. только создать, а не запускать_**
-	* Вариант 1:
+	* Вариант 1 (использование стороннего контейнера):
 		* sudo docker run -dit --name=pg-client1 codingpuss/postgres-client
+	* Вариант 2 (создание образа с помощью Dockerfile):
+		* sudo docker build -t pg-client2 -f /tmp/Dockerfile_pg-client .
+		* sudo docker run -dit --name=pg-client2 pg-client2
+		* Содержимое /tmp/Dockerfile_pg-client:
+			* FROM alpine:3.17
+			* RUN apk --no-cache add postgresql14-client
+			* CMD ["/bin/sh"]
 
 
 > подключится из контейнера с клиентом к контейнеру с сервером и сделать таблицу с парой строк
 * **_Вариант 1:_**
-	* sudo docker exec -it pg-client1 psql postgresql://postgres:Pass1234@51.250.102.80:5432/postgres
+	* sudo docker exec -it pg-client1 psql postgresql://postgres:Pass1234@10.129.0.50:5432/postgres
   		* create table t1(i int);
   		* INSERT INTO t1(i) SELECT generate_series(1,1000);
 	* или
-  	* sudo docker exec -it pg-client1 psql postgresql://postgres:Pass1234@51.250.102.80:5432/postgres -c "create table t1(i int)"
-  	* sudo docker exec -it pg-client1 psql postgresql://postgres:Pass1234@51.250.102.80:5432/postgres -c "INSERT INTO t1(i) SELECT generate_series(1,1000)"
+  	* sudo docker exec -it pg-client1 psql postgresql://postgres:Pass1234@10.129.0.5:5432/postgres -c "create table t1(i int)"
+  	* sudo docker exec -it pg-client1 psql postgresql://postgres:Pass1234@10.129.0.5:5432/postgres -c "INSERT INTO t1(i) SELECT generate_series(1,1000)"
+* **_Вариант 2:_**
+	* sudo docker exec -it pg-client2 psql -h 10.129.0.5 -d postgres -U postgres
+  		* create table t1(i int);
+  		* INSERT INTO t1(i) SELECT generate_series(1,1000);
+	* или
+  	* sudo docker exec -it pg-client2 psql -h 10.129.0.5 -d postgres -U postgres -c "create table t1(i int)"
+  	* sudo docker exec -it pg-client2 psql -h 10.129.0.5 -d postgres -U postgres -c "INSERT INTO t1(i) SELECT generate_series(1,1000)"
 
 
 >  подключится к контейнеру с сервером с ноутбука/компьютера извне инстансов GCP/ЯО/Аналоги
 * **_Это не является проблемой при наличии общедоступного адреса т.к. порт к СУБД у нас проброшен из контейнера в нашу виртуальную машину с докером._**
-  * sudo psql -h 84.201.165.95 -U postgres -d postgres
+  * sudo psql -h 51.250.102.80 -U postgres -d postgres
     * Замечание 1: Мы должны знать пароль от пользователя postgres
     * Замечание 2: Должен быть прописан доступ в pg_hba.conf
     * Замечание 3: Должен быть настроен параметр listen_addresses
@@ -68,6 +82,6 @@
 
 
 >  оставляйте в ЛК ДЗ комментарии что и как вы делали и как боролись с проблемами
-  * **_Задачу с клиентом postgres можно было бы решить через сборку своего Docker-контейнера или дописать скрипты формирования для существующего (установка postgres client)_**
-
+  1. В моем решении с postgres_client есть одна особенность, контенер с клиентом всегда остается запущенным, что не есть правильно. Но в заднии было создать контейнер с клиентом. А правильно было бы-запусить контейнер с клиентом, поработать с ним и потом удалить его (run --rm)
+  2. В Dockerfile можно было бы использовать 'ENTRYPOINT [ "psql" ]' вместо 'CMD ["/bin/sh"]'. В этом случаем можно убрать psql из строки с запуском контейнера и это подходит для случая, когда контейнер запускается, а после работы с ним - удаляется. У меня не получилось сделать так, чтобы с 'ENTRYPOINT [ "psql" ]' котейнер с клиентом оставался рабочим, после run, чтобы работать с ним через exec.
 
