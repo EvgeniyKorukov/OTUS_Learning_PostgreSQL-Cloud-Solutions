@@ -37,8 +37,8 @@
   		* create table t1(i int);
   		* INSERT INTO t1(i) SELECT generate_series(1,1000);
 	* или
-  		* sudo docker exec -it pg-client1 psql postgresql://postgres:Pass1234@51.250.102.80:5432/postgres -c "create table t1(i int)"
-  		* sudo docker exec -it pg-client1 psql postgresql://postgres:Pass1234@51.250.102.80:5432/postgres -c "INSERT INTO t1(i) SELECT generate_series(1,1000)"
+  	* sudo docker exec -it pg-client1 psql postgresql://postgres:Pass1234@51.250.102.80:5432/postgres -c "create table t1(i int)"
+  	* sudo docker exec -it pg-client1 psql postgresql://postgres:Pass1234@51.250.102.80:5432/postgres -c "INSERT INTO t1(i) SELECT generate_series(1,1000)"
 
 
 >  подключится к контейнеру с сервером с ноутбука/компьютера извне инстансов GCP/ЯО/Аналоги
