@@ -26,17 +26,23 @@
 
 
 > развернуть контейнер с клиентом postgres
-* **_sudo docker run -it --rm jbergknoff/postgresql-client postgresql://postgres:Pass1234@10.129.0.34:5432/postgres_**
+* **_Подразумевается только развернуть контейнер т.е. только создать, а не запускать_**
+	* Вариант 1:
+		* sudo docker run -dit --name=pg-client1 codingpuss/postgres-client
 
 
 > подключится из контейнера с клиентом к контейнеру с сервером и сделать таблицу с парой строк
-* **_sudo docker run -it --rm jbergknoff/postgresql-client postgresql://postgres:Pass1234@10.129.0.34:5432/postgres_**
-  * create table t1(i int);
-  * INSERT INTO t1(i) SELECT generate_series(1,1000);
+* **_Вариант 1:_**
+	* sudo docker exec -it pg-client1 psql postgresql://postgres:Pass1234@51.250.102.80:5432/postgres
+  		* create table t1(i int);
+  		* INSERT INTO t1(i) SELECT generate_series(1,1000);
+	* или
+  		* sudo docker exec -it pg-client1 psql postgresql://postgres:Pass1234@51.250.102.80:5432/postgres -c "create table t1(i int)"
+  		* sudo docker exec -it pg-client1 psql postgresql://postgres:Pass1234@51.250.102.80:5432/postgres -c "INSERT INTO t1(i) SELECT generate_series(1,1000)"
 
 
 >  подключится к контейнеру с сервером с ноутбука/компьютера извне инстансов GCP/ЯО/Аналоги
-* **_Это не является проблемой при наличии общедоступного адреса т.к. порт к СУБД у нас пробошен из контейнера в нашу виртуальную машину с докером._**
+* **_Это не является проблемой при наличии общедоступного адреса т.к. порт к СУБД у нас проброшен из контейнера в нашу виртуальную машину с докером._**
   * sudo psql -h 84.201.165.95 -U postgres -d postgres
     * Замечание 1: Мы должны знать пароль от пользователя postgres
     * Замечание 2: Должен быть прописан доступ в pg_hba.conf
@@ -58,7 +64,7 @@
 
 
 >  проверить, что данные остались на месте
-* **_Данные на месте т.к. они хрантся на нашей виртуалке. Если бы хранили в контейнере Docker, то они теряись бы при каждой остановке/запуске контейнера**_**
+* **_Данные на месте т.к. они хрантся на нашей виртуалке. Если бы хранили в контейнере Docker, то они удалялись бы при каждой остановке/запуске контейнера**_**
 
 
 >  оставляйте в ЛК ДЗ комментарии что и как вы делали и как боролись с проблемами
