@@ -158,4 +158,4 @@
   5. Я мог бы еще сделать вариацию запуска контейнеров (postgres server и postgres client), через создание docker-network и запуска контейнеров с указанием сети (--network). Но я уже проработал более сложные варианты. Хотя....)
 		* sudo docker network create pg-net
 		* sudo docker run --name pg-srv -p 5432:5432 --network=pg-net -v /var/lib/postgres:/var/lib/postgresql/data -e POSTGRES_PASSWORD=Pass1234 -d postgres:14
-		* sudo docker run -it --rm --network=pg-net --name pg-client jbergknoff/postgresql-client -h pg-srv -U postgre
+		* sudo docker run -it --rm --network=pg-net --name pg-client jbergknoff/postgresql-client -h pg-srv -U postgres
