@@ -102,14 +102,60 @@
 			* ENTRYPOINT [ "psql" ]
 		* sudo docker build -t pg-client2 -f /tmp/PG_Project/Dockerfile_pg-client .
 		* sudo docker run -it --rm --link pg-srv --name pg-client2 pg-client2
-	
+	* Вариант 5 (использованием docker-compose, совместно с Docker-file и использованием docker network):
+		* Содержимое /tmp/PG_Project/Dockerfile_pg-client:
+			* FROM alpine:3.17
+			* RUN apk --no-cache add postgresql14-client
+			* ENV PGHOST=pg-srv
+			* ENV PGPORT=5432
+			* ENV PGUSER=postgres
+			* ENV PGPASSWORD=Pass1234
+			* ENV PGDATABASE=postgres
+			* ENTRYPOINT [ "psql" ]
+		* Содержимое /tmp/PG_Project/docker-compose.yml:
+			* version: '3.1'
+			* services:
+				* pg-srv:
+					* image: postgres:14
+					* restart: always
+					* environment:
+						* POSTGRES_PASSWORD: Pass1234
+					* volumes:
+						* \- /var/lib/postgres:/var/lib/postgresql/data
+					* ports:
+						* \- 5432:5432
+					* networks:
+						* \- pg-net
+					* pg-cli:
+						* build:
+						* context: .
+						* dockerfile: /tmp/PG_Project/Dockerfile_pg-client
+						* environment:
+							* PGHOST: pg-srv
+							* PGPORT: 5432
+							* PGUSER: postgres
+							* PGPASSWORD: Pass1234
+							* PGDATABASE: postgres
+						* networks:
+							* \- pg-net
+					* networks:
+						* pg-net:
+		* sudo docker compose -f /tmp/PG_Project/docker-compose.yml up -d
+		* Вариации запуска клиента:
+			* sudo docker compose run --rm pg-cli -h pg-srv -U postgres	
+			* sudo docker compose run --rm pg-cli 
+
 
 >  проверить, что данные остались на месте
-* **_Данные на месте т.к. они хрантся на нашей виртуалке. Если бы хранили в контейнере Docker, то они удалялись бы при каждой остановке/запуске контейнера**_**
+* **_Данные на месте т.к. они хрантся на нашей виртуалке. Если бы хранили в контейнере Docker, то они удалялись бы при каждой остановке/запуске контейнера_**
 
 
 >  оставляйте в ЛК ДЗ комментарии что и как вы делали и как боролись с проблемами
   1. В моем решении с postgres_client есть одна особенность, контенер с клиентом всегда остается запущенным, что не есть правильно. Но в заднии было создать контейнер с клиентом. А правильно было бы-запусить контейнер с клиентом, поработать с ним и потом удалить его (run --rm)
   2. В Dockerfile можно было бы использовать 'ENTRYPOINT [ "psql" ]' вместо 'CMD ["/bin/sh"]'. В этом случаем можно убрать psql из строки с запуском контейнера и это подходит для случая, когда контейнер запускается, а после работы с ним - удаляется. У меня не получилось сделать так, чтобы с 'ENTRYPOINT [ "psql" ]' котейнер с клиентом оставался рабочим, после run, чтобы работать с ним через exec.
   3. При изменении Docker-file (/tmp/PG_Project/Dockerfile_pg-client), не разбрался как обновлять образ 'sudo docker build -t pg-client2 -f /tmp/PG_Project/Dockerfile_pg-client .'. При каждом build, он создает новый образ, а не обновляет текущий. Обновлять пока получается только через удаление существующего образа.
-
+  4. С Docker-Compose получился не самый удачный вариант в моем случае т.к. он подразумевает, что в docker-compose должны запускаться работающие сервисы(службы) и там не место клиентам, которые выполняют какой-то функционал и потом завершаются. Это мое мнение и выводы из проделанного.
+  5. Я мог бы еще сделать вариацию запуска контейнеров (postgres server и postgres client), через создание docker-network и запуска контейнеров с указанием сети (--network). Но я уже проработал более сложные варианты. Хотя....)
+		* sudo docker network create pg-net
+		* sudo docker run --name pg-srv -p 5432:5432 --network=pg-net -v /var/lib/postgres:/var/lib/postgresql/data -e POSTGRES_PASSWORD=Pass1234 -d postgres:14
+		* sudo docker run -it --rm --network=pg-net --name pg-client jbergknoff/postgresql-client -h pg-srv -U postgre
