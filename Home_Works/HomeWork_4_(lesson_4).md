@@ -266,7 +266,65 @@
     ubuntu@srv-postgres:~$ sudo  pg_ctlcluster 15 main restart
     ubuntu@srv-postgres:~$ 
     ```
-  
+* Проводим тестирование с параметрами pgbench:
+  * 10 клиентов `--client=10`
+  * Новое подключение для каждой транзакции `--connect`
+  * 5 параллельных потоков `--jobs=5`
+  * Выводим прогрес каждые 30 секунд `--progress=30`
+  * Время на тест 600 секунд или 10 минут `--time=600`
+  * База: demo
+    ```console
+    ubuntu@srv-postgres:~$ sudo -u postgres pgbench --client=10 --connect --jobs=5 --progress=30 --time=600 demo
+    pgbench (15.2 (Ubuntu 15.2-1.pgdg22.04+1))
+    starting vacuum...end.
+    progress: 30.0 s, 67.1 tps, lat 95.504 ms stddev 33.282, 0 failed
+    progress: 60.0 s, 67.0 tps, lat 95.077 ms stddev 34.999, 0 failed
+    progress: 90.0 s, 67.4 tps, lat 96.808 ms stddev 36.913, 0 failed
+    progress: 120.0 s, 67.3 tps, lat 95.080 ms stddev 32.575, 0 failed
+    progress: 150.0 s, 66.6 tps, lat 95.622 ms stddev 33.714, 0 failed
+    progress: 180.0 s, 67.4 tps, lat 95.704 ms stddev 35.366, 0 failed
+    progress: 210.1 s, 67.6 tps, lat 92.890 ms stddev 32.252, 0 failed
+    progress: 240.0 s, 67.3 tps, lat 95.530 ms stddev 33.755, 0 failed
+
+    progress: 270.0 s, 67.3 tps, lat 95.716 ms stddev 35.639, 0 failed
+    progress: 300.0 s, 67.4 tps, lat 96.186 ms stddev 35.318, 0 failed
+    progress: 330.0 s, 67.5 tps, lat 94.324 ms stddev 32.761, 0 failed
+    progress: 360.0 s, 67.3 tps, lat 96.327 ms stddev 33.907, 0 failed
+    progress: 390.0 s, 67.5 tps, lat 95.377 ms stddev 34.131, 0 failed
+    progress: 420.0 s, 67.3 tps, lat 95.728 ms stddev 33.764, 0 failed
+    progress: 450.0 s, 67.3 tps, lat 95.219 ms stddev 34.432, 0 failed
+    progress: 480.0 s, 67.3 tps, lat 97.167 ms stddev 36.083, 0 failed
+    progress: 510.0 s, 67.6 tps, lat 93.963 ms stddev 31.146, 0 failed
+    progress: 540.0 s, 67.3 tps, lat 95.263 ms stddev 34.615, 0 failed
+    progress: 570.0 s, 67.3 tps, lat 96.225 ms stddev 33.643, 0 failed
+    progress: 600.0 s, 67.3 tps, lat 94.768 ms stddev 33.274, 0 failed
+    transaction type: <builtin: TPC-B (sort of)>
+    scaling factor: 1
+    query mode: simple
+    number of clients: 10
+    number of threads: 5
+    maximum number of tries: 1
+    duration: 600 s
+    number of transactions actually processed: 40390
+    number of failed transactions: 0 (0.000%)
+    latency average = 95.419 ms
+    latency stddev = 34.119 ms
+    average connection time = 53.138 ms
+    tps = 67.307295 (including reconnection times)
+    ubuntu@srv-postgres:~$ 
+    ```  
+* Выводы:
+  * `number of transactions actually processed` было `39125` стало `40390`. Количество транзакций увеличилось и это хорошо.
+  * `latency average` было `107.568 ms` стало `95.419 ms`. Средняя задержка уменьшилась и это хорошо.
+  * `latency stddev` было `45.366 ms` стало `34.119 ms`. Средняя задержка дисковых устройств уменьшилась и это хорошо.
+  * `average connection time` было `45.791 ms` стало `53.138 ms`. Увеличилось среднее время подключения, что не есть хорошо.
+  * `tps` было `65.198881` стало `67.307295`. Увеличилось количество транзакций в секунду и это хорошо.
+* Результат: 
+  * Мы получили прирост производительности.
+  * Но сильно снизили надежность.
+  * Всегда приходтся вибирирать "золотую середину" между производительностью и надежностью.
+  * Все зависит от требований к системе, ее важности и надежности.
+
 
 ***
 
