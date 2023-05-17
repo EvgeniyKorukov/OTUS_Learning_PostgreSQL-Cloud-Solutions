@@ -242,9 +242,30 @@
     * ❗️ Этого ни в коем случае нельзя делать на промышленной системе и выйгруш мы получим только на начальном этапе, пока таблицы и индексы не разрастутся от модификации и изменений. 
     * ❗️НО у нас в задаче ничего не сказано про долгосрочную производительность и не обращать внимание на стабильность БД
 
-```sql
+    ```sql
+    ubuntu@srv-postgres:~$ sudo -u postgres psql
+    could not change directory to "/home/ubuntu": Permission denied
+    psql (15.2 (Ubuntu 15.2-1.pgdg22.04+1))
+    Type "help" for help.
 
-```
+    postgres=# alter system set wal_level='minimal';
+    alter system set max_wal_senders='0';
+    alter system set synchronous_commit='off';
+    alter system set fsync='off';
+    alter system set full_page_writes='off';
+    alter system set autovacuum='off';
+    ALTER SYSTEM
+    ALTER SYSTEM
+    ALTER SYSTEM
+    ALTER SYSTEM
+    ALTER SYSTEM
+    ALTER SYSTEM
+    postgres=# 
+    postgres=# \q
+    ubuntu@srv-postgres:~$ 
+    ubuntu@srv-postgres:~$ sudo  pg_ctlcluster 15 main restart
+    ubuntu@srv-postgres:~$ 
+    ```
   
 
 ***
