@@ -285,7 +285,6 @@
     progress: 180.0 s, 67.4 tps, lat 95.704 ms stddev 35.366, 0 failed
     progress: 210.1 s, 67.6 tps, lat 92.890 ms stddev 32.252, 0 failed
     progress: 240.0 s, 67.3 tps, lat 95.530 ms stddev 33.755, 0 failed
-
     progress: 270.0 s, 67.3 tps, lat 95.716 ms stddev 35.639, 0 failed
     progress: 300.0 s, 67.4 tps, lat 96.186 ms stddev 35.318, 0 failed
     progress: 330.0 s, 67.5 tps, lat 94.324 ms stddev 32.761, 0 failed
@@ -325,6 +324,56 @@
   * Всегда приходтся вибирирать "золотую середину" между производительностью и надежностью.
   * Все зависит от требований к системе, ее важности и надежности.
 
+* Стало интересно и провел еще одно тестирование и включил `autovacuum` т.к. подумал, что в тесте нагрузка на изменение данных и это может улучишить результаты)
+    ```console
+    ubuntu@srv-postgres:~$ sudo -u postgres pgbench --client=10 --connect --jobs=5 --progress=30 --time=600 demo
+    pgbench (15.2 (Ubuntu 15.2-1.pgdg22.04+1))
+    starting vacuum...end.
+    progress: 30.1 s, 68.3 tps, lat 92.959 ms stddev 33.026, 0 failed
+    progress: 60.1 s, 68.0 tps, lat 93.329 ms stddev 31.869, 0 failed
+    progress: 90.1 s, 68.3 tps, lat 93.983 ms stddev 33.539, 0 failed
+    progress: 120.0 s, 68.4 tps, lat 93.284 ms stddev 33.207, 0 failed
+    progress: 150.0 s, 68.5 tps, lat 92.892 ms stddev 30.870, 0 failed
+    progress: 180.0 s, 68.4 tps, lat 92.213 ms stddev 32.445, 0 failed
+    progress: 210.0 s, 68.5 tps, lat 92.505 ms stddev 31.134, 0 failed
+    progress: 240.1 s, 68.2 tps, lat 91.988 ms stddev 31.607, 0 failed
+    progress: 270.0 s, 68.6 tps, lat 94.112 ms stddev 33.582, 0 failed
+    progress: 300.1 s, 68.4 tps, lat 91.738 ms stddev 31.632, 0 failed
+    progress: 330.1 s, 68.6 tps, lat 93.781 ms stddev 33.727, 0 failed
+    progress: 360.1 s, 67.2 tps, lat 95.509 ms stddev 35.374, 0 failed
+    progress: 390.1 s, 68.5 tps, lat 94.292 ms stddev 35.153, 0 failed
+    progress: 420.0 s, 68.1 tps, lat 94.291 ms stddev 34.138, 0 failed
+    progress: 450.0 s, 68.7 tps, lat 91.314 ms stddev 31.981, 0 failed
+    progress: 480.0 s, 68.3 tps, lat 94.021 ms stddev 33.979, 0 failed
+    progress: 510.0 s, 68.5 tps, lat 93.432 ms stddev 34.854, 0 failed
+    progress: 540.0 s, 68.4 tps, lat 92.906 ms stddev 32.776, 0 failed
+    progress: 570.0 s, 68.7 tps, lat 93.574 ms stddev 34.239, 0 failed
+    progress: 600.0 s, 68.4 tps, lat 93.569 ms stddev 34.616, 0 failed
+    transaction type: <builtin: TPC-B (sort of)>
+    scaling factor: 1
+    query mode: simple
+    number of clients: 10
+    number of threads: 5
+    maximum number of tries: 1
+    duration: 600 s
+    number of transactions actually processed: 41023
+    number of failed transactions: 0 (0.000%)
+    latency average = 93.277 ms
+    latency stddev = 33.227 ms
+    average connection time = 52.987 ms
+    tps = 68.361959 (including reconnection times)
+    ubuntu@srv-postgres:~$ 
+    ```  
+* Выводы:
+  * `number of transactions actually processed` было `40390` стало `41023`. Количество транзакций увеличилось и это хорошо.
+  * `latency average` было `95.419 ms` стало `93.277 ms`. Средняя задержка уменьшилась и это хорошо.
+  * `latency stddev` было `34.119 ms` стало `33.227 ms`. Средняя задержка дисковых устройств уменьшилась и это хорошо.
+  * `average connection time` было `53.138 ms` стало `52.987 ms`. Увеличилось среднее время подключения, что не есть хорошо.
+  * `tps` было `67.307295` стало `68.361959`. Увеличилось количество транзакций в секунду и это хорошо.
+
+* Результат: 
+  * В данной ситуации `autovacuum` дал нам прирост производительности т.к. много изменений данных.
+  * Отключение `autovacuum` не всегда дает прирост производительности т.к. все зависит от характера и типа нагрузки.
 
 ***
 
