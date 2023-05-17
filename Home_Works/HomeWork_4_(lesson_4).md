@@ -93,7 +93,7 @@
    * DB Type: `Mixed type of application`
    * Total Memory (RAM): `2 GB`
    * Number of CPUs: `1`
-   * Number of Connections: `20`
+   * Number of Connections: `20` ❗️т.к. pgtune не считает с connection меньше 20
    * Data Storage: `SSD Storage`
      ```sql
      # DB Version: 15
@@ -168,15 +168,59 @@
   * Время на тест 600 секунд или 10 минут `--time=600`
   * База: demo
     ```console
-
+    ubuntu@srv-postgres:~$ sudo -u postgres pgbench --client=10 --connect --jobs=5 --progress=30 --time=600 demo
+    pgbench (15.2 (Ubuntu 15.2-1.pgdg22.04+1))
+    starting vacuum...end.
+    progress: 30.0 s, 65.2 tps, lat 107.680 ms stddev 46.124, 0 failed
+    progress: 60.0 s, 65.4 tps, lat 108.561 ms stddev 46.275, 0 failed
+    progress: 90.0 s, 65.4 tps, lat 107.072 ms stddev 44.912, 0 failed
+    progress: 120.0 s, 65.4 tps, lat 107.234 ms stddev 47.425, 0 failed
+    progress: 150.0 s, 65.3 tps, lat 108.209 ms stddev 46.529, 0 failed
+    progress: 180.0 s, 65.7 tps, lat 106.189 ms stddev 42.666, 0 failed
+    progress: 210.0 s, 65.5 tps, lat 106.677 ms stddev 43.738, 0 failed
+    progress: 240.0 s, 65.2 tps, lat 107.284 ms stddev 44.676, 0 failed
+    progress: 270.0 s, 65.5 tps, lat 108.234 ms stddev 46.285, 0 failed
+    progress: 300.0 s, 65.3 tps, lat 107.736 ms stddev 45.785, 0 failed
+    progress: 330.0 s, 64.2 tps, lat 108.711 ms stddev 45.018, 0 failed
+    progress: 360.1 s, 65.4 tps, lat 108.028 ms stddev 46.110, 0 failed
+    progress: 390.0 s, 65.2 tps, lat 106.436 ms stddev 44.878, 0 failed
+    progress: 420.0 s, 65.0 tps, lat 109.260 ms stddev 47.808, 0 failed
+    progress: 450.0 s, 64.8 tps, lat 108.565 ms stddev 47.684, 0 failed
+    progress: 480.0 s, 64.7 tps, lat 107.474 ms stddev 44.278, 0 failed
+    progress: 510.0 s, 65.4 tps, lat 106.759 ms stddev 44.940, 0 failed
+    progress: 540.0 s, 65.2 tps, lat 105.888 ms stddev 42.045, 0 failed
+    progress: 570.0 s, 65.2 tps, lat 106.874 ms stddev 42.809, 0 failed
+    progress: 600.0 s, 65.1 tps, lat 108.668 ms stddev 46.620, 0 failed
+    transaction type: <builtin: TPC-B (sort of)>
+    scaling factor: 1
+    query mode: simple
+    number of clients: 10
+    number of threads: 5
+    maximum number of tries: 1
+    duration: 600 s
+    number of transactions actually processed: 39125
+    number of failed transactions: 0 (0.000%)
+    latency average = 107.568 ms
+    latency stddev = 45.366 ms
+    average connection time = 45.791 ms
+    tps = 65.198881 (including reconnection times)
+    ubuntu@srv-postgres:~$ 
     ```
 * Выводы:
-  * 
+  * `number of transactions actually processed` было `39618` стало `39125`. Количество транзакций уменьшилось, что не есть хорошо.
+  * `latency average` было `106.224 ms` стало `107.568 ms`. Средняя задержка увеличилась, что не есть хорошо.
+  * `latency stddev` было `44.725 ms` стало `45.366 ms`. Средняя задержка дисковых устройств увеличилась, что не есть хорошо.
+  * `average connection time` было `45.224 ms` стало `45.791 ms`. Увеличилось среднее время подключения, что не есть хорошо.
+  * `tps` было `66.022330` стало `65.198881`. Уменьшилось количество транзакций в секунду, что не есть хорошо.
+* Результат: 
+  * Сделали хуже, чем было, на основании этого синтетического теста. 
+  * Количество подключений в pgbench `10`, а в pgtune нельзя поставить меньше `20`. Это не существенно, но могло немного повлиять на результы тестов. Хотя при изменении количества подклчений меняется только `work_mem`
+  * Еще, после калькуляции в pgtune уменьшили `max_connections` со `100` до `20`. Это как раз и могло сказаться на результате.
 
 ***
 
 > ### Настроить кластер на оптимальную производительность не обращая внимания на стабильность БД
-* Настройкам ОС пренебрегаем т.к. тут их показатели будут не заметны. В частности, я имею ввиду:
+* Настройкам:
 
   
 
