@@ -79,22 +79,95 @@
     ubuntu@srv-postgres:~$ 
     ```
 
-
-
 ***
 
 > ### Выставить оптимальные настройки
-* Трям
+ * Настройкам ОС пренебрегаем т.к. тут их показатели будут не заметны. В частности, я имею ввиду:
+   * huge pages
+   * transparent_hugepages
+   * swapiness
+   * лимиты и прочее
+ * Берем калькулятор параметров [PGTune](https://pgtune.leopard.in.ua/) и считаем параметры для следующей конфигурации:
+   * DB version: `15`
+   * OS Type: `Linux`
+   * DB Type: `Mixed type of application`
+   * Total Memory (RAM): `2 GB`
+   * Number of CPUs: `1`
+   * Number of Connections: `20`
+   * Data Storage: `SSD Storage`
+     ```sql
+     # DB Version: 15
+     # OS Type: linux
+     # DB Type: mixed
+     # Total Memory (RAM): 2 GB
+     # CPUs num: 1
+     # Connections num: 20
+     # Data Storage: ssd
+
+     max_connections = 20
+     shared_buffers = 512MB
+     effective_cache_size = 1536MB
+     maintenance_work_mem = 128MB
+     checkpoint_completion_target = 0.9
+     wal_buffers = 16MB
+     default_statistics_target = 100
+     random_page_cost = 1.1
+     effective_io_concurrency = 200
+     work_mem = 6553kB
+     min_wal_size = 1GB
+     max_wal_size = 4GB   
+     ```
+ * Применяем параметры на СУБД PostgreSQL и перезапускаем кластер, чтобы применились параметры:
+    ```sql
+    ubuntu@srv-postgres:~$ sudo -u postgres psql
+    could not change directory to "/home/ubuntu": Permission denied
+    psql (15.2 (Ubuntu 15.2-1.pgdg22.04+1))
+    Type "help" for help.
+
+    postgres=# 
+    ALTER SYSTEM SET max_connections = '20';
+    ALTER SYSTEM SET shared_buffers = '512MB';
+    ALTER SYSTEM SET effective_cache_size = '1536MB';
+    ALTER SYSTEM SET maintenance_work_mem = '128MB';
+    ALTER SYSTEM SET checkpoint_completion_target = '0.9';
+    ALTER SYSTEM SET wal_buffers = '16MB';
+    ALTER SYSTEM SET default_statistics_target = '100';
+    ALTER SYSTEM SET random_page_cost = '1.1';
+    ALTER SYSTEM SET effective_io_concurrency = '200';
+    ALTER SYSTEM SET work_mem = '6553kB';
+    ALTER SYSTEM SET min_wal_size = '1GB';
+    ALTER SYSTEM SET max_wal_size = '4GB';
+    ALTER SYSTEM
+    ALTER SYSTEM
+    ALTER SYSTEM
+    ALTER SYSTEM
+    ALTER SYSTEM
+    ALTER SYSTEM
+    ALTER SYSTEM
+    ALTER SYSTEM
+    ALTER SYSTEM
+    ALTER SYSTEM
+    ALTER SYSTEM
+    ALTER SYSTEM
+    postgres=# 
+    postgres=# \q
+    ubuntu@srv-postgres:~$ 
+    ubuntu@srv-postgres:~$ sudo  pg_ctlcluster 15 main restart
+    ubuntu@srv-postgres:~$ 
+    ```
+
 
 ***
 
 > ### Проверить насколько выросла производительность
-* Трям
+ * Трям
 
 ***
 
 > ### Настроить кластер на оптимальную производительность не обращая внимания на стабильность БД
-* Трям
+* Настройкам ОС пренебрегаем т.к. тут их показатели будут не заметны. В частности, я имею ввиду:
+
+  
 
 ***
 
