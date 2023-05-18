@@ -324,7 +324,7 @@
   * Всегда приходтся вибирирать "золотую середину" между производительностью и надежностью.
   * Все зависит от требований к системе, ее важности и надежности.
 
-* ❓ Стало интересно и провел еще одно тестирование и включил `[autovacuum](https://postgrespro.ru/docs/postgrespro/15/runtime-config-autovacuum)=`on` т.к. подумал, что в тесте нагрузка на изменение данных и это может улучишить результаты)
+* ❓ Стало интересно и провел еще одно тестирование и включил [autovacuum](https://postgrespro.ru/docs/postgrespro/15/runtime-config-autovacuum)=`on` т.к. подумал, что в тесте нагрузка на изменение данных и это может улучишить результаты)
     ```console
     ubuntu@srv-postgres:~$ sudo -u postgres pgbench --client=10 --connect --jobs=5 --progress=30 --time=600 demo
     pgbench (15.2 (Ubuntu 15.2-1.pgdg22.04+1))
