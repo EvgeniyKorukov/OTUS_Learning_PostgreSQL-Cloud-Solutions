@@ -262,9 +262,251 @@
     postgres@srv-postgres:~$ 
     ```
 
-***
+  * Делаем полный РК и смотрим список уже имеющихся РК
+    ```console
+    ostgres@srv-postgres:~$ 
+    postgres@srv-postgres:~$ pg_probackup-15 backup --instance 'main' -b FULL --stream --temp-slot
 
-> ### Topic
-  * text
+    INFO: Backup start, pg_probackup version: 2.5.12, instance: main, backup ID: RV0ULQ, backup mode: FULL, wal mode: STREAM, remote: false, compress-algorithm: none, compress-level: 1
+    WARNING: This PostgreSQL instance was initialized without data block checksums. pg_probackup have no way to detect data block corruption without them. Reinitialize PGDATA with option '--data-checksums'.
+    WARNING: Current PostgreSQL role is superuser. It is not recommended to run pg_probackup under superuser.
+    INFO: Database backup start
+    INFO: wait for pg_backup_start()
+    INFO: Wait for WAL segment /pg_backups/backups/main/RV0ULQ/database/pg_wal/000000010000000000000003 to be streamed
+    INFO: PGDATA size: 36MB
+    INFO: Current Start LSN: 0/3000028, TLI: 1
+    INFO: Start transferring data files
+    INFO: Data files are transferred, time elapsed: 1s
+    INFO: wait for pg_stop_backup()
+    INFO: pg_stop backup() successfully executed
+    INFO: stop_lsn: 0/3003CF8
+    INFO: Getting the Recovery Time from WAL
+    INFO: Syncing backup files to disk
+    INFO: Backup files are synced, time elapsed: 1s
+    INFO: Validating backup RV0ULQ
+    INFO: Backup RV0ULQ data files are valid
+    INFO: Backup RV0ULQ resident size: 53MB
+    INFO: Backup RV0ULQ completed
+    postgres@srv-postgres:~$ 
+    postgres@srv-postgres:~$ pg_probackup-15 show
+
+    BACKUP INSTANCE 'main'
+    ================================================================================================================================
+     Instance  Version  ID      Recovery Time           Mode  WAL Mode  TLI  Time  Data   WAL  Zratio  Start LSN  Stop LSN   Status 
+    ================================================================================================================================
+     main      15       RV0ULQ  2023-05-21 18:41:52+00  FULL  STREAM    1/0   11s  37MB  16MB    1.00  0/3000028  0/3003CF8  OK     
+    postgres@srv-postgres:~$ 
+    ```
+
+  * Выполняем инкрементальный РК
+    * Добавляем данные в таблицу
+    * Устанавливаем пользователю backup пароль
+    * Создаем pgpass с фишкой от Евгения Аристова
+    * Выдаем права на запуск функции для РК. Это надо делать для каждой БД
+    * Выполняем инкрементальный РК
+    * Смотрим список РК и их виды (full, delta,page)
+    ```console
+    ostgres@srv-postgres:~$ 
+    postgres@srv-postgres:~$ psql otus -c "insert into test values (4);"
+    INSERT 0 1
+    postgres@srv-postgres:~$ psql -c "ALTER USER backup PASSWORD 'otus123';"
+    ALTER ROLE
+    postgres@srv-postgres:~$ 
+    postgres@srv-postgres:~$ psql otus -c "insert into test values (4);"
+    INSERT 0 1
+    postgres@srv-postgres:~$ psql -c "ALTER USER backup PASSWORD 'otus123';"
+    ALTER ROLE
+    postgres@srv-postgres:~$ 
+    postgres@srv-postgres:~$ echo "localhost:5432:otus:backup:otus123">>~/.pgpass
+    postgres@srv-postgres:~$ echo "localhost:5432:replication:backup:otus123">>~/.pgpass
+    postgres@srv-postgres:~$ chmod 600 ~/.pgpass
+    postgres@srv-postgres:~$ 
+    postgres@srv-postgres:~$ psql -d otus
+    psql (15.2 (Ubuntu 15.2-1.pgdg22.04+1))
+    Type "help" for help.
+
+    otus=# BEGIN;
+    GRANT USAGE ON SCHEMA pg_catalog TO backup;
+    GRANT EXECUTE ON FUNCTION pg_catalog.current_setting(text) TO backup;
+    GRANT EXECUTE ON FUNCTION pg_catalog.set_config(text, text, boolean) TO backup;
+    GRANT EXECUTE ON FUNCTION pg_catalog.pg_is_in_recovery() TO backup;
+    GRANT EXECUTE ON FUNCTION pg_catalog.pg_backup_start(text, boolean) TO backup;
+    GRANT EXECUTE ON FUNCTION pg_catalog.pg_backup_stop(boolean) TO backup;
+    GRANT EXECUTE ON FUNCTION pg_catalog.pg_create_restore_point(text) TO backup;
+    GRANT EXECUTE ON FUNCTION pg_catalog.pg_switch_wal() TO backup;
+    GRANT EXECUTE ON FUNCTION pg_catalog.pg_last_wal_replay_lsn() TO backup;
+    GRANT EXECUTE ON FUNCTION pg_catalog.txid_current() TO backup;
+    GRANT EXECUTE ON FUNCTION pg_catalog.txid_current_snapshot() TO backup;
+    GRANT EXECUTE ON FUNCTION pg_catalog.txid_snapshot_xmax(txid_snapshot) TO backup;
+    GRANT EXECUTE ON FUNCTION pg_catalog.pg_control_checkpoint() TO backup;
+    COMMIT;
+    BEGIN
+    GRANT
+    GRANT
+    GRANT
+    GRANT
+    GRANT
+    GRANT
+    GRANT
+    GRANT
+    GRANT
+    GRANT
+    GRANT
+    GRANT
+    GRANT
+    COMMIT
+    otus=# 
+    otus=# \q
+    postgres@srv-postgres:~$ 
+    postgres@srv-postgres:~$ pg_probackup-15 backup --instance 'main' -b DELTA --stream --temp-slot -h localhost -U backup -d otus -p 5432
+    INFO: Backup start, pg_probackup version: 2.5.12, instance: main, backup ID: RV0VQ9, backup mode: DELTA, wal mode: STREAM, remote: false, compress-algorithm: none, compress-level: 1
+    WARNING: This PostgreSQL instance was initialized without data block checksums. pg_probackup have no way to detect data block corruption without them. Reinitialize PGDATA with option '--data-checksums'.
+    INFO: Database backup start
+    INFO: wait for pg_backup_start()
+    INFO: Parent backup: RV0ULQ
+    INFO: Wait for WAL segment /pg_backups/backups/main/RV0VQ9/database/pg_wal/00000001000000000000000B to be streamed
+    INFO: PGDATA size: 36MB
+    INFO: Current Start LSN: 0/B000028, TLI: 1
+    INFO: Parent Start LSN: 0/3000028, TLI: 1
+    INFO: Start transferring data files
+    INFO: Data files are transferred, time elapsed: 0
+    INFO: wait for pg_stop_backup()
+    INFO: pg_stop backup() successfully executed
+    INFO: stop_lsn: 0/B000168
+    INFO: Getting the Recovery Time from WAL
+    INFO: Syncing backup files to disk
+    INFO: Backup files are synced, time elapsed: 0
+    INFO: Validating backup RV0VQ9
+    INFO: Backup RV0VQ9 data files are valid
+    INFO: Backup RV0VQ9 resident size: 16MB
+    INFO: Backup RV0VQ9 completed
+    postgres@srv-postgres:~$ 
+    postgres@srv-postgres:~$ pg_probackup-15 show
+
+    BACKUP INSTANCE 'main'
+    ==================================================================================================================================
+     Instance  Version  ID      Recovery Time           Mode   WAL Mode  TLI  Time   Data   WAL  Zratio  Start LSN  Stop LSN   Status 
+    ==================================================================================================================================
+     main      15       RV0VQ9  2023-05-21 19:06:11+00  DELTA  STREAM    1/1    3s  436kB  16MB    1.00  0/B000028  0/B000168  OK     
+     main      15       RV0ULQ  2023-05-21 18:41:52+00  FULL   STREAM    1/0   11s   37MB  16MB    1.00  0/3000028  0/3003CF8  OK     
+    postgres@srv-postgres:~$ 
+    ```
+    
+  * Для Евгения Аристова)
+    * Создавать отдельного пользователя надо в том случае, если РК занимается отдельное подразделение или есть требования службы безопастности.
+    * Если мы работаем под пользователем postgres, то не надо выдавать права на каждую БД, а РК можно сделать так
+      *  pg_probackup-15 backup --instance 'main' -b DELTA --stream --temp-slot
+      ```console
+      postgres@srv-postgres:/home/ubuntu$ pg_probackup-15 backup --instance 'main' -b DELTA --stream --temp-slot
+      could not change directory to "/home/ubuntu": Permission denied
+      INFO: Backup start, pg_probackup version: 2.5.12, instance: main, backup ID: RV0W98, backup mode: DELTA, wal mode: STREAM, remote: false, compress-algorithm: none, compress-level: 1
+      WARNING: This PostgreSQL instance was initialized without data block checksums. pg_probackup have no way to detect data block corruption without them. Reinitialize PGDATA with option '--data-checksums'.
+      WARNING: Current PostgreSQL role is superuser. It is not recommended to run pg_probackup under superuser.
+      INFO: Database backup start
+      INFO: wait for pg_backup_start()
+      INFO: Parent backup: RV0VQ9
+      INFO: Wait for WAL segment /pg_backups/backups/main/RV0W98/database/pg_wal/00000001000000000000000D to be streamed
+      INFO: PGDATA size: 36MB
+      INFO: Current Start LSN: 0/D000028, TLI: 1
+      INFO: Parent Start LSN: 0/B000028, TLI: 1
+      INFO: Start transferring data files
+      INFO: Data files are transferred, time elapsed: 0
+      INFO: wait for pg_stop_backup()
+      INFO: pg_stop backup() successfully executed
+      INFO: stop_lsn: 0/D000168
+      INFO: Getting the Recovery Time from WAL
+      INFO: Syncing backup files to disk
+      INFO: Backup files are synced, time elapsed: 2s
+      INFO: Validating backup RV0W98
+      INFO: Backup RV0W98 data files are valid
+      INFO: Backup RV0W98 resident size: 38MB
+      INFO: Backup RV0W98 completed
+      postgres@srv-postgres:/home/ubuntu$ 
+      ```
+
+  * Создаем новую СУБД (кластер баз данных PostgreSQL) и восстанавливаем ее из имеющейся РК
+    * Создаем новый экземпляр Postgres и удаляем его данные
+    * Восстанавливаем из РК
+    * Запускаем новый экземпляр Postgres
+    * Проверяем, что есть новые данные
+  ```console
+  ubuntu@srv-postgres:~$ sudo pg_createcluster 15 main2
+  [sudo] password for ubuntu: 
+  Creating new PostgreSQL cluster 15/main2 ...
+  /usr/lib/postgresql/15/bin/initdb -D /var/lib/postgresql/15/main2 --auth-local peer --auth-host scram-sha-256 --no-instructions
+  The files belonging to this database system will be owned by user "postgres".
+  This user must also own the server process.
+
+  The database cluster will be initialized with locale "en_US.UTF-8".
+  The default database encoding has accordingly been set to "UTF8".
+  The default text search configuration will be set to "english".
+
+  Data page checksums are disabled.
+
+  fixing permissions on existing directory /var/lib/postgresql/15/main2 ... ok
+  creating subdirectories ... ok
+  selecting dynamic shared memory implementation ... posix
+  selecting default max_connections ... 100
+  selecting default shared_buffers ... 128MB
+  selecting default time zone ... Etc/UTC
+  creating configuration files ... ok
+  running bootstrap script ... ok
+  performing post-bootstrap initialization ... ok
+  syncing data to disk ... ok
+  Ver Cluster Port Status Owner    Data directory               Log file
+  15  main2   5433 down   postgres /var/lib/postgresql/15/main2 /var/log/postgresql/postgresql-15-main2.log
+  ubuntu@srv-postgres:~$ sudo rm -rf /var/lib/postgresql/15/main2
+  ubuntu@srv-postgres:~$ sudo ls /var/lib/postgresql/15/main2
+  ls: cannot access '/var/lib/postgresql/15/main2': No such file or directory
+  ubuntu@srv-postgres:~$ sudo pg_probackup-15 show -B /pg_backups/
+
+  BACKUP INSTANCE 'main'
+  ===================================================================================================================================
+   Instance  Version  ID      Recovery Time           Mode   WAL Mode  TLI  Time    Data   WAL  Zratio  Start LSN  Stop LSN   Status 
+  ===================================================================================================================================
+   main      15       RV0W98  2023-05-21 19:17:33+00  DELTA  STREAM    1/1    6s  6147kB  32MB    1.00  0/D000028  0/D000168  OK     
+   main      15       RV0VQ9  2023-05-21 19:06:11+00  DELTA  STREAM    1/1    3s   436kB  16MB    1.00  0/B000028  0/B000168  OK     
+   main      15       RV0ULQ  2023-05-21 18:41:52+00  FULL   STREAM    1/0   11s    37MB  16MB    1.00  0/3000028  0/3003CF8  OK     
+  ubuntu@srv-postgres:~$ 
+
+  ubuntu@srv-postgres:~$ sudo -u postgres pg_probackup-15 restore -B /pg_backups/ --instance main -i RV0VQ9 -D /var/lib/postgresql/15/main2 
+  could not change directory to "/home/ubuntu": Permission denied
+  INFO: Validating parents for backup RV0VQ9
+  INFO: Validating backup RV0ULQ
+  INFO: Backup RV0ULQ data files are valid
+  INFO: Validating backup RV0VQ9
+  INFO: Backup RV0VQ9 data files are valid
+  INFO: Backup RV0VQ9 WAL segments are valid
+  INFO: Backup RV0VQ9 is valid.
+  INFO: Restoring the database from backup at 2023-05-21 19:06:09+00
+  INFO: Start restoring backup files. PGDATA size: 52MB
+  INFO: Backup files are restored. Transfered bytes: 52MB, time elapsed: 1s
+  INFO: Restore incremental ratio (less is better): 100% (52MB/52MB)
+  INFO: Syncing restored files to disk
+  INFO: Restored backup files are synced, time elapsed: 7s
+  INFO: Restore of backup RV0VQ9 completed.
+  ubuntu@srv-postgres:~$ 
+  ubuntu@srv-postgres:~$ 
+  ubuntu@srv-postgres:~$ sudo pg_ctlcluster 15 main2 start
+  ubuntu@srv-postgres:~$ 
+  ubuntu@srv-postgres:~$ pg_lsclusters 
+  Ver Cluster Port Status Owner    Data directory               Log file
+  15  main    5432 online postgres /var/lib/postgresql/15/main  /var/log/postgresql/postgresql-15-main.log
+  15  main2   5433 online postgres /var/lib/postgresql/15/main2 /var/log/postgresql/postgresql-15-main2.log
+  ubuntu@srv-postgres:~$ 
+  ubuntu@srv-postgres:~$ sudo -u postgres psql -p 5433 -d otus -c 'select * from test;'
+  could not change directory to "/home/ubuntu": Permission denied
+   i  
+  ----
+   10
+   20
+   30
+    4
+  (4 rows)
+
+  ubuntu@srv-postgres:~$ 
+  ```
+  
+  * **Новая запись в таблице есть, после восстановления-цель достигнута**
 
 ***
