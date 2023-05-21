@@ -188,6 +188,45 @@
     postgres-# 
     ```
 
+  * Инициализируем pg_probackup, добавляем инстанс и смотрим настройки инстанса
+    ```console
+    postgres@srv-postgres:~$ 
+    postgres@srv-postgres:~$ pg_probackup-15 init
+    INFO: Backup catalog '/pg_backups' successfully initialized
+    postgres@srv-postgres:~$ 
+    postgres@srv-postgres:~$ pg_probackup-15 add-instance --instance 'main' -D /var/lib/postgresql/15/main
+    INFO: Instance 'main' successfully initialized
+    postgres@srv-postgres:~$ 
+    postgres@srv-postgres:~$ pg_probackup-15 show-config --instance main
+    # Backup instance information
+    pgdata = /var/lib/postgresql/15/main
+    system-identifier = 7235684450752214614
+    xlog-seg-size = 16777216
+    # Connection parameters
+    pgdatabase = postgres
+    # Replica parameters
+    replica-timeout = 5min
+    # Archive parameters
+    archive-timeout = 5min
+    # Logging parameters
+    log-level-console = INFO
+    log-level-file = OFF
+    log-format-console = PLAIN
+    log-format-file = PLAIN
+    log-filename = pg_probackup.log
+    log-rotation-size = 0TB
+    log-rotation-age = 0d
+    # Retention parameters
+    retention-redundancy = 0
+    retention-window = 0
+    wal-depth = 0
+    # Compression parameters
+    compress-algorithm = none
+    compress-level = 1
+    # Remote access parameters
+    remote-proto = ssh
+    postgres@srv-postgres:~$ 
+    ```
 
 ***
 
