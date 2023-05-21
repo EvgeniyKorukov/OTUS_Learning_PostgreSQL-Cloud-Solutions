@@ -122,6 +122,72 @@
     ubuntu@srv-postgres:~$ 
     ubuntu@srv-postgres:~$ 
     ```
+  
+  * Создаем каталог для РК, прописваем права и переменные окружения
+    ```console
+    ubuntu@srv-postgres:~$ 
+    ubuntu@srv-postgres:~$ sudo rm -rf /pg_backups && sudo mkdir /pg_backups && sudo chmod 777 /pg_backups
+    ubuntu@srv-postgres:~$ 
+    ubuntu@srv-postgres:~$ sudo su postgres
+
+    postgres@srv-postgres:/home/ubuntu$ 
+    postgres@srv-postgres:/home/ubuntu$ echo "BACKUP_PATH=/pg_backups/">>~/.bashrc
+    postgres@srv-postgres:/home/ubuntu$ echo "export BACKUP_PATH">>~/.bashrc
+    postgres@srv-postgres:/home/ubuntu$ cd ~
+    postgres@srv-postgres:~$ . .bashrc
+    postgres@srv-postgres:~$ 
+    postgres@srv-postgres:~$ echo $BACKUP_PATH
+    /pg_backups/
+    postgres@srv-postgres:~$ 
+    postgres@srv-postgres:~$
+    ```
+    
+  * Создаем пользователя для РК в СУБД и назначаем ему права
+    ```console 
+    postgres@srv-postgres:~$ psql
+    psql (15.2 (Ubuntu 15.2-1.pgdg22.04+1))
+    Type "help" for help.
+
+    postgres=# BEGIN;
+    CREATE ROLE backup WITH LOGIN;
+    GRANT USAGE ON SCHEMA pg_catalog TO backup;
+    GRANT EXECUTE ON FUNCTION pg_catalog.current_setting(text) TO backup;
+    GRANT EXECUTE ON FUNCTION pg_catalog.set_config(text, text, boolean) TO backup;
+    GRANT EXECUTE ON FUNCTION pg_catalog.pg_is_in_recovery() TO backup;
+    GRANT EXECUTE ON FUNCTION pg_catalog.pg_backup_start(text, boolean) TO backup;
+    GRANT EXECUTE ON FUNCTION pg_catalog.pg_backup_stop(boolean) TO backup;
+    GRANT EXECUTE ON FUNCTION pg_catalog.pg_create_restore_point(text) TO backup;
+    GRANT EXECUTE ON FUNCTION pg_catalog.pg_switch_wal() TO backup;
+    GRANT EXECUTE ON FUNCTION pg_catalog.pg_last_wal_replay_lsn() TO backup;
+    GRANT EXECUTE ON FUNCTION pg_catalog.txid_current() TO backup;
+    GRANT EXECUTE ON FUNCTION pg_catalog.txid_current_snapshot() TO backup;
+    GRANT EXECUTE ON FUNCTION pg_catalog.txid_snapshot_xmax(txid_snapshot) TO backup;
+    GRANT EXECUTE ON FUNCTION pg_catalog.pg_control_checkpoint() TO backup;
+    COMMIT;
+
+    ALTER ROLE backup WITH REPLICATION;
+
+    exit
+    BEGIN
+    CREATE ROLE
+    GRANT
+    GRANT
+    GRANT
+    GRANT
+    GRANT
+    GRANT
+    GRANT
+    GRANT
+    GRANT
+    GRANT
+    GRANT
+    GRANT
+    GRANT
+    COMMIT
+    ALTER ROLE
+    postgres-# 
+    ```
+
 
 ***
 
