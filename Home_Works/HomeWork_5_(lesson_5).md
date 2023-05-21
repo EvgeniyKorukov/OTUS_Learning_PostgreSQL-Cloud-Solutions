@@ -228,6 +228,40 @@
     postgres@srv-postgres:~$ 
     ```
 
+  * Создаем 2 БД и наполняем их
+    ```console
+    postgres@srv-postgres:~$ psql -c "CREATE DATABASE otus;"
+    CREATE DATABASE
+    postgres@srv-postgres:~$ psql otus -c "CREATE TABLE test(i int);"
+    psql otus -c "INSERT INTO test VALUES (10), (20), (30);"
+    psql otus -c "SELECT * FROM test;"
+    CREATE TABLE
+    INSERT 0 3
+     i  
+    ----
+     10
+     20
+     30
+    (3 rows)
+
+    postgres@srv-postgres:~$ psql -c "CREATE DATABASE otus2;"
+    CREATE DATABASE
+    postgres@srv-postgres:~$ psql otus2 -c "CREATE TABLE test2(i int);"
+    psql otus2 -c "INSERT INTO test2 VALUES (40), (50), (60), (70);"
+    psql otus2 -c "SELECT * FROM test2;"
+    CREATE TABLE
+    INSERT 0 4
+     i  
+    ----
+     40
+     50
+     60
+     70
+    (4 rows)
+
+    postgres@srv-postgres:~$ 
+    ```
+
 ***
 
 > ### Topic
