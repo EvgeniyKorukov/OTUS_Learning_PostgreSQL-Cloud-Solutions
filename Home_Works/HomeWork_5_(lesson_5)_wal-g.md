@@ -70,7 +70,7 @@
     user@srv-pg-ubuntu:~$
     ```
 
-  * Создаем каталог для РК и прописваем права
+  * Создаем каталог для РК и прописываем права
     ```console
     ubuntu@srv-postgres:~$ 
     ubuntu@srv-postgres:~$ sudo rm -rf /pg_backups && sudo mkdir /pg_backups && sudo chmod 777 /pg_backups
@@ -263,6 +263,90 @@
     basebackups_005  wal_005
     postgres@srv-pg-ubuntu:/pg_backups$ 
     ```   
-    
-    
-    
+  
+  * Создаем новую СУБД (кластер баз данных PostgreSQL) и восстанавливаем ее из имеющейся РК
+    * Создаем новый экземпляр Postgres и удаляем его данные
+    * Восстанавливаем из РК
+    * Запускаем новый экземпляр Postgres
+    * Проверяем, что есть новые данные
+      ```console
+      postgres@srv-pg-ubuntu:/pg_backups$ pg_createcluster 15 slave
+
+      Creating new PostgreSQL cluster 15/slave ...
+      /usr/lib/postgresql/15/bin/initdb -D /var/lib/postgresql/15/slave --auth-local peer --auth-host scram-sha-256 --no-instructions
+      The files belonging to this database system will be owned by user "postgres".
+      This user must also own the server process.
+
+      The database cluster will be initialized with locale "C.UTF-8".
+      The default database encoding has accordingly been set to "UTF8".
+      The default text search configuration will be set to "english".
+
+      Data page checksums are disabled.
+
+      fixing permissions on existing directory /var/lib/postgresql/15/slave ... ok
+      creating subdirectories ... ok
+      selecting dynamic shared memory implementation ... posix
+      selecting default max_connections ... 100
+      selecting default shared_buffers ... 128MB
+      selecting default time zone ... Etc/UTC
+      creating configuration files ... ok
+      running bootstrap script ... ok
+      performing post-bootstrap initialization ... ok
+      syncing data to disk ... ok
+      Warning: systemd does not know about the new cluster yet. Operations like "service postgresql start" will not handle it. To fix, run:
+        sudo systemctl daemon-reload
+      Ver Cluster Port Status Owner    Data directory               Log file
+      15  slave   5433 down   postgres /var/lib/postgresql/15/slave /var/log/postgresql/postgresql-15-slave.log
+      postgres@srv-pg-ubuntu:/pg_backups$ 
+
+      postgres@srv-pg-ubuntu:/pg_backups$ pg_lsclusters 
+
+      Ver Cluster Port Status Owner    Data directory                Log file
+      15  master  5432 online postgres /var/lib/postgresql/15/master /var/log/postgresql/postgresql-15-master.log
+      15  slave   5433 down   postgres /var/lib/postgresql/15/slave  /var/log/postgresql/postgresql-15-slave.log
+      postgres@srv-pg-ubuntu:/pg_backups$ 
+      postgres@srv-pg-ubuntu:/pg_backups$ rm -rf /var/lib/postgresql/15/slave
+      postgres@srv-pg-ubuntu:/pg_backups$ 
+      postgres@srv-pg-ubuntu:/pg_backups$ wal-g backup-fetch /var/lib/postgresql/15/slave LATEST~wal-g backup-fetch /var/lib/postgresql/15/slave LATEST
+      wal-g backup-fetch /var/lib/postgresql/15/slave LATEST
+
+      INFO: 2023/05/22 19:21:57.980128 Selecting the latest backup...
+      INFO: 2023/05/22 19:21:57.980751 LATEST backup is: 'base_000000010000000000000004_D_000000010000000000000002'
+      INFO: 2023/05/22 19:21:57.989118 Delta from base_000000010000000000000002 at LSN 0/2000028 
+      INFO: 2023/05/22 19:21:57.998963 Finished extraction of part_003.tar.br
+      INFO: 2023/05/22 19:22:11.533774 Finished extraction of part_001.tar.br
+      INFO: 2023/05/22 19:22:11.535289 Finished extraction of pg_control.tar.br
+      INFO: 2023/05/22 19:22:11.535844 
+      Backup extraction complete.
+      INFO: 2023/05/22 19:22:11.537229 base_000000010000000000000002 fetched. Upgrading from LSN 0/2000028 to LSN 0/4000028 
+      INFO: 2023/05/22 19:22:11.561627 Finished extraction of part_003.tar.br
+      INFO: 2023/05/22 19:22:11.577387 Finished extraction of part_001.tar.br
+      INFO: 2023/05/22 19:22:11.589781 Finished extraction of pg_control.tar.br
+      INFO: 2023/05/22 19:22:11.590502 
+      Backup extraction complete.
+      postgres@srv-pg-ubuntu:/pg_backups$ 
+
+      postgres@srv-pg-ubuntu:/pg_backups$ touch "/var/lib/postgresql/15/slave/recovery.signal"
+      touch "/var/lib/postgresql/15/slave/recovery.signal"
+
+      postgres@srv-pg-ubuntu:/pg_backups$ 
+
+      postgres@srv-pg-ubuntu:/pg_backups$ pg_ctlcluster 15 slave start
+      Warning: the cluster will not be running as a systemd service. Consider using systemctl:
+        sudo systemctl start postgresql@15-slave
+      postgres@srv-pg-ubuntu:/pg_backups$ 
+
+      postgres@srv-pg-ubuntu:/pg_backups$ psql -p 5433 otus -c "select * from test;"
+      psql -p 5433 otus -c "select * from test;"
+
+       i  
+      ----
+       10
+       20
+        3
+      (3 rows)
+
+      postgres@srv-pg-ubuntu:/pg_backups$       
+      ```
+      
+    ***
