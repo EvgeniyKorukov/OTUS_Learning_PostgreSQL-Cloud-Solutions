@@ -107,7 +107,49 @@
          Ver Cluster Port Status Owner    Data directory              Log file
          15  main    5432 online postgres /var/lib/postgresql/15/main /var/log/postgresql/postgresql-15-main.log
          ubuntu@pg-srv3:~$ 
-         ```         
+         ```  
+  * Проверяем доступность по сети ВМ c Postgres и etcd
+    ```console
+    ubuntu@pg-srv1:~$ 
+    ubuntu@pg-srv1:~$ ping etcd3 -c 2
+    PING etcd3.ru-central1.internal (10.129.0.13) 56(84) bytes of data.
+    64 bytes from etcd3.ru-central1.internal (10.129.0.13): icmp_seq=1 ttl=61 time=0.357 ms
+    64 bytes from etcd3.ru-central1.internal (10.129.0.13): icmp_seq=2 ttl=61 time=0.395 ms
+
+    --- etcd3.ru-central1.internal ping statistics ---
+    2 packets transmitted, 2 received, 0% packet loss, time 1006ms
+    rtt min/avg/max/mdev = 0.357/0.376/0.395/0.019 ms
+    ubuntu@pg-srv1:~$ 
+    ubuntu@pg-srv1:~$ ping etcd2.ru-central1.internal -c 2
+    PING etcd2.ru-central1.internal (10.129.0.12) 56(84) bytes of data.
+    64 bytes from etcd2.ru-central1.internal (10.129.0.12): icmp_seq=1 ttl=61 time=1.21 ms
+    64 bytes from etcd2.ru-central1.internal (10.129.0.12): icmp_seq=2 ttl=61 time=0.358 ms
+
+    --- etcd2.ru-central1.internal ping statistics ---
+    2 packets transmitted, 2 received, 0% packet loss, time 1002ms
+    rtt min/avg/max/mdev = 0.358/0.783/1.209/0.425 ms
+    ubuntu@pg-srv1:~$ 
+    ```
+    ```console
+    ubuntu@etcd2:~$ ping pg-srv3 -c2
+    PING pg-srv3.ru-central1.internal (10.129.0.23) 56(84) bytes of data.
+    64 bytes from pg-srv3.ru-central1.internal (10.129.0.23): icmp_seq=1 ttl=61 time=2.00 ms
+    64 bytes from pg-srv3.ru-central1.internal (10.129.0.23): icmp_seq=2 ttl=61 time=0.403 ms
+
+    --- pg-srv3.ru-central1.internal ping statistics ---
+    2 packets transmitted, 2 received, 0% packet loss, time 1002ms
+    rtt min/avg/max/mdev = 0.403/1.199/1.996/0.796 ms
+    ubuntu@etcd2:~$ 
+    ubuntu@etcd2:~$ ping pg-srv1.ru-central1.internal -c2
+    PING pg-srv1.ru-central1.internal (10.129.0.21) 56(84) bytes of data.
+    64 bytes from pg-srv1.ru-central1.internal (10.129.0.21): icmp_seq=1 ttl=61 time=0.351 ms
+    64 bytes from pg-srv1.ru-central1.internal (10.129.0.21): icmp_seq=2 ttl=61 time=0.441 ms
+
+    --- pg-srv1.ru-central1.internal ping statistics ---
+    2 packets transmitted, 2 received, 0% packet loss, time 1002ms
+    rtt min/avg/max/mdev = 0.351/0.396/0.441/0.045 ms
+    ubuntu@etcd2:~$ 
+    ```    
 ***
 
 > ### 2. Инициализируем кластер
