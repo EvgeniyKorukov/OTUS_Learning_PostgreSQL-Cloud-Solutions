@@ -205,21 +205,24 @@
     * Создаем сервис в ОС для запуска Patroni
        ```console
        ubuntu@pg-srv1:~$ cat > temp.cfg << EOF 
-       > [Unit]
-       > Description=High availability PostgreSQL Cluster
-       > After=syslog.target network.target
-       > [Service]
-       > Type=simple
-       > User=postgres
-       > Group=postgres
-       > ExecStart=/usr/local/bin/patroni /etc/patroni.yml
-       > KillMode=process
-       > TimeoutSec=30
-       > Restart=no
-       > [Install]
-       > WantedBy=multi-user.target
-       > EOF
-       ubuntu@pg-srv1:~$ cat temp.cfg | sudo tee -a /etc/systemd/system/patroni.service
+       [Unit]
+       Description=High availability PostgreSQL Cluster
+       After=syslog.target network.target
+       [Service]
+       Type=simple
+       User=postgres
+       Group=postgres
+       ExecStart=/usr/local/bin/patroni /etc/patroni.yml
+       KillMode=process
+       TimeoutSec=30
+       Restart=no
+       [Install]
+       WantedBy=multi-user.target
+       EOF
+       cat temp.cfg | sudo tee -a /etc/systemd/system/patroni.service
+       ```
+       ```console
+       ubuntu@pg-srv1:~$ cat temp2.cfg
        [Unit]
        Description=High availability PostgreSQL Cluster
        After=syslog.target network.target
@@ -235,19 +238,69 @@
        WantedBy=multi-user.target
        ubuntu@pg-srv1:~$ 
        ```
-    * Делаем сервис Patroni автозапусакаемым
+    * Делаем сервис Patroni автозапусакаемым       
        ```console
        ubuntu@pg-srv1:~$ sudo systemctl enable patroni
-       Created symlink /etc/systemd/system/multi-user.target.wants/patroni.service → /etc/systemd/system/patroni.service.
-       ubuntu@pg-srv1:~$ sudo systemctl status patroni
-       ● patroni.service - High availability PostgreSQL Cluster
-            Loaded: loaded (/etc/systemd/system/patroni.service; enabled; vendor preset: enabled)
-            Active: inactive (dead)
-       ubuntu@pg-srv1:~$ 
        ```
-    * Делаем файл конфигурации для Patroni
+    * Создаем конфиг для Patroni
        ```console
-       ubuntu@pg-srv1:~$ cat temp2.cfg | sudo tee -a /etc/patroni.yml
+       cat > temp2.cfg << EOF 
+       scope: patroni_cluster
+       name: $(hostname)
+       restapi:
+         listen: $(hostname -I | tr -d " "):8008
+         connect_address: $(hostname -I | tr -d " "):8008
+       etcd:
+         hosts: etcd1.ru-central1.internal:2379,etcd2.ru-central1.internal:2379,etcd3.ru-central1.internal:2379
+       bootstrap:
+         dcs:
+           ttl: 30
+           loop_wait: 10
+           retry_timeout: 10
+           maximum_lag_on_failover: 1048576
+           postgresql:
+             use_pg_rewind: true
+             parameters:
+         initdb: 
+         - encoding: UTF8
+         - data-checksums
+         pg_hba: 
+         - host replication replicator 10.129.0.0/24 md5
+         - host all all 10.129.0.0/24 md5
+         users:
+           admin:
+             password: admin_321
+             options:
+               - createrole
+               - createdb
+       postgresql:
+         listen: 127.0.0.1, $(hostname -I | tr -d " "):5432
+         connect_address: $(hostname -I | tr -d " "):5432
+         data_dir: /var/lib/postgresql/15/main
+         bin_dir: /usr/lib/postgresql/15/bin
+         pgpass: /tmp/pgpass0
+         authentication:
+           replication:
+             username: replicator
+             password: rep-pass_321
+           superuser:
+             username: postgres
+             password: zalando_321
+           rewind:  
+             username: rewind_user
+             password: rewind_password_321
+         parameters:
+           unix_socket_directories: '.'
+       tags:
+           nofailover: false
+           noloadbalance: false
+           clonefrom: false
+           nosync: false
+       EOF
+       cat temp2.cfg | sudo tee -a /etc/patroni.yml
+       ```
+       ```console
+       ubuntu@pg-srv1:~$ cat temp2.cfg
        scope: patroni_cluster
        name: pg-srv1
        restapi:
@@ -300,6 +353,7 @@
            clonefrom: false
            nosync: false
        ubuntu@pg-srv1:~$ 
+
        ```
     * Запускаем службу с Patroni
        ```console
