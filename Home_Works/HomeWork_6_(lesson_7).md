@@ -29,20 +29,36 @@
        sudo apt update && sudo apt upgrade -y && sudo apt install -y etcd
        sudo systemctl stop etcd
        ```
-     * На каждой ВМ формируем конфигурацию для etcd
-       ```bash
-       cat > temp.cfg << EOF 
-       ETCD_NAME="$(hostname)"
-       ETCD_LISTEN_CLIENT_URLS="http://0.0.0.0:2379"
-       ETCD_ADVERTISE_CLIENT_URLS="http://$(hostname -f):2379"
-       ETCD_LISTEN_PEER_URLS="http://0.0.0.0:2380"
-       ETCD_INITIAL_ADVERTISE_PEER_URLS="http://$(hostname -f):2380"
-       ETCD_INITIAL_CLUSTER_TOKEN="PatroniCluster"
-       ETCD_INITIAL_CLUSTER="etcd1=http://etcd1.ru-central1.internal:2380,etcd2=http://etcd2.ru-central1.internal:2380,etcd3=http://etcd3.ru-central1.internal:2380"
-       ETCD_INITIAL_CLUSTER_STATE="new"
-       ETCD_DATA_DIR="/var/lib/etcd"
-       EOF
-       cat temp.cfg | sudo tee -a /etc/default/etcd
+     * На каждой ВМ с etcd:
+       * Формируем конфигурацию для etcd
+       * Делаем сервис etcd автозапускаемым
+       * Запускаем etcd
+         ```bash
+         cat > temp.cfg << EOF 
+         ETCD_NAME="$(hostname)"
+         ETCD_LISTEN_CLIENT_URLS="http://0.0.0.0:2379"
+         ETCD_ADVERTISE_CLIENT_URLS="http://$(hostname -f):2379"
+         ETCD_LISTEN_PEER_URLS="http://0.0.0.0:2380"
+         ETCD_INITIAL_ADVERTISE_PEER_URLS="http://$(hostname -f):2380"
+         ETCD_INITIAL_CLUSTER_TOKEN="PatroniCluster"
+         ETCD_INITIAL_CLUSTER="etcd1=http://etcd1.ru-central1.internal:2380,etcd2=http://etcd2.ru-central1.internal:2380,etcd3=http://etcd3.ru-central1.internal:2380"
+         ETCD_INITIAL_CLUSTER_STATE="new"
+         ETCD_DATA_DIR="/var/lib/etcd"
+         EOF
+         cat temp.cfg | sudo tee -a /etc/default/etcd
+
+         sudo systemctl enable etcd
+
+         sudo systemctl start etcd
+         ```
+     * Проверяем статус etcd на одной из ВМ
+       ```console
+       ubuntu@etcd1:~$ etcdctl cluster-health
+       member 61f991406239b07 is healthy: got healthy result from http://etcd1.ru-central1.internal:2379
+       member 3376d9633be63daf is healthy: got healthy result from http://etcd3.ru-central1.internal:2379
+       member 64b82de471857189 is healthy: got healthy result from http://etcd2.ru-central1.internal:2379
+       cluster is healthy
+       ubuntu@etcd1:~$ 
        ```
 ***
 
