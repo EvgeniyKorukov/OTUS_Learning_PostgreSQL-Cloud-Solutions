@@ -29,7 +29,21 @@
        sudo apt update && sudo apt upgrade -y && sudo apt install -y etcd
        sudo systemctl stop etcd
        ```
-
+     * На каждой ВМ формируем конфигурацию для etcd
+       ```bash
+       cat > temp.cfg << EOF 
+       ETCD_NAME="$(hostname)"
+       ETCD_LISTEN_CLIENT_URLS="http://0.0.0.0:2379"
+       ETCD_ADVERTISE_CLIENT_URLS="http://$(hostname -f):2379"
+       ETCD_LISTEN_PEER_URLS="http://0.0.0.0:2380"
+       ETCD_INITIAL_ADVERTISE_PEER_URLS="http://$(hostname -f):2380"
+       ETCD_INITIAL_CLUSTER_TOKEN="PatroniCluster"
+       ETCD_INITIAL_CLUSTER="etcd1=http://etcd1.ru-central1.internal:2380,etcd2=http://etcd2.ru-central1.internal:2380,etcd3=http://etcd3.ru-central1.internal:2380"
+       ETCD_INITIAL_CLUSTER_STATE="new"
+       ETCD_DATA_DIR="/var/lib/etcd"
+       EOF
+       cat temp.cfg | sudo tee -a /etc/default/etcd
+       ```
 ***
 
 > ### 2. Инициализируем кластер
