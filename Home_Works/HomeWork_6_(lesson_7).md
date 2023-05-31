@@ -477,11 +477,18 @@
        ```console
        sudo systemctl enable patroni && sudo systemctl start patroni 
        ```
-    * Проверяем список запущенных нод. В моем случае он Replica и остановлен т.к. я до этого тестировал и не пересоздал etcd. В обычном варианте-это будет Leader и запущенный
+    * Проверяем список запущенных нод. 
        ```console
-
+       ubuntu@pg-srv1:~$ sudo patronictl -c /etc/patroni.yml list
+       + Cluster: patroni_cluster -------+---------+----+-----------+
+       | Member  | Host        | Role    | State   | TL | Lag in MB |
+       +---------+-------------+---------+---------+----+-----------+
+       | pg-srv1 | 10.129.0.21 | Leader  | running |  1 |           |
+       | pg-srv2 | 10.129.0.22 | Replica | running |  1 |         0 |
+       | pg-srv3 | 10.129.0.23 | Replica | running |  1 |         0 |
+       +---------+-------------+---------+---------+----+-----------+
+       ubuntu@pg-srv1:~$ 
        ```       
-    * 
 ***
 
 > ### 3. Проверяем отказоустойсивость
