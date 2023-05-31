@@ -376,14 +376,13 @@
        ubuntu@pg-srv1:~$ 
        ```
     * Проверяем список запущенных нод. 
-    * **❗️В моем случае он Replica и остановлен т.к. я до этого тестировал и не пересоздал etcd. В обычном варианте-это будет Leader и запущенный**
        ```console
-       ubuntu@pg-srv1:~$ sudo patronictl -c /etc/patroni.yml list 
-       + Cluster: patroni_cluster -------+---------+----+-----------+
-       | Member  | Host        | Role    | State   | TL | Lag in MB |
-       +---------+-------------+---------+---------+----+-----------+
-       | pg-srv1 | 10.129.0.21 | Replica | stopped |    |   unknown |
-       +---------+-------------+---------+---------+----+-----------+
+       ubuntu@pg-srv1:~$ sudo patronictl -c /etc/patroni.yml list
+       + Cluster: patroni_cluster ------+---------+----+-----------+
+       | Member  | Host        | Role   | State   | TL | Lag in MB |
+       +---------+-------------+--------+---------+----+-----------+
+       | pg-srv1 | 10.129.0.21 | Leader | running |  1 |           |
+       +---------+-------------+--------+---------+----+-----------+
        ubuntu@pg-srv1:~$ 
        ```
        
