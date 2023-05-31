@@ -175,6 +175,260 @@
 ***
 
 > ### 2. Инициализируем кластер
+  * Устанавливаем и настраиваем Patroni на одной из нод, в моем случае это `pg-srv1`:
+    * Ставим Python
+       ```console
+       ubuntu@pg-srv1:~$ sudo apt-get install -y python3 python3-pip git mc
+       ubuntu@pg-srv1:~$ sudo pip3 install psycopg2-binary     
+       ```
+    * Останавливаем и удаляем экземлпяр PostgreSQL который запускается по-умолчанию
+       ```console
+       ubuntu@pg-srv1:~$ 
+       ubuntu@pg-srv1:~$ sudo pg_dropcluster 15 main --stop
+       ubuntu@pg-srv1:~$ 
+       ```
+    * Проверяем, что остановили PostgreSQL
+       ```console
+       ubuntu@pg-srv1:~$ pg_lsclusters 
+       Ver Cluster Port Status Owner Data directory Log file
+       ubuntu@pg-srv1:~$ 
+       ```
+    * Устанавливаем Patroni
+       ```console
+       ubuntu@pg-srv1:~$ sudo pip3 install patroni[etcd]
+       ``` 
+    * Создаем symlink
+       ```bash
+       ubuntu@pg-srv1:~$ sudo ln -s /usr/local/bin/patroni /bin/patroni
+       ubuntu@pg-srv1:~$ 
+       ```
+    * Создаем сервис в ОС для запуска Patroni
+       ```console
+       ubuntu@pg-srv1:~$ cat > temp.cfg << EOF 
+       > [Unit]
+       > Description=High availability PostgreSQL Cluster
+       > After=syslog.target network.target
+       > [Service]
+       > Type=simple
+       > User=postgres
+       > Group=postgres
+       > ExecStart=/usr/local/bin/patroni /etc/patroni.yml
+       > KillMode=process
+       > TimeoutSec=30
+       > Restart=no
+       > [Install]
+       > WantedBy=multi-user.target
+       > EOF
+       ubuntu@pg-srv1:~$ cat temp.cfg | sudo tee -a /etc/systemd/system/patroni.service
+       [Unit]
+       Description=High availability PostgreSQL Cluster
+       After=syslog.target network.target
+       [Service]
+       Type=simple
+       User=postgres
+       Group=postgres
+       ExecStart=/usr/local/bin/patroni /etc/patroni.yml
+       KillMode=process
+       TimeoutSec=30
+       Restart=no
+       [Install]
+       WantedBy=multi-user.target
+       ubuntu@pg-srv1:~$ 
+       ```
+    * Делаем сервис Patroni автозапусакаемым
+       ```console
+       ubuntu@pg-srv1:~$ sudo systemctl enable patroni
+       Created symlink /etc/systemd/system/multi-user.target.wants/patroni.service → /etc/systemd/system/patroni.service.
+       ubuntu@pg-srv1:~$ sudo systemctl status patroni
+       ● patroni.service - High availability PostgreSQL Cluster
+            Loaded: loaded (/etc/systemd/system/patroni.service; enabled; vendor preset: enabled)
+            Active: inactive (dead)
+       ubuntu@pg-srv1:~$ 
+       ```
+    * Делаем файл конфигурации для Patroni
+       ```console
+       ubuntu@pg-srv1:~$ cat temp2.cfg | sudo tee -a /etc/patroni.yml
+       scope: patroni_cluster
+       name: pg-srv1
+       restapi:
+         listen: 10.129.0.21:8008
+         connect_address: 10.129.0.21:8008
+       etcd:
+         hosts: etcd1.ru-central1.internal:2379,etcd2.ru-central1.internal:2379,etcd3.ru-central1.internal:2379
+       bootstrap:
+         dcs:
+           ttl: 30
+           loop_wait: 10
+           retry_timeout: 10
+           maximum_lag_on_failover: 1048576
+           postgresql:
+             use_pg_rewind: true
+             parameters:
+         initdb: 
+         - encoding: UTF8
+         - data-checksums
+         pg_hba: 
+         - host replication replicator 10.129.0.0/24 md5
+         - host all all 10.129.0.0/24 md5
+         users:
+           admin:
+             password: admin_321
+             options:
+               - createrole
+               - createdb
+       postgresql:
+         listen: 127.0.0.1, 10.129.0.21:5432
+         connect_address: 10.129.0.21:5432
+         data_dir: /var/lib/postgresql/15/main
+         bin_dir: /usr/lib/postgresql/15/bin
+         pgpass: /tmp/pgpass0
+         authentication:
+           replication:
+             username: replicator
+             password: rep-pass_321
+           superuser:
+             username: postgres
+             password: zalando_321
+           rewind:  
+             username: rewind_user
+             password: rewind_password_321
+         parameters:
+           unix_socket_directories: '.'
+       tags:
+           nofailover: false
+           noloadbalance: false
+           clonefrom: false
+           nosync: false
+       ubuntu@pg-srv1:~$ 
+       ```
+    * Запускаем службу с Patroni
+       ```console
+       ubuntu@pg-srv1:~$ sudo systemctl start patroni
+       ubuntu@pg-srv1:~$ sudo systemctl status patroni
+       ● patroni.service - High availability PostgreSQL Cluster
+            Loaded: loaded (/etc/systemd/system/patroni.service; enabled; vendor preset: enabled)
+            Active: active (running) since Wed 2023-05-31 20:35:19 UTC; 4s ago
+          Main PID: 19882 (patroni)
+             Tasks: 5 (limit: 4646)
+            Memory: 22.7M
+            CGroup: /system.slice/patroni.service
+                    └─19882 /usr/bin/python3 /usr/local/bin/patroni /etc/patroni.yml
+
+       May 31 20:35:19 pg-srv1 systemd[1]: Started High availability PostgreSQL Cluster.
+       May 31 20:35:20 pg-srv1 patroni[19882]: 2023-05-31 20:35:20,037 INFO: Selected new etcd server http://etcd2.ru-cent>
+       May 31 20:35:20 pg-srv1 patroni[19882]: 2023-05-31 20:35:20,045 INFO: No PostgreSQL configuration items changed, no>
+       May 31 20:35:20 pg-srv1 patroni[19882]: 2023-05-31 20:35:20,056 INFO: Lock owner: None; I am pg-srv1
+       May 31 20:35:20 pg-srv1 patroni[19882]: 2023-05-31 20:35:20,061 INFO: waiting for leader to bootstrap
+       ubuntu@pg-srv1:~$ 
+       ```
+    * Проверяем список запущенных нод. 
+    * **❗️В моем случае он Replica и остановлен т.к. я до этого тестировал и не пересоздал etcd. В обычном варианте-это будет Leader и запущенный**
+       ```console
+       ubuntu@pg-srv1:~$ sudo patronictl -c /etc/patroni.yml list 
+       + Cluster: patroni_cluster -------+---------+----+-----------+
+       | Member  | Host        | Role    | State   | TL | Lag in MB |
+       +---------+-------------+---------+---------+----+-----------+
+       | pg-srv1 | 10.129.0.21 | Replica | stopped |    |   unknown |
+       +---------+-------------+---------+---------+----+-----------+
+       ubuntu@pg-srv1:~$ 
+       ```
+       
+       
+  * Устанавливаем и настраиваем Patroni на остальных двух нодах, в моем случае это `pg-srv2` и `pg-srv2`:
+    * Ставим Python
+    * Останавливаем и удаляем экземлпяр PostgreSQL который запускается по-умолчанию
+    * Устанавливаем Patroni
+    * Создаем symlink
+       ```console
+       sudo apt install -y python3 python3-pip git mc && sudo pip3 install psycopg2-binary && sudo systemctl stop postgresql@15-main && sudo -u postgres pg_dropcluster 15 main && sudo pip3 install       patroni[etcd] && sudo ln -s /usr/local/bin/patroni /bin/patroni   
+       ```
+    * Создаем сервис в ОС для запуска Patroni 
+    * **❗️Здесь привожу только скрипт для генерации т.к. на всех хостах он одинаковый**
+       ```console
+       cat > temp.cfg << EOF 
+       [Unit]
+       Description=High availability PostgreSQL Cluster
+       After=syslog.target network.target
+       [Service]
+       Type=simple
+       User=postgres
+       Group=postgres
+       ExecStart=/usr/local/bin/patroni /etc/patroni.yml
+       KillMode=process
+       TimeoutSec=30
+       Restart=no
+       [Install]
+       WantedBy=multi-user.target
+       EOF
+       cat temp.cfg | sudo tee -a /etc/systemd/system/patroni.service
+       ```
+    * Делаем файл конфигурации для Patroni
+    * **❗️Здесь привожу только скрипт для генерации т.к. разница будет в имени хоста и его ip-адресе** 
+       ```console
+       cat > temp2.cfg << EOF 
+       scope: patroni_cluster
+       name: $(hostname)
+       restapi:
+         listen: $(hostname -I | tr -d " "):8008
+         connect_address: $(hostname -I | tr -d " "):8008
+       etcd:
+         hosts: etcd1.ru-central1.internal:2379,etcd2.ru-central1.internal:2379,etcd3.ru-central1.internal:2379
+       bootstrap:
+         dcs:
+           ttl: 30
+           loop_wait: 10
+           retry_timeout: 10
+           maximum_lag_on_failover: 1048576
+           postgresql:
+             use_pg_rewind: true
+             parameters:
+         initdb: 
+         - encoding: UTF8
+         - data-checksums
+         pg_hba: 
+         - host replication replicator 10.129.0.0/24 md5
+         - host all all 10.129.0.0/24 md5
+         users:
+           admin:
+             password: admin_321
+             options:
+               - createrole
+               - createdb
+       postgresql:
+         listen: 127.0.0.1, $(hostname -I | tr -d " "):5432
+         connect_address: $(hostname -I | tr -d " "):5432
+         data_dir: /var/lib/postgresql/15/main
+         bin_dir: /usr/lib/postgresql/15/bin
+         pgpass: /tmp/pgpass0
+         authentication:
+           replication:
+             username: replicator
+             password: rep-pass_321
+           superuser:
+             username: postgres
+             password: zalando_321
+           rewind:  
+             username: rewind_user
+             password: rewind_password_321
+         parameters:
+           unix_socket_directories: '.'
+       tags:
+           nofailover: false
+           noloadbalance: false
+           clonefrom: false
+           nosync: false
+       EOF
+       cat temp2.cfg | sudo tee -a /etc/patroni.yml
+       ```
+    * Делаем службу Patroni автозапускаемой и запускаем ее
+       ```console
+       sudo systemctl enable patroni && sudo systemctl start patroni 
+       ```
+    * Проверяем список запущенных нод. В моем случае он Replica и остановлен т.к. я до этого тестировал и не пересоздал etcd. В обычном варианте-это будет Leader и запущенный
+       ```console
+
+       ```       
+    * 
 ***
 
 > ### 3. Проверяем отказоустойсивость
