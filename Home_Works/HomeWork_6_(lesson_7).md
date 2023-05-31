@@ -81,12 +81,33 @@
         | **`pg-srv1`** | `10.129.0.21` |
         | **`pg-srv2`** | `10.129.0.22` |      
         | **`pg-srv3`** | `10.129.0.23` |
-     * На каждой ВМ устанавливаем PostgreSQL 15 и проверяем, что экземпляры запустились (вывод установки и pg_lsclusters приводить не стал т.к. в этом нет особого смысла)
-       ```bash
-       sudo apt update && sudo apt upgrade -y -q && echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" | sudo tee -a /etc/apt/sources.list.d/pgdg.list && wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add - && sudo apt-get update && sudo apt -y install postgresql-15
-       
-       pg_lsclusters
-       ```       
+     * На каждой ВМ устанавливаем PostgreSQL 15 и проверяем, что экземпляры запустились (вывод установки приводить не стал т.к. в этом нет особого смысла)
+         ```bash
+         sudo apt update && sudo apt upgrade -y -q && echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" | sudo tee -a /etc/apt/sources.list.d/pgdg.list && wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add - && sudo apt-get update && sudo apt -y install postgresql-15
+
+         pg_lsclusters
+         ```
+       * Вывод pg_lsclusters с каждой ВМ:
+         ```console
+         ubuntu@pg-srv1:~$ hostname; pg_lsclusters
+         pg-srv1
+         Ver Cluster Port Status Owner    Data directory              Log file
+         15  main    5432 online postgres /var/lib/postgresql/15/main /var/log/postgresql/postgresql-15-main.log
+         ubuntu@pg-srv1:~$        
+         ```
+         ```console
+         ubuntu@pg-srv2:~$ hostname; pg_lsclusters
+         pg-srv2
+         Ver Cluster Port Status Owner    Data directory              Log file
+         15  main    5432 online postgres /var/lib/postgresql/15/main /var/log/postgresql/postgresql-15-main.log
+         ubuntu@pg-srv2:~$ 
+         ```
+         ```console
+         ubuntu@pg-srv3:~$ pg_lsclusters
+         Ver Cluster Port Status Owner    Data directory              Log file
+         15  main    5432 online postgres /var/lib/postgresql/15/main /var/log/postgresql/postgresql-15-main.log
+         ubuntu@pg-srv3:~$ 
+         ```         
 ***
 
 > ### 2. Инициализируем кластер
