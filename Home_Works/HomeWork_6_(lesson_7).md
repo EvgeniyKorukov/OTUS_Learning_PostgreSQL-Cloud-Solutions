@@ -493,11 +493,55 @@
       sudo apt install -y pgbouncer
       ```
     * Создаем файл-конфигурации `pgbouncer.ini`
+      ```console
+      cat > temp3.cfg << EOF 
+      [databases]
+      otus = host=127.0.0.1 port=5432 dbname=otus 
+      [pgbouncer]
+      logfile = /var/log/postgresql/pgbouncer.log
+      pidfile = /var/run/postgresql/pgbouncer.pid
+      listen_addr = *
+      listen_port = 6432
+      auth_type = md5
+      auth_file = /etc/pgbouncer/userlist.txt
+      admin_users = admindb
+      EOF
+      cat temp3.cfg | sudo tee -a /etc/pgbouncer/pgbouncer.ini
+      ```
     * Создаем файл с пользователями и паролями `userlist.txt`
+      ```console
+      cat > temp4.cfg << EOF 
+      "admindb" "d9cfab6a2f1a0eb0c037e605cd578025"
+      EOF
+      cat temp4.cfg | sudo tee -a /etc/pgbouncer/userlist.txt
+      ```
     * Перезапуск сервиса PGBouncer
+      ```console
+      sudo systemctl restart pgbouncer
+      ```
     * Формирование файла pgpass для без парольного входа
-    * 
-       
+      ```console
+      sudo su - postgres
+      echo "localhost:5432:postgres:postgres:zalando_321">>~/.pgpass
+      chmod 600 ~/.pgpass
+      ```
+    * Подключаемся через pgbouncer+создаем пользователя+подключаемся под созданным пользователем
+    * **❗️Делаем только на одной ВМ**
+      ```console
+      psql -h localhost
+      create user admindb with password 'root123';
+      psql -h localhost -U admindb -d postgres
+      ```
+    * Подстраиваем pgbouncer (проблема с аутенификацией scram)
+      ```console
+      ------------------
+      ```
+    * Создаем новую БД и подключаемся к ней через PGBouncer
+      ```console
+      sudo -u postgres psql -h localhost -c "CREATE DATABASE otus;"
+      sudo -u postgres psql -p 6432 -h 127.0.0.1 otus
+      ```      
+      
 ***
 
 > ### 3. Проверяем отказоустойсивость
