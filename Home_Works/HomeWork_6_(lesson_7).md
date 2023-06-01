@@ -486,61 +486,97 @@
        +---------+-------------+---------+---------+----+-----------+
        ubuntu@pg-srv1:~$ 
        ```   
-  * Устанавливаем и настраиваем PGBouncer на всех 3х ВМ с Postgres и Patroni:
-    * Установка PGBouncer
+  * Устанавливаем HAProxy:
+  * **❗️В задаче не было ни слова про установку и настройку pgbouncer, поэтому мы обойдемся без него**
+    * Установка HAProxy
       ```console
-      sudo apt install -y pgbouncer
+      sudo apt install -y --no-install-recommends software-properties-common && sudo add-apt-repository -y ppa:vbernat/haproxy-2.5 && sudo apt install -y haproxy=2.5.*
       ```
-    * Создаем файл-конфигурации `pgbouncer.ini`
+    * Проверка ответа с Patroni
       ```console
-      cat > temp3.cfg << EOF 
-      [databases]
-      otus = host=127.0.0.1 port=5432 dbname=otus 
-      [pgbouncer]
-      logfile = /var/log/postgresql/pgbouncer.log
-      pidfile = /var/run/postgresql/pgbouncer.pid
-      listen_addr = *
-      listen_port = 6432
-      auth_type = md5
-      auth_file = /etc/pgbouncer/userlist.txt
-      admin_users = admindb
-      EOF
-      cat temp3.cfg | sudo tee -a /etc/pgbouncer/pgbouncer.ini
+      ubuntu@haproxy1:~$ curl -v 10.129.0.21:8008/master
+      *   Trying 10.129.0.21:8008...
+      * TCP_NODELAY set
+      * Connected to 10.129.0.21 (10.129.0.21) port 8008 (#0)
+      > GET /master HTTP/1.1
+      > Host: 10.129.0.21:8008
+      > User-Agent: curl/7.68.0
+      > Accept: */*
+      > 
+      * Mark bundle as not supporting multiuse
+      * HTTP 1.0, assume close after body
+      < HTTP/1.0 200 OK
+      < Server: BaseHTTP/0.6 Python/3.8.10
+      < Date: Thu, 01 Jun 2023 15:59:47 GMT
+      < Content-Type: application/json
+      < 
+      * Closing connection 0
+      {"state": "running", "postmaster_start_time": "2023-06-01 14:59:55.034632+00:00", "role": "master", "server_version": 150003, "xlog": {"location": 92810824}, "timeline": 3, "dcs_last_seen": 1685635178, "database_system_identifier": "7239474815612112356", "patroni": {"version": "3.0.2", "scope": "patroni_cluster"}}ubuntu@haproxy1:~$ 
+      ubuntu@haproxy1:~$ 
       ```
-    * Создаем файл с пользователями и паролями `userlist.txt`
+     * Проверка доступа к Postgres напраямую, без pgbouncer
+          ```console
+          sudo apt update && sudo apt upgrade -y && sudo apt install -y postgresql-client-common && sudo apt install postgresql-client -y
+          ubuntu@haproxy1:~$ psql -p 6432 -d otus -h 10.129.0.21 -U postgres
+          Password for user postgres: 
+          psql (12.15 (Ubuntu 12.15-0ubuntu0.20.04.1), server 15.3 (Ubuntu 15.3-1.pgdg20.04+1))
+          WARNING: psql major version 12, server major version 15.
+                   Some psql features might not work.
+          Type "help" for help.
+
+          otus=# 
+          ```
+    * Создание конфига для HAProxy
+      * **❗️Делаем конфигурацию без pgbouncer**
       ```console
-      cat > temp4.cfg << EOF 
-      "admindb" "d9cfab6a2f1a0eb0c037e605cd578025"
-      EOF
-      cat temp4.cfg | sudo tee -a /etc/pgbouncer/userlist.txt
-      ```
-    * Перезапуск сервиса PGBouncer
-      ```console
-      sudo systemctl restart pgbouncer
-      ```
-    * Формирование файла pgpass для без парольного входа
-      ```console
-      sudo su - postgres
-      echo "localhost:5432:postgres:postgres:zalando_321">>~/.pgpass
-      chmod 600 ~/.pgpass
-      ```
-    * Подключаемся через pgbouncer+создаем пользователя+подключаемся под созданным пользователем
-    * **❗️Делаем только на одной ВМ**
-      ```console
-      psql -h localhost
-      create user admindb with password 'root123';
-      psql -h localhost -U admindb -d postgres
-      ```
-    * Подстраиваем pgbouncer (проблема с аутенификацией scram)
-      ```console
-      ------------------
-      ```
-    * Создаем новую БД и подключаемся к ней через PGBouncer
-      ```console
-      sudo -u postgres psql -h localhost -c "CREATE DATABASE otus;"
-      sudo -u postgres psql -p 6432 -h 127.0.0.1 otus
-      ```      
+      sudo vim /etc/haproxy/haproxy.cfg
       
+      listen postgres_write
+          bind *:5432
+          mode            tcp
+          option httpchk
+          http-check connect
+          http-check send meth GET uri /master
+          http-check expect status 200
+          default-server inter 10s fall 3 rise 3 on-marked-down shutdown-sessions
+          server pg-srv1 10.129.0.21:5432 check port 8008
+          server pg-srv2 10.129.0.22:5432 check port 8008
+          server pg-srv3 10.129.0.23:5432 check port 8008
+
+      listen postgres_read
+          bind *:5433
+          mode            tcp
+          http-check connect
+          http-check send meth GET uri /replica
+          http-check expect status 200
+          default-server inter 10s fall 3 rise 3 on-marked-down shutdown-sessions
+          server pg-srv1 10.129.0.21:5432 check port 8008
+          server pg-srv2 10.129.0.22:5432 check port 8008
+          server pg-srv3 10.129.0.23:5432 check port 8008
+      ```      
+    * Перезапуск HAProxy и проверка подключеия к мастеру и реплике с HAProxy
+      ```console
+      sudo systemctl restart haproxy
+      
+      ubuntu@haproxy1:~$ psql -h localhost -d otus -U postgres -p 5432 -c 'select pg_is_in_recovery()'
+      Password for user postgres: 
+       pg_is_in_recovery 
+      -------------------
+       f
+      (1 row)
+
+      ubuntu@haproxy1:~$ 
+      ubuntu@haproxy1:~$ psql -h localhost -d otus -U postgres -p 5433 -c 'select pg_is_in_recovery()'
+      Password for user postgres: 
+       pg_is_in_recovery 
+      -------------------
+       t
+      (1 row)
+
+      ubuntu@haproxy1:~$ ^C
+      ubuntu@haproxy1:~$ 
+      ```         
+    * :+1: **Отказоусточивый кластер готов. Через HAProxy можно обратиться и к мастеру и к реплике**       
 ***
 
 > ### 3. Проверяем отказоустойсивость
