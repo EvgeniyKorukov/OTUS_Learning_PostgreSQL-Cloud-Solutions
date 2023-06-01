@@ -580,6 +580,72 @@
 ***
 
 > ### 3. Проверяем отказоустойсивость
+  * Смотрим текущее состояние Patoroni
+    ```console
+    ubuntu@pg-srv1:~$ sudo patronictl -c /etc/patroni.yml list
+    + Cluster: patroni_cluster -------+---------+----+-----------+
+    | Member  | Host        | Role    | State   | TL | Lag in MB |
+    +---------+-------------+---------+---------+----+-----------+
+    | pg-srv1 | 10.129.0.21 | Leader  | running |  3 |           |
+    | pg-srv2 | 10.129.0.22 | Replica | running |  3 |         0 |
+    | pg-srv3 | 10.129.0.23 | Replica | running |  3 |         0 |
+    +---------+-------------+---------+---------+----+-----------+
+    ubuntu@pg-srv1:~$ 
+    ```
+  * Делаем switchover
+    ```console
+    ubuntu@pg-srv1:~$ sudo patronictl -c /etc/patroni.yml switchover
+    Current cluster topology
+    + Cluster: patroni_cluster -------+---------+----+-----------+
+    | Member  | Host        | Role    | State   | TL | Lag in MB |
+    +---------+-------------+---------+---------+----+-----------+
+    | pg-srv1 | 10.129.0.21 | Leader  | running |  3 |           |
+    | pg-srv2 | 10.129.0.22 | Replica | running |  3 |         0 |
+    | pg-srv3 | 10.129.0.23 | Replica | running |  3 |         0 |
+    +---------+-------------+---------+---------+----+-----------+
+    Primary [pg-srv1]: 
+    Candidate ['pg-srv2', 'pg-srv3'] []: pg-srv3
+    When should the switchover take place (e.g. 2023-06-01T17:19 )  [now]: 
+    Are you sure you want to switchover cluster patroni_cluster, demoting current leader pg-srv1? [y/N]: y
+    2023-06-01 16:19:18.05130 Successfully switched over to "pg-srv3"
+    + Cluster: patroni_cluster -------+---------+----+-----------+
+    | Member  | Host        | Role    | State   | TL | Lag in MB |
+    +---------+-------------+---------+---------+----+-----------+
+    | pg-srv1 | 10.129.0.21 | Replica | stopped |    |   unknown |
+    | pg-srv2 | 10.129.0.22 | Replica | running |  3 |         0 |
+    | pg-srv3 | 10.129.0.23 | Leader  | running |  3 |           |
+    +---------+-------------+---------+---------+----+-----------+
+    ubuntu@pg-srv1:~$ 
+    ```
+  * Смотрим текущее состояние Patoroni
+    ```console
+    ubuntu@pg-srv1:~$ sudo patronictl -c /etc/patroni.yml list
+    + Cluster: patroni_cluster -------+---------+----+-----------+
+    | Member  | Host        | Role    | State   | TL | Lag in MB |
+    +---------+-------------+---------+---------+----+-----------+
+    | pg-srv1 | 10.129.0.21 | Replica | running |  5 |         0 |
+    | pg-srv2 | 10.129.0.22 | Replica | running |  5 |         0 |
+    | pg-srv3 | 10.129.0.23 | Leader  | running |  5 |           |
+    +---------+-------------+---------+---------+----+-----------+
+    ubuntu@pg-srv1:~$ 
+    ```
+  * Останавливаем Patroni на ноде, где находится мастер
+    ```console
+    ubuntu@pg-srv3:~$ sudo systemctl stop patroni
+    ```
+  * Смотрим текущее состояние Patoroni
+    ```console
+    ubuntu@pg-srv1:~$ sudo patronictl -c /etc/patroni.yml list
+    + Cluster: patroni_cluster -------+---------+----+-----------+
+    | Member  | Host        | Role    | State   | TL | Lag in MB |
+    +---------+-------------+---------+---------+----+-----------+
+    | pg-srv1 | 10.129.0.21 | Leader  | running |  6 |           |
+    | pg-srv2 | 10.129.0.22 | Replica | running |  6 |         0 |
+    | pg-srv3 | 10.129.0.23 | Replica | stopped |    |   unknown |
+    +---------+-------------+---------+---------+----+-----------+
+    ubuntu@pg-srv1:~$ 
+    ```
+    * :+1: **Отказоустойчивость работает**           
 ***
 
 > ### 4. *настраиваем бэкапы через wal-g или pg_probackup
