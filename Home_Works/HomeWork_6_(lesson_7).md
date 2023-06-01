@@ -61,7 +61,7 @@
        cluster is healthy
        ubuntu@etcd1:~$ 
        ```
-  * Создаем 3 ВМ для PostgreSQL 15+Patroni+PGBouncer в YandexCloud
+  * Создаем 3 ВМ для PostgreSQL 15+Patroni в YandexCloud
     * Общие параметры для всех 3х ВМ для postgres+patroni с фиксированным внутренним IPv4. Команды по созданию ВМ прилагать не буду т.к. они типовые
          :hammer_and_wrench: Параметр | :memo: Значение |
         --------------:|---------------| 
@@ -170,7 +170,6 @@
         :hammer_and_wrench: Название ВМ | :memo: Внутренний IPv4 |
         --------------:|---------------|
         | **`haproxy1`** | `10.129.0.31` |
-        | **`haproxy2`** | `10.129.0.32` |      
     
 ***
 
