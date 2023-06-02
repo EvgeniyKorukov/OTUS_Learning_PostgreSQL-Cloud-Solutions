@@ -656,3 +656,108 @@
   * **Честно, на нашел как автоматизировать(свзять) Patroni или HAProxy c pg_probackup, чтобы РК выполнялось с выбором ресурса (master, replica sync, replica async). Понимаю, что можно сделать некий bash-скрипт, который определить роль СУБД через Patrony и в зависимости от роли,либо будет делать РК на этой ноде, либо нет. Еще надо чтобыл nfs общий на всех 3х нодах. Если есть какое-то готовое решение, то поделитесь пожалуйста**
 
 ***
+
+**Скрипты для разворачивания ВМ**
+```console
+#Создание ВМ в YandexCloud для postgres
+yc compute instance create \
+  --name pg-srv1 \
+  --hostname pg-srv1 \
+  --cores 2 \
+  --memory 4 \
+  --create-boot-disk size=10G,type=network-ssd,image-folder-id=standard-images,image-family=ubuntu-2004-lts \
+  --network-interface subnet-name=default-ru-central1-b,nat-ip-version=ipv4,ipv4-address=10.129.0.21 \
+  --zone ru-central1-b \
+  --core-fraction 20 \
+  --preemptible \
+  --metadata-from-file ssh-keys=/home/eugink/.ssh/eugin_yandex_key.pub
+yc compute instance create \
+  --name pg-srv2 \
+  --hostname pg-srv2 \
+  --cores 2 \
+  --memory 4 \
+  --create-boot-disk size=10G,type=network-ssd,image-folder-id=standard-images,image-family=ubuntu-2004-lts \
+  --network-interface subnet-name=default-ru-central1-b,nat-ip-version=ipv4,ipv4-address=10.129.0.22 \
+  --zone ru-central1-b \
+  --core-fraction 20 \
+  --preemptible \
+  --metadata-from-file ssh-keys=/home/eugink/.ssh/eugin_yandex_key.pub
+  
+yc compute instance create \
+  --name pg-srv3 \
+  --hostname pg-srv3 \
+  --cores 2 \
+  --memory 4 \
+  --create-boot-disk size=10G,type=network-ssd,image-folder-id=standard-images,image-family=ubuntu-2004-lts \
+  --network-interface subnet-name=default-ru-central1-b,nat-ip-version=ipv4,ipv4-address=10.129.0.23 \
+  --zone ru-central1-b \
+  --core-fraction 20 \
+  --preemptible \
+  --metadata-from-file ssh-keys=/home/eugink/.ssh/eugin_yandex_key.pub
+  
+#Создание ВМ в YandexCloud для etcd
+yc compute instance create \
+  --name etcd1 \
+  --hostname etcd1 \
+  --cores 2 \
+  --memory 2 \
+  --create-boot-disk size=5G,type=network-ssd,image-folder-id=standard-images,image-family=ubuntu-2004-lts \
+  --network-interface subnet-name=default-ru-central1-b,nat-ip-version=ipv4,ipv4-address=10.129.0.11 \
+  --zone ru-central1-b \
+  --core-fraction 20 \
+  --preemptible \
+  --metadata-from-file ssh-keys=/home/eugink/.ssh/eugin_yandex_key.pub
+yc compute instance create \
+  --name etcd2 \
+  --hostname etcd2 \
+  --cores 2 \
+  --memory 2 \
+  --create-boot-disk size=5G,type=network-ssd,image-folder-id=standard-images,image-family=ubuntu-2004-lts \
+  --network-interface subnet-name=default-ru-central1-b,nat-ip-version=ipv4,ipv4-address=10.129.0.12 \
+  --zone ru-central1-b \
+  --core-fraction 20 \
+  --preemptible \
+  --metadata-from-file ssh-keys=/home/eugink/.ssh/eugin_yandex_key.pub  
+yc compute instance create \
+  --name etcd3 \
+  --hostname etcd3 \
+  --cores 2 \
+  --memory 2 \
+  --create-boot-disk size=5G,type=network-ssd,image-folder-id=standard-images,image-family=ubuntu-2004-lts \
+  --network-interface subnet-name=default-ru-central1-b,nat-ip-version=ipv4,ipv4-address=10.129.0.13 \
+  --zone ru-central1-b \
+  --core-fraction 20 \
+  --preemptible \
+  --metadata-from-file ssh-keys=/home/eugink/.ssh/eugin_yandex_key.pub  
+
+#Создание ВМ в YandexCloud для HA Proxy
+yc compute instance create \
+  --name haproxy1 \
+  --hostname haproxy1 \
+  --cores 2 \
+  --memory 2 \
+  --create-boot-disk size=5G,type=network-ssd,image-folder-id=standard-images,image-family=ubuntu-2004-lts \
+  --network-interface subnet-name=default-ru-central1-b,nat-ip-version=ipv4,ipv4-address=10.129.0.31 \
+  --zone ru-central1-b \
+  --core-fraction 20 \
+  --preemptible \
+  --metadata-from-file ssh-keys=/home/eugink/.ssh/eugin_yandex_key.pub
+yc compute instance create \
+  --name haproxy2 \
+  --hostname haproxy2 \
+  --cores 2 \
+  --memory 2 \
+  --create-boot-disk size=5G,type=network-ssd,image-folder-id=standard-images,image-family=ubuntu-2004-lts \
+  --network-interface subnet-name=default-ru-central1-b,nat-ip-version=ipv4,ipv4-address=10.129.0.32 \
+  --zone ru-central1-b \
+  --core-fraction 20 \
+  --preemptible \
+  --metadata-from-file ssh-keys=/home/eugink/.ssh/eugin_yandex_key.pub
+
+
+
+
+``
+
+***
+
