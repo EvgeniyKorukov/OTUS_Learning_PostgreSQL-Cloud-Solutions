@@ -8,8 +8,8 @@
     yc compute instance create \
       --name k8s-srv \
       --hostname k8s-srv \
-      --cores 2 \
-      --memory 4 \
+      --cores 4 \
+      --memory 8 \
       --create-boot-disk size=15G,type=network-ssd,image-folder-id=standard-images,image-family=ubuntu-2004-lts \
       --network-interface subnet-name=default-ru-central1-b,nat-ip-version=ipv4,ipv4-address=10.129.0.30 \
       --zone ru-central1-b \
@@ -20,14 +20,14 @@
     :hammer_and_wrench: Параметр | :memo: Значение |
     --------------:|---------------| 
     | Имя ВМ | **`k8s-srv`** |
-    | Внешний ip | `158.160.31.143` |
+    | Внешний ip | `158.160.14.6` |
     | Внктренний ip | `10.129.0.30` |        
     | Операционная система | `Ubuntu 20.04 LTS` |
     | Зона доступности | `ru-central1-b` |
     | Платформа | `Intel Cascade Lake	` |
-    | vCPU | `2` |
+    | vCPU | `4` |
     | Гарантированная доля vCPU | `20%` |
-    | RAM | `4 ГБ` |
+    | RAM | `8 ГБ` |
     | Тип диска | `SSD` | 
     | Объём дискового пространства | `15 ГБ` |
     | Макс. IOPS (чтение / запись) | `1000 / 1000` |
@@ -35,7 +35,7 @@
     | Прерываемая | :ballot_box_with_check: |
     * Подключаемся к ВМ
     ```console
-    ssh ubuntu@158.160.31.143
+    ssh ubuntu@158.160.14.6
     ```
     
   * Установка Docker т.к. будем работать через его движок
