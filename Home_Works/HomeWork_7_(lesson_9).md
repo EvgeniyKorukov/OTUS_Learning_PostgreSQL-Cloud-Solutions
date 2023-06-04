@@ -65,6 +65,7 @@
  * Установка PostgreSQL Client, он нам нужен будет для проверки подключения и версии сервера
 	 ```console
 	 sudo apt install postgresql-client
+	 sudo apt install postgresql-common
 	 ```
 
  * Установка minikube
@@ -182,7 +183,14 @@
 	```
 
 * Проверяем версию PostgreSQL
- ```console
-    
- ```
+	```console
+	buntu@k8s-srv:~$ psql -h 192.168.49.2 -p 31316 -U postgres -W -d db1 
+	Password: 
+	psql (12.15 (Ubuntu 12.15-0ubuntu0.20.04.1), server 14.8 (Debian 14.8-1.pgdg110+1))
+	WARNING: psql major version 12, server major version 14.
+					 Some psql features might not work.
+	Type "help" for help.
+
+	db1=# 
+	```
 ***
