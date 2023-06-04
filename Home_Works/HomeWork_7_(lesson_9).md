@@ -174,6 +174,7 @@
 	statefulset.apps/pg-statefulset created
 	ubuntu@k8s-srv:~/K8s_HomeWorks/manifests$ 
 	``` 
+	[Проект](https://github.com/EvgeniyKorukov/OTUS_Learning_PostgreSQL-Cloud-Solutions/blob/main/Home_Works/K8s_HomeWorks.zip)	
 
 * Получаем параметры службы
 	```console
