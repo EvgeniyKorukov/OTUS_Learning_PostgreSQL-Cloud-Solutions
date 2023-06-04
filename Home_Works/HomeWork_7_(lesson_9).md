@@ -97,14 +97,42 @@
 		🏄  Done! kubectl is now configured to use "minikube" cluster and "default" namespace by default
 		ubuntu@k8s-srv:~$ 
 	  ```
+	* Настройка dashboard для K8s для внешнего доступа (по внешнему ip)
+ 		* Я это делать в сеансах `screen`
+ 		* В одном сеансе
+			```console
+			minikube dashboard
+			```
+			```console
+			ubuntu@k8s-srv:~$ minikube dashboard
+			🔌  Enabling dashboard ...
+					▪ Using image docker.io/kubernetesui/dashboard:v2.7.0
+					▪ Using image docker.io/kubernetesui/metrics-scraper:v1.0.8
+			💡  Some dashboard features require the metrics-server addon. To enable all features please run:
+
+							minikube addons enable metrics-server   
 
 
-
-
-    minikube dashboard
-#Proxy for port (external access)
-	https://stackoverflow.com/questions/47173463/how-to-access-local-kubernetes-minikube-dashboard-remotely
-		kubectl proxy --address='0.0.0.0' --disable-filter=true
+			🤔  Verifying dashboard health ...
+			🚀  Launching proxy ...
+			🤔  Verifying proxy health ...
+			🎉  Opening http://127.0.0.1:37949/api/v1/namespaces/kubernetes-dashboard/services/http:kubernetes-dashboard:/proxy/ in your default browser...
+			👉  http://127.0.0.1:37949/api/v1/namespaces/kubernetes-dashboard/services/http:kubernetes-dashboard:/proxy/
+			```
+ 		* Во втором сеансе, чтобы был доступ с внешнего ip
+ 			* [Solved remote access](https://stackoverflow.com/questions/47173463/how-to-access-local-kubernetes-minikube-dashboard-remotely)
+			```console
+			kubectl proxy --address='0.0.0.0' --disable-filter=true
+			```
+			```console
+			ubuntu@k8s-srv:~$ kubectl proxy --address='0.0.0.0' --disable-filter=true
+			W0604 14:07:46.658686   18829 proxy.go:175] Request filter disabled, your proxy is vulnerable to XSRF attacks, please be cautious
+			Starting to serve on [::]:8001
+			```
+ 		* Так мы получили внешний доступ к dashboad
+ 			```console
+			http://158.160.14.6:8001/api/v1/namespaces/kubernetes-dashboard/services/http:kubernetes-dashboard:/proxy/#/workloads?namespace=default
+			```
 
 ***
 
@@ -113,16 +141,3 @@
     ```console
     ```
 ***
-
-> ### Topic1
-  * Text
-    ```console
-    ```
-***
-
-> ### Topic1
-  * Text
-    ```console
-    ```
-***
-
