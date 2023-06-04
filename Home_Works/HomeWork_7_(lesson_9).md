@@ -62,20 +62,46 @@
        sudo mv ./kubectl /usr/local/bin/kubectl
        kubectl version --client  
        ```
-    
+ * Установка PostgreSQL Client, он нам нужен будет для проверки подключения и версии сервера
+	 ```console
+	 sudo apt install postgresql-client
+	 ```
+
  * Установка minikube
-   * [Install minikube](	https://minikube.sigs.k8s.io/docs/start/)
+   * [Install minikube](https://minikube.sigs.k8s.io/docs/start/)
       ```console
       curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
       sudo install minikube-linux-amd64 /usr/local/bin/minikube
+      sudo usermod -aG docker $USER && newgrp docker
       minikube start
-      minikube dashboard
       ```
+	  ```console
+		ubuntu@k8s-srv:~$ minikube start
+		😄  minikube v1.30.1 on Ubuntu 20.04 (amd64)
+		✨  Automatically selected the docker driver. Other choices: none, ssh
+		📌  Using Docker driver with root privileges
+		👍  Starting control plane node minikube in cluster minikube
+		🚜  Pulling base image ...
+		💾  Downloading Kubernetes v1.26.3 preload ...
+				> preloaded-images-k8s-v18-v1...:  397.02 MiB / 397.02 MiB  100.00% 27.93 M
+				> gcr.io/k8s-minikube/kicbase...:  373.53 MiB / 373.53 MiB  100.00% 9.66 Mi
+		🔥  Creating docker container (CPUs=2, Memory=2200MB) ...
+		🐳  Preparing Kubernetes v1.26.3 on Docker 23.0.2 ...
+				▪ Generating certificates and keys ...
+				▪ Booting up control plane ...
+				▪ Configuring RBAC rules ...
+		🔗  Configuring bridge CNI (Container Networking Interface) ...
+				▪ Using image gcr.io/k8s-minikube/storage-provisioner:v5
+		🔎  Verifying Kubernetes components...
+		🌟  Enabled addons: storage-provisioner, default-storageclass
+		🏄  Done! kubectl is now configured to use "minikube" cluster and "default" namespace by default
+		ubuntu@k8s-srv:~$ 
+	  ```
 
 
 
 
-
+    minikube dashboard
 #Proxy for port (external access)
 	https://stackoverflow.com/questions/47173463/how-to-access-local-kubernetes-minikube-dashboard-remotely
 		kubectl proxy --address='0.0.0.0' --disable-filter=true
