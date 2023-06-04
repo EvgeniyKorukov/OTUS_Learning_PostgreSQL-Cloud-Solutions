@@ -137,7 +137,52 @@
 ***
 
 > ### Разворачиваем PostgreSQL 14 через манифест
-  * Text
-    ```console
-    ```
+ * Чтобы работать с переменными K8s надо их получить и применить
+	```console
+	minikube docker-env
+
+	ubuntu@k8s-srv:~/K8s_HomeWorks/manifests$ minikube docker-env
+	export DOCKER_TLS_VERIFY="1"
+	export DOCKER_HOST="tcp://192.168.49.2:2376"
+	export DOCKER_CERT_PATH="/home/ubuntu/.minikube/certs"
+	export MINIKUBE_ACTIVE_DOCKERD="minikube"
+
+	# To point your shell to minikube's docker-daemon, run:
+	# eval $(minikube -p minikube docker-env)
+	ubuntu@k8s-srv:~/K8s_HomeWorks/manifests$ export DOCKER_TLS_VERIFY="1"
+	ubuntu@k8s-srv:~/K8s_HomeWorks/manifests$ export DOCKER_HOST="tcp://192.168.49.2:2376"
+	ubuntu@k8s-srv:~/K8s_HomeWorks/manifests$ export DOCKER_CERT_PATH="/home/ubuntu/.minikube/certs"
+	ubuntu@k8s-srv:~/K8s_HomeWorks/manifests$ export MINIKUBE_ACTIVE_DOCKERD="minikube"
+	ubuntu@k8s-srv:~/K8s_HomeWorks/manifests$ 
+	ubuntu@k8s-srv:~/K8s_HomeWorks/manifests$ 
+	```
+
+ * Создаем свой namespace и делаем его по умолчанию
+	```console
+	ubuntu@k8s-srv:~/K8s_HomeWorks/manifests$ kubectl create namespace pg-my-kub
+	namespace/pg-my-kub created
+	ubuntu@k8s-srv:~/K8s_HomeWorks/manifests$ kubectl config set-context --current --namespace=pg-my-kub
+	Context "minikube" modified.
+	ubuntu@k8s-srv:~/K8s_HomeWorks/manifests$ 
+	ubuntu@k8s-srv:~/K8s_HomeWorks/manifests$ 
+	```
+ * Делаем все через manifest, поэтому все шаги в приложенном архиве. А тут просто загружаем проект
+	```console
+	ubuntu@k8s-srv:~/K8s_HomeWorks/manifests$ kubectl apply -f postgres.yaml
+	service/pg-service created
+	statefulset.apps/pg-statefulset created
+	ubuntu@k8s-srv:~/K8s_HomeWorks/manifests$ 
+	``` 
+
+* Получаем параметры службы
+	```console
+	ubuntu@k8s-srv:~/K8s_HomeWorks/manifests$ minikube service pg-service --url -n pg-my-kub
+	http://192.168.49.2:31316
+	ubuntu@k8s-srv:~/K8s_HomeWorks/manifests$ 
+	```
+
+* Проверяем версию PostgreSQL
+ ```console
+    
+ ```
 ***
