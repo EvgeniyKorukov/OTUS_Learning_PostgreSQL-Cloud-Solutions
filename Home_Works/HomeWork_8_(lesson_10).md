@@ -378,32 +378,10 @@
       +--------------------+
       ubuntu@test-srv:~$ 
       ```
-    * Меняем пароль у пользователя `root` в MySQL 
-      ```console
-      ubuntu@test-srv:~$ sudo mysql -u root
-      Welcome to the MySQL monitor.  Commands end with ; or \g.
-      Your MySQL connection id is 35
-      Server version: 8.0.33-0ubuntu0.20.04.2 (Ubuntu)
-
-      Copyright (c) 2000, 2023, Oracle and/or its affiliates.
-
-      Oracle is a registered trademark of Oracle Corporation and/or its
-      affiliates. Other names may be trademarks of their respective
-      owners.
-
-      Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
-
-      mysql> ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'root';
-      Query OK, 0 rows affected (0.04 sec)
-
-      mysql> \q
-      Bye
-      ubuntu@test-srv:~$ 
-      ```
 
     * Создаем таблицу `taxi_trips`
       ```console
-      ubuntu@test-srv:~$ sudo mysql -u root -p -D otus
+      ubuntu@test-srv:~$ sudo mysql -u root -D otus
       Enter password:
       Welcome to the MySQL monitor.  Commands end with ; or \g.
       Your MySQL connection id is 39
@@ -491,7 +469,6 @@
     
 ***
 > ### 4. Описать что и как делали и с какими проблемами столкнулись
-  * Text
-    ```console    
-    ```
+  * В `DataSet` в `timestamp` используется `UTC`, что вызывает ошибку, поэтому мы менли параметр `SET GLOBAL SQL_MODE`=`ALLOW_INVALID_DATES` и перезапускали `MySQL`
+
 ***
