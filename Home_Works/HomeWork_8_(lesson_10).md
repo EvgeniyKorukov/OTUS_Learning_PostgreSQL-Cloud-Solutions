@@ -355,14 +355,114 @@
       sys     0m40.730s
       postgres@test-srv:~$ 
       ```
-      ```console
-      ```      
 
 ***
 > ### 1. Выбрать одну из СУБД
-  * Text
-    ```console
-    ```
+  * MySQL
+    * Ставим с настройками по умолчанию по инструкции с [MySQL Installation](https://losst.pro/ustanovka-mysql-ubuntu-16-04)
+      ```console
+      sudo apt install mysql-server mysql-client
+      ```
+    * Создаем базу otus для экспериментов
+      ```console
+      ubuntu@test-srv:~$ sudo mysql -u root -e "create database otus"
+      ubuntu@test-srv:~$ sudo mysql -u root -e "show databases"
+      +--------------------+
+      | Database           |
+      +--------------------+
+      | information_schema |
+      | mysql              |
+      | otus               |
+      | performance_schema |
+      | sys                |
+      +--------------------+
+      ubuntu@test-srv:~$ 
+      ```
+    * Меняем пароль у пользователя `root` в MySQL 
+      ```console
+      ubuntu@test-srv:~$ sudo mysql -u root
+      Welcome to the MySQL monitor.  Commands end with ; or \g.
+      Your MySQL connection id is 35
+      Server version: 8.0.33-0ubuntu0.20.04.2 (Ubuntu)
+
+      Copyright (c) 2000, 2023, Oracle and/or its affiliates.
+
+      Oracle is a registered trademark of Oracle Corporation and/or its
+      affiliates. Other names may be trademarks of their respective
+      owners.
+
+      Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+      mysql> ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'root';
+      Query OK, 0 rows affected (0.04 sec)
+
+      mysql> \q
+      Bye
+      ubuntu@test-srv:~$ 
+      ```
+
+    * Создаем таблицу `taxi_trips`
+      ```console
+      ubuntu@test-srv:~$ sudo mysql -u root -p -D otus
+      Enter password:
+      Welcome to the MySQL monitor.  Commands end with ; or \g.
+      Your MySQL connection id is 39
+      Server version: 8.0.33-0ubuntu0.20.04.2 (Ubuntu)
+
+      Copyright (c) 2000, 2023, Oracle and/or its affiliates.
+
+      Oracle is a registered trademark of Oracle Corporation and/or its
+      affiliates. Other names may be trademarks of their respective
+      owners.
+
+      Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+      mysql> SELECT DATABASE();
+      +------------+
+      | DATABASE() |
+      +------------+
+      | otus       |
+      +------------+
+      1 row in set (0.00 sec)
+
+      mysql> create table taxi_trips (
+          -> unique_key text,
+          -> taxi_id text,
+          -> trip_start_timestamp TIMESTAMP,
+          -> trip_end_timestamp TIMESTAMP,
+          -> trip_seconds bigint,
+          -> trip_miles numeric,
+          -> pickup_census_tract bigint,
+          -> dropoff_census_tract bigint,
+          -> pickup_community_area bigint,
+          -> dropoff_community_area bigint,
+          -> fare numeric,
+          -> tips numeric,
+          -> tolls numeric,
+          -> extras numeric,
+          -> trip_total numeric,
+          -> payment_type text,
+          -> company text,
+          -> pickup_latitude numeric,
+          -> pickup_longitude numeric,
+          -> pickup_location text,
+          -> dropoff_latitude numeric,
+          -> dropoff_longitude numeric,
+          -> dropoff_location text
+          -> );
+      Query OK, 0 rows affected (0.05 sec)
+
+      mysql> show tables;
+      +----------------+
+      | Tables_in_otus |
+      +----------------+
+      | taxi_trips     |
+      +----------------+
+      1 row in set (0.00 sec)
+
+      mysql> \q                                                                                                                                                  Bye
+      ubuntu@test-srv:~$ 
+      ```
     
 ***
 
