@@ -515,7 +515,14 @@
     | Загрузка через консоль | `---` | `578395.630 ms (09:38.396)` |
     | Загрузка через bash-скрипт | `35m34.097` | `13m2.157s` |
     | Запрос количества записей | `3m12.111s` | `3m21.361s` |
-    | Запрос из BigQuery | `x` | `x` |
+    | Запрос из BigQuery | `4m35.598s` | `3m20.996s` |
+    * Запрос из BigQuery
+    ```sql
+    SELECT payment_type, round(sum(tips)/sum(trip_total)*100, 0) + 0 as tips_percent, count(*) as c 
+    FROM taxi_trips
+    group by payment_type
+    order by 3;
+    ```
     
 
     
