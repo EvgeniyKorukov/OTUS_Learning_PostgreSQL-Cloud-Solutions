@@ -469,10 +469,14 @@
     
 ***
 > ### 4. Описать что и как делали и с какими проблемами столкнулись
-  * В `DataSet` в `timestamp` используется `UTC`, что вызывает ошибку, поэтому мы менял параметр `SET GLOBAL SQL_MODE`=`ALLOW_INVALID_DATES` и перезапускал `MySQL`
-  * Менял параметр в`MySQL`:
-    * `secure_file_priv = ""`, в файле параметров `/etc/mysql/mysql.conf.d/mysqld.cnf ` чтобы можно было загружать данные из определенного каталога т.к. по умолчанию `ERROR 1290 (HY000) at line 1: The MySQL server is running with the --secure-file-priv option so it cannot execute this statement` и перезапускал `MySQL`
-    * `local_infile = 1`, в файле параметров `/etc/mysql/mysql.conf.d/mysqld.cnf ` чтобы можно было загружать данные из определенного каталога т.к. по умолчанию `ERROR 1290 (HY000) at line 1: The MySQL server is running with the --secure-file-priv option so it cannot execute this statement` и перезапускал `MySQL`
+  * Решения для MySQL:
+    * ❗️`ERROR 1290 (HY000) at line 1: The MySQL server is running with the --secure-file-priv option so it cannot execute this statement` менял параметры в `/etc/mysql/mysql.conf.d/mysqld.cnf` и перезапускал `MySQL`
+      * `secure_file_priv = ""`, чтобы можно было загружать данные из определенного каталога  
+      * `local_infile = 1`, чтобы можно было загружать данные из определенного каталога
+    * ❗️`ERROR 29 (HY000) at line 1: File '/gset/taxi.csv.000000000039' not found (OS errno 13 - Permission denied)` 
+      * Добавлял `/gset/* rw,` в `/etc/apparmor.d/usr.sbin.mysql` и обновлял `sudo /etc/init.d/apparmor reload`
+    * ❗️`ERROR 1292 (22007) at line 1: Incorrect datetime value: '2017-04-13 13:00:00 UTC' for column 'trip_start_timestamp' at row 1`
+      * В `DataSet` в `timestamp` используется `UTC`, что вызывает ошибку, поэтому мы менял параметр `SET GLOBAL SQL_MODE`=`ALLOW_INVALID_DATES` и перезапускал `MySQL`
     * 
 
 ***
