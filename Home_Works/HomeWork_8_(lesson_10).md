@@ -467,10 +467,22 @@
 ***
 
 > ### 2. Загрузить в неё данные (от 10 до 100 Гб)
-  * Text
+  * Создаем `mysql_load.sh` для загрузки
+    ```console
+    ubuntu@test-srv:~$ vim ~/mysql_load.sh && chmod +x ~/mysql_load.sh
+    ```
+    ```bash
+    ubuntu@test-srv:~$ cat mysql_load.sh 
+    for f in /gset/taxi.csv.*
+    do
+      echo "Processing $f file..."
+      mysql -u root -D otus -e "LOAD DATA INFILE '$f' INTO TABLE taxi_trips FIELDS TERMINATED BY ',' IGNORE 1 ROWS ;"
+    done
+    ubuntu@test-srv:~$ 
+    ```
+  * Загружаем данные в MySQL
     ```console
     ```
-    
 ***
 > ### 3. Сравнить скорость выполнения запросов на PosgreSQL и выбранной СУБД
   * Text
