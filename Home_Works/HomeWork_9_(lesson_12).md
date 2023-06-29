@@ -414,74 +414,70 @@
            ```
        * Инициализируем `pg-auto-failover`
            ```console
+           postgres@pg-mon:~$ 
            postgres@pg-mon:~$ pg_autoctl create monitor --auth trust --ssl-mode require --ssl-self-signed --pgport 5432 --hostname `hostname -a`
-           21:04:21 13859 INFO  Using --ssl-self-signed: pg_autoctl will create self-signed certificates, allowing for encrypted network traffic
-           21:04:21 13859 WARN  Self-signed certificates provide protection against eavesdropping; this setup does NOT protect against Man-In-The-Middle attacks nor Impersonation attacks.
-           21:04:21 13859 WARN  See https://www.postgresql.org/docs/current/libpq-ssl.html for details
-           21:04:21 13859 WARN  Failed to find pg_ctl command in your PATH
-           21:04:21 13859 WARN  Failed to resolve hostname "pg-mon" to a local IP address, automated pg_hba.conf setup might fail.
-           21:04:21 13859 INFO  Initialising a PostgreSQL cluster at "/pg_mon"
-           21:04:21 13859 INFO  /usr/lib/postgresql/15/bin/pg_ctl initdb -s -D /pg_mon --option '--auth=trust'
-           21:04:25 13859 INFO   /usr/bin/openssl req -new -x509 -days 365 -nodes -text -out /pg_mon/server.crt -keyout /pg_mon/server.key -subj "/CN=pg-mon"
-           21:04:25 13859 INFO  Started pg_autoctl postgres service with pid 13883
-           21:04:25 13883 INFO   /usr/bin/pg_autoctl do service postgres --pgdata /pg_mon -v
-           21:04:25 13859 INFO  Started pg_autoctl monitor-init service with pid 13884
-           21:04:25 13889 INFO   /usr/lib/postgresql/15/bin/postgres -D /pg_mon -p 5432 -h *
-           21:04:25 13883 INFO  Postgres is now serving PGDATA "/pg_mon" on port 5432 with pid 13889
-           21:04:26 13884 WARN  NOTICE:  installing required extension "btree_gist"
-           21:04:26 13884 FATAL Failed to find IP address for hostname "pg-mon", see above for details
-           21:04:26 13884 WARN  Failed to grant connection to local network.
-           21:04:26 13859 ERROR pg_autoctl service monitor-init exited with exit status 12
-           21:04:26 13859 INFO  Restarting service monitor-init
-           21:04:26 13905 INFO  The user "autoctl" already exists, skipping.
-           21:04:26 13905 INFO  The database "pg_auto_failover" already exists, skipping.
-           21:04:26 13905 WARN  NOTICE:  extension "pgautofailover" already exists, skipping
-           21:04:26 13905 FATAL Failed to find IP address for hostname "pg-mon", see above for details
-           21:04:26 13905 WARN  Failed to grant connection to local network.
-           21:04:26 13859 ERROR pg_autoctl service monitor-init exited with exit status 12
-           21:04:26 13859 INFO  Restarting service monitor-init
-           21:04:26 13911 INFO  The user "autoctl" already exists, skipping.
-           21:04:26 13911 INFO  The database "pg_auto_failover" already exists, skipping.
-           21:04:26 13911 WARN  NOTICE:  extension "pgautofailover" already exists, skipping
-           21:04:26 13911 FATAL Failed to find IP address for hostname "pg-mon", see above for details
-           21:04:26 13911 WARN  Failed to grant connection to local network.
-           21:04:26 13859 ERROR pg_autoctl service monitor-init exited with exit status 12
-           21:04:26 13859 INFO  Restarting service monitor-init
-           21:04:26 13917 INFO  The user "autoctl" already exists, skipping.
-           21:04:26 13917 INFO  The database "pg_auto_failover" already exists, skipping.
-           21:04:26 13917 WARN  NOTICE:  extension "pgautofailover" already exists, skipping
-           21:04:26 13917 FATAL Failed to find IP address for hostname "pg-mon", see above for details
-           21:04:26 13917 WARN  Failed to grant connection to local network.
-           21:04:26 13859 ERROR pg_autoctl service monitor-init exited with exit status 12
-           21:04:26 13859 INFO  Restarting service monitor-init
-           21:04:26 13923 INFO  The user "autoctl" already exists, skipping.
-           21:04:26 13923 INFO  The database "pg_auto_failover" already exists, skipping.
-           21:04:26 13923 WARN  NOTICE:  extension "pgautofailover" already exists, skipping
-           21:04:26 13923 FATAL Failed to find IP address for hostname "pg-mon", see above for details
-           21:04:26 13923 WARN  Failed to grant connection to local network.
-           21:04:26 13859 ERROR pg_autoctl service monitor-init exited with exit status 12
-           21:04:26 13859 INFO  Restarting service monitor-init
-           21:04:26 13929 INFO  The user "autoctl" already exists, skipping.
-           21:04:26 13929 INFO  The database "pg_auto_failover" already exists, skipping.
-           21:04:26 13929 WARN  NOTICE:  extension "pgautofailover" already exists, skipping
-           21:04:26 13929 FATAL Failed to find IP address for hostname "pg-mon", see above for details
-           21:04:26 13929 WARN  Failed to grant connection to local network.
-           21:04:26 13859 ERROR pg_autoctl service monitor-init exited with exit status 12
-           21:04:26 13859 FATAL pg_autoctl service monitor-init has already been restarted 5 times in the last 0 seconds, stopping now
-           21:04:26 13883 INFO  Postgres controller service received signal SIGTERM, terminating
-           21:04:26 13883 INFO  Stopping pg_autoctl postgres service
-           21:04:26 13883 INFO  /usr/lib/postgresql/15/bin/pg_ctl --pgdata /pg_mon --wait stop --mode fast
-           21:04:26 13859 INFO  Waiting for subprocesses to terminate.
-           21:04:27 13859 FATAL Something went wrong in sub-process supervision, stopping now. See above for details.
-           21:04:27 13859 INFO  Stop pg_autoctl
+           21:58:43 14091 INFO  Using --ssl-self-signed: pg_autoctl will create self-signed certificates, allowing for encrypted network traffic
+           21:58:43 14091 WARN  Self-signed certificates provide protection against eavesdropping; this setup does NOT protect against Man-In-The-Middle attacks nor Impersonation attacks.
+           21:58:43 14091 WARN  See https://www.postgresql.org/docs/current/libpq-ssl.html for details
+           21:58:43 14091 INFO  Initialising a PostgreSQL cluster at "/pg_mon"
+           21:58:43 14091 INFO  /usr/lib/postgresql/15/bin/pg_ctl initdb -s -D /pg_mon --option '--auth=trust'
+           21:58:46 14091 INFO   /usr/bin/openssl req -new -x509 -days 365 -nodes -text -out /pg_mon/server.crt -keyout /pg_mon/server.key -subj "/CN=pg-mon"
+           21:58:47 14091 INFO  Started pg_autoctl postgres service with pid 14111
+           21:58:47 14111 INFO   /usr/bin/pg_autoctl do service postgres --pgdata /pg_mon -v
+           21:58:47 14091 INFO  Started pg_autoctl monitor-init service with pid 14112
+           21:58:47 14117 INFO   /usr/lib/postgresql/15/bin/postgres -D /pg_mon -p 5432 -h *
+           21:58:47 14111 INFO  Postgres is now serving PGDATA "/pg_mon" on port 5432 with pid 14117
+           21:58:47 14112 WARN  NOTICE:  installing required extension "btree_gist"
+           21:58:47 14112 INFO  Granting connection privileges on 10.129.0.0/24
+           21:58:47 14112 WARN  Skipping HBA edits (per --skip-pg-hba) for rule: hostssl "pg_auto_failover" "autoctl_node" 10.129.0.0/24 trust
+           21:58:47 14112 INFO  Your pg_auto_failover monitor instance is now ready on port 5432.
+           21:58:47 14112 INFO  Monitor has been successfully initialized.
+           21:58:47 14091 WARN  pg_autoctl service monitor-init exited with exit status 0
+           21:58:47 14111 INFO  Postgres controller service received signal SIGTERM, terminating
+           21:58:47 14111 INFO  Stopping pg_autoctl postgres service
+           21:58:47 14111 INFO  /usr/lib/postgresql/15/bin/pg_ctl --pgdata /pg_mon --wait stop --mode fast
+           21:58:47 14091 INFO  Waiting for subprocesses to terminate.
+           21:58:48 14091 INFO  Stop pg_autoctl
            postgres@pg-mon:~$ 
            ```
+       * Создаем и запускаем сервис
+           ```console
+           root@pg-mon:~# pg_autoctl show systemd --pgdata /pg_mon
+           22:09:25 14317 INFO  HINT: to complete a systemd integration, run the following commands (as root):
+           22:09:25 14317 INFO  pg_autoctl -q show systemd --pgdata "/pg_mon" | tee /etc/systemd/system/pgautofailover.service
+           22:09:25 14317 INFO  systemctl daemon-reload
+           22:09:25 14317 INFO  systemctl enable pgautofailover
+           22:09:25 14317 INFO  systemctl start pgautofailover
+           [Unit]
+           Description = pg_auto_failover
+           
+           [Service]
+           WorkingDirectory = /var/lib/postgresql
+           Environment = 'PGDATA=/pg_mon'
+           User = postgres
+           ExecStart = /usr/bin/pg_autoctl run
+           Restart = always
+           StartLimitBurst = 0
+           ExecReload = /usr/bin/pg_autoctl reload
+           
+           [Install]
+           WantedBy = multi-user.target
+           root@pg-mon:~#
+           root@pg-mon:~# vim /etc/systemd/system/pgautofailover.service
+           root@pg-mon:~# 
+           root@pg-mon:~# systemctl daemon-reload
+           root@pg-mon:~# systemctl enable pgautofailover
+           Created symlink /etc/systemd/system/multi-user.target.wants/pgautofailover.service → /etc/systemd/system/pgautofailover.service.
+           root@pg-mon:~# systemctl start pgautofailover
+           ```
+           
        * Создаем пользователя для управления
            ```console
+           postgres@pg-mon:~$ psql -c "alter user autoctl_node password 'zxcasdqwe'"
+           ALTER ROLE
+           postgres@pg-mon:~$ 
            ```
-       * С
-           ```console
-           ```
+
        * С
            ```console
            ```           
