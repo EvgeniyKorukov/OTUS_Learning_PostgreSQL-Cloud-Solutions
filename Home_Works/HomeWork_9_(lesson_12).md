@@ -492,8 +492,13 @@
            postgres@pg-mon:~$ 
            ```           
 
-       * С
+       * Смотрим статус кластера
            ```console
+           postgres@pg-mon:~$ pg_autoctl show state
+           Name |  Node |  Host:Port |  TLI: LSN |   Connection |      Reported State |      Assigned State
+           -----+-------+------------+-----------+--------------+---------------------+--------------------
+           
+           postgres@pg-mon:~$ 
            ```
 
        * С
