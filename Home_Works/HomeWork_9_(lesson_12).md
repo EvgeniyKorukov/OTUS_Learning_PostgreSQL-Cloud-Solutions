@@ -21,8 +21,8 @@
     * Индивидуальные параметры каждой ВМ:
         :hammer_and_wrench: Название ВМ | :memo: Внутренний IPv4 | Описание |
         --------------:|---------------|---------------|
-        | **`pg-srv1`** | `10.129.0.21` | Сервер с СУБД Potgres |
-        | **`pg-srv2`** | `10.129.0.22` | Сервер с СУБД Potgres |      
+        | **`pg-srv1`** | `10.129.0.21` | Сервер с СУБД PostgreSQL 15 |
+        | **`pg-srv2`** | `10.129.0.22` | Сервер с СУБД PostgreSQL 15 |      
         | **`pg-mon`** | `10.129.0.23` | Сервер `monitor` для [pg_auto_failover](https://github.com/hapostgres/pg_auto_failover) |
      * Создание ВМ `pg-srv1`
        ```console
