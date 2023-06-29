@@ -390,6 +390,12 @@
            Processing triggers for man-db (2.9.1-1) ...
            ubuntu@pg-mon:~$ 
            ```
+       * Правим /etc/hosts
+         * 10.129.0.21 pg-srv1.ru-central1.internal pg-srv1
+         * 10.129.0.22 pg-srv2.ru-central1.internal pg-srv2
+         * 10.129.0.23 pg-mon.ru-central1.internal pg-mon
+
+             
        * Создаем рабочий каталог+прописываем их в `~/.profile`+применяем их
            ```console
            ubuntu@pg-mon:~$ 
