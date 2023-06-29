@@ -350,13 +350,12 @@
        * Удаляем кластер, который создавался автоматически
          ```console
          ubuntu@pg-mon:~$ sudo pg_dropcluster 15 main --stop
-         ubuntu@pg-mon:~$ ^C
          ubuntu@pg-mon:~$ pg_lsclusters 
          Ver Cluster Port Status Owner Data directory Log file
          ubuntu@pg-mon:~$ 
          ```
 
-       * Устанавливаем pg_auto_failover
+       * Устанавливаем `pg_auto_failover`
            ```console
            ubuntu@pg-mon:~$ sudo apt-get install postgresql-15-auto-failover -y
            Reading package lists... Done
@@ -391,3 +390,92 @@
            Processing triggers for man-db (2.9.1-1) ...
            ubuntu@pg-mon:~$ 
            ```
+       * Создаем рабочий каталог+прописываем их в `~/.profile`+прминяем их
+           ```console
+           ubuntu@pg-mon:~$ 
+           ubuntu@pg-mon:~$ sudo mkdir /pg_mon && sudo chown -R postgres:postgres /pg_mon
+           ubuntu@pg-mon:~$ 
+           ubuntu@pg-mon:~$ sudo su - postgres
+           postgres@pg-mon:~$ 
+           postgres@pg-mon:~$ echo "export PATH=/usr/lib/postgresql/15/bin/:$PATH" >> .profile
+           postgres@pg-mon:~$ echo "export PGDATA=/pg_mon" >> .profile
+           postgres@pg-mon:~$ cat .profile 
+           export PATH=/usr/lib/postgresql/15/bin/:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin
+           export PGDATA=/pg_mon
+           postgres@pg-mon:~$ 
+           postgres@pg-mon:~$ . ~/.profile 
+           postgres@pg-mon:~$ 
+           ```
+       * Инициализируем `pg-auto-failover`
+           ```console
+           postgres@pg-mon:~$ pg_autoctl create monitor --auth trust --ssl-mode require --ssl-self-signed --pgport 5432 --hostname `hostname -a`
+           21:04:21 13859 INFO  Using --ssl-self-signed: pg_autoctl will create self-signed certificates, allowing for encrypted network traffic
+           21:04:21 13859 WARN  Self-signed certificates provide protection against eavesdropping; this setup does NOT protect against Man-In-The-Middle attacks nor Impersonation attacks.
+           21:04:21 13859 WARN  See https://www.postgresql.org/docs/current/libpq-ssl.html for details
+           21:04:21 13859 WARN  Failed to find pg_ctl command in your PATH
+           21:04:21 13859 WARN  Failed to resolve hostname "pg-mon" to a local IP address, automated pg_hba.conf setup might fail.
+           21:04:21 13859 INFO  Initialising a PostgreSQL cluster at "/pg_mon"
+           21:04:21 13859 INFO  /usr/lib/postgresql/15/bin/pg_ctl initdb -s -D /pg_mon --option '--auth=trust'
+           21:04:25 13859 INFO   /usr/bin/openssl req -new -x509 -days 365 -nodes -text -out /pg_mon/server.crt -keyout /pg_mon/server.key -subj "/CN=pg-mon"
+           21:04:25 13859 INFO  Started pg_autoctl postgres service with pid 13883
+           21:04:25 13883 INFO   /usr/bin/pg_autoctl do service postgres --pgdata /pg_mon -v
+           21:04:25 13859 INFO  Started pg_autoctl monitor-init service with pid 13884
+           21:04:25 13889 INFO   /usr/lib/postgresql/15/bin/postgres -D /pg_mon -p 5432 -h *
+           21:04:25 13883 INFO  Postgres is now serving PGDATA "/pg_mon" on port 5432 with pid 13889
+           21:04:26 13884 WARN  NOTICE:  installing required extension "btree_gist"
+           21:04:26 13884 FATAL Failed to find IP address for hostname "pg-mon", see above for details
+           21:04:26 13884 WARN  Failed to grant connection to local network.
+           21:04:26 13859 ERROR pg_autoctl service monitor-init exited with exit status 12
+           21:04:26 13859 INFO  Restarting service monitor-init
+           21:04:26 13905 INFO  The user "autoctl" already exists, skipping.
+           21:04:26 13905 INFO  The database "pg_auto_failover" already exists, skipping.
+           21:04:26 13905 WARN  NOTICE:  extension "pgautofailover" already exists, skipping
+           21:04:26 13905 FATAL Failed to find IP address for hostname "pg-mon", see above for details
+           21:04:26 13905 WARN  Failed to grant connection to local network.
+           21:04:26 13859 ERROR pg_autoctl service monitor-init exited with exit status 12
+           21:04:26 13859 INFO  Restarting service monitor-init
+           21:04:26 13911 INFO  The user "autoctl" already exists, skipping.
+           21:04:26 13911 INFO  The database "pg_auto_failover" already exists, skipping.
+           21:04:26 13911 WARN  NOTICE:  extension "pgautofailover" already exists, skipping
+           21:04:26 13911 FATAL Failed to find IP address for hostname "pg-mon", see above for details
+           21:04:26 13911 WARN  Failed to grant connection to local network.
+           21:04:26 13859 ERROR pg_autoctl service monitor-init exited with exit status 12
+           21:04:26 13859 INFO  Restarting service monitor-init
+           21:04:26 13917 INFO  The user "autoctl" already exists, skipping.
+           21:04:26 13917 INFO  The database "pg_auto_failover" already exists, skipping.
+           21:04:26 13917 WARN  NOTICE:  extension "pgautofailover" already exists, skipping
+           21:04:26 13917 FATAL Failed to find IP address for hostname "pg-mon", see above for details
+           21:04:26 13917 WARN  Failed to grant connection to local network.
+           21:04:26 13859 ERROR pg_autoctl service monitor-init exited with exit status 12
+           21:04:26 13859 INFO  Restarting service monitor-init
+           21:04:26 13923 INFO  The user "autoctl" already exists, skipping.
+           21:04:26 13923 INFO  The database "pg_auto_failover" already exists, skipping.
+           21:04:26 13923 WARN  NOTICE:  extension "pgautofailover" already exists, skipping
+           21:04:26 13923 FATAL Failed to find IP address for hostname "pg-mon", see above for details
+           21:04:26 13923 WARN  Failed to grant connection to local network.
+           21:04:26 13859 ERROR pg_autoctl service monitor-init exited with exit status 12
+           21:04:26 13859 INFO  Restarting service monitor-init
+           21:04:26 13929 INFO  The user "autoctl" already exists, skipping.
+           21:04:26 13929 INFO  The database "pg_auto_failover" already exists, skipping.
+           21:04:26 13929 WARN  NOTICE:  extension "pgautofailover" already exists, skipping
+           21:04:26 13929 FATAL Failed to find IP address for hostname "pg-mon", see above for details
+           21:04:26 13929 WARN  Failed to grant connection to local network.
+           21:04:26 13859 ERROR pg_autoctl service monitor-init exited with exit status 12
+           21:04:26 13859 FATAL pg_autoctl service monitor-init has already been restarted 5 times in the last 0 seconds, stopping now
+           21:04:26 13883 INFO  Postgres controller service received signal SIGTERM, terminating
+           21:04:26 13883 INFO  Stopping pg_autoctl postgres service
+           21:04:26 13883 INFO  /usr/lib/postgresql/15/bin/pg_ctl --pgdata /pg_mon --wait stop --mode fast
+           21:04:26 13859 INFO  Waiting for subprocesses to terminate.
+           21:04:27 13859 FATAL Something went wrong in sub-process supervision, stopping now. See above for details.
+           21:04:27 13859 INFO  Stop pg_autoctl
+           postgres@pg-mon:~$ 
+           ```
+       * Создаем пользователя для управления
+           ```console
+           ```
+       * С
+           ```console
+           ```
+       * С
+           ```console
+           ```           
