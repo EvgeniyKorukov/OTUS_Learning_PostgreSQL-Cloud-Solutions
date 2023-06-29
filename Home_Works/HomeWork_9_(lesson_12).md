@@ -67,7 +67,7 @@
          --metadata-from-file ssh-keys=/home/eugink/.ssh/eugin_yandex_key.pub
        ```
 
-     * Настройрока ВМ `pg-mon`
+     * Настройка ВМ `pg-mon`
        * Устанавливаем PostgreSQL 15
          <pre><details><summary>Вывод терминала</summary>
          ubuntu@pg-mon:~$ sudo apt update && sudo apt upgrade -y && sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list' && wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add - && sudo apt-get update
@@ -501,6 +501,123 @@
            postgres@pg-mon:~$ 
            ```
 
+
+     * Настройка ВМ `pg-srv1` и `pg-srv2`
+       * Устанавливаем PostgreSQL 15
+         ```console
+         sudo apt update && sudo apt upgrade -y && sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list' && wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add - && sudo apt-get update && sudo apt-get -y install postgresql-15
+         ```
+       * Удаляем кластер, который создавался автоматически
+         ```console
+         sudo pg_dropcluster 15 main --stop
+         ```
+
+       * Устанавливаем `pg_auto_failover`
+         ```console
+         sudo apt-get install postgresql-15-auto-failover -y
+         ```
+       * Правим /etc/hosts
+         * 10.129.0.21 pg-srv1.ru-central1.internal pg-srv1
+         * 10.129.0.22 pg-srv2.ru-central1.internal pg-srv2
+         * 10.129.0.23 pg-mon.ru-central1.internal pg-mon
+
+             
+       * Создаем рабочий каталог+прописываем их в `~/.profile`+применяем их
+           ```console
+           sudo mkdir /pg_data && sudo chown -R postgres:postgres /pg_data
+           sudo su - postgres
+           echo "export PATH=/usr/lib/postgresql/15/bin/:$PATH" >> .profile
+           echo "export PGDATA=/pg_data" >> .profile
+           . ~/.profile 
+           ```
+       * Инициализируем `pg-auto-failover`
+           ```console
+           postgres@pg-mon:~$ pg_autoctl create monitor --auth trust --ssl-mode require --ssl-self-signed --pgport 6000 --hostname `hostname --fqdn`
+           22:23:01 14522 INFO  Using --ssl-self-signed: pg_autoctl will create self-signed certificates, allowing for encrypted network traffic
+           22:23:01 14522 WARN  Self-signed certificates provide protection against eavesdropping; this setup does NOT protect against Man-In-The-Middle attacks nor Impersonation attacks.
+           22:23:01 14522 WARN  See https://www.postgresql.org/docs/current/libpq-ssl.html for details
+           22:23:01 14522 INFO  Initialising a PostgreSQL cluster at "/pg_mon"
+           22:23:01 14522 INFO  /usr/lib/postgresql/15/bin/pg_ctl initdb -s -D /pg_mon --option '--auth=trust'
+           22:23:05 14522 INFO   /usr/bin/openssl req -new -x509 -days 365 -nodes -text -out /pg_mon/server.crt -keyout /pg_mon/server.key -subj "/CN=pg-mon.ru-central1.internal"
+           22:23:05 14522 INFO  Started pg_autoctl postgres service with pid 14543
+           22:23:05 14543 INFO   /usr/bin/pg_autoctl do service postgres --pgdata /pg_mon -v
+           22:23:05 14522 INFO  Started pg_autoctl monitor-init service with pid 14544
+           22:23:05 14549 INFO   /usr/lib/postgresql/15/bin/postgres -D /pg_mon -p 6000 -h *
+           22:23:05 14543 INFO  Postgres is now serving PGDATA "/pg_mon" on port 6000 with pid 14549
+           22:23:06 14544 WARN  NOTICE:  installing required extension "btree_gist"
+           22:23:06 14544 INFO  Granting connection privileges on 10.129.0.0/24
+           22:23:06 14544 WARN  Skipping HBA edits (per --skip-pg-hba) for rule: hostssl "pg_auto_failover" "autoctl_node" 10.129.0.0/24 trust
+           22:23:06 14544 INFO  Your pg_auto_failover monitor instance is now ready on port 6000.
+           22:23:06 14544 INFO  Monitor has been successfully initialized.
+           22:23:06 14522 WARN  pg_autoctl service monitor-init exited with exit status 0
+           22:23:06 14543 INFO  Postgres controller service received signal SIGTERM, terminating
+           22:23:06 14543 INFO  Stopping pg_autoctl postgres service
+           22:23:06 14543 INFO  /usr/lib/postgresql/15/bin/pg_ctl --pgdata /pg_mon --wait stop --mode fast
+           22:23:06 14522 INFO  Waiting for subprocesses to terminate.
+           22:23:07 14522 INFO  Stop pg_autoctl
+           postgres@pg-mon:~$ 
+           ```
+       * Создаем и запускаем сервис
+           ```console
+           root@pg-mon:~# pg_autoctl show systemd --pgdata /pg_mon
+           22:09:25 14317 INFO  HINT: to complete a systemd integration, run the following commands (as root):
+           22:09:25 14317 INFO  pg_autoctl -q show systemd --pgdata "/pg_mon" | tee /etc/systemd/system/pgautofailover.service
+           22:09:25 14317 INFO  systemctl daemon-reload
+           22:09:25 14317 INFO  systemctl enable pgautofailover
+           22:09:25 14317 INFO  systemctl start pgautofailover
+           [Unit]
+           Description = pg_auto_failover
+           
+           [Service]
+           WorkingDirectory = /var/lib/postgresql
+           Environment = 'PGDATA=/pg_mon'
+           User = postgres
+           ExecStart = /usr/bin/pg_autoctl run
+           Restart = always
+           StartLimitBurst = 0
+           ExecReload = /usr/bin/pg_autoctl reload
+           
+           [Install]
+           WantedBy = multi-user.target
+           root@pg-mon:~#
+           root@pg-mon:~# vim /etc/systemd/system/pgautofailover.service
+           root@pg-mon:~# 
+           root@pg-mon:~# systemctl daemon-reload
+           root@pg-mon:~# systemctl enable pgautofailover
+           Created symlink /etc/systemd/system/multi-user.target.wants/pgautofailover.service → /etc/systemd/system/pgautofailover.service.
+           root@pg-mon:~# systemctl start pgautofailover
+           ```
+           
+       * Создаем пользователя для управления
+           ```console
+           postgres@pg-mon:~$ psql -p 6000 -c "alter user autoctl_node password 'zxcasdqwe'"
+           ALTER ROLE
+           postgres@pg-mon:~$ 
+           ```
+
+       * Добавляем доступ для `10.129.0.0/24` в `pg_hba.conf`
+         * host    all             all             10.129.0.0/24            trust 
+           ```console
+           postgres@pg-mon:~$ vim /pg_mon/pg_hba.conf 
+           postgres@pg-mon:~$ 
+           postgres@pg-mon:~$ 
+           postgres@pg-mon:~$ psql -p 6000 -c "select pg_reload_conf()"
+            pg_reload_conf 
+           ----------------
+            t
+           (1 row)
+           
+           postgres@pg-mon:~$ 
+           ```           
+
+       * Смотрим статус кластера
+           ```console
+           postgres@pg-mon:~$ pg_autoctl show state
+           Name |  Node |  Host:Port |  TLI: LSN |   Connection |      Reported State |      Assigned State
+           -----+-------+------------+-----------+--------------+---------------------+--------------------
+           
+           postgres@pg-mon:~$ 
+           ```
        * С
            ```console
            ```
