@@ -357,7 +357,6 @@
          ```
 
        * Устанавливаем pg_auto_failover
-         <pre><details><summary>Вывод терминала</summary>
            ```console
            ubuntu@pg-mon:~$ sudo apt-get install postgresql-15-auto-failover -y
            Reading package lists... Done
@@ -392,4 +391,3 @@
            Processing triggers for man-db (2.9.1-1) ...
            ubuntu@pg-mon:~$ 
            ```
-       </details></pre> 
