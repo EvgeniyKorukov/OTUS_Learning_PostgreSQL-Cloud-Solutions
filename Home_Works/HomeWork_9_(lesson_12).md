@@ -21,15 +21,51 @@
     * Индивидуальные параметры каждой ВМ:
         :hammer_and_wrench: Название ВМ | :memo: Внутренний IPv4 | Описание |
         --------------:|---------------|---------------|
-        | **`pg_srv1`** | `10.129.0.21` | Сервер с СУБД Potgres |
-        | **`pg_srv2`** | `10.129.0.22` | Сервер с СУБД Potgres |      
-        | **`pg_mon`** | `10.129.0.23` | Сервер `monitor` для [pg_auto_failover](https://github.com/hapostgres/pg_auto_failover) |
-     * На каждой ВМ устанавливаем ...
-       ```bash
-       sudo apt update && sudo apt upgrade -y 
+        | **`pg-srv1`** | `10.129.0.21` | Сервер с СУБД Potgres |
+        | **`pg-srv2`** | `10.129.0.22` | Сервер с СУБД Potgres |      
+        | **`pg-mon`** | `10.129.0.23` | Сервер `monitor` для [pg_auto_failover](https://github.com/hapostgres/pg_auto_failover) |
+     * Создание ВМ `pg-srv1`
+       ```console
+       yc compute instance create \
+         --name pg-srv1 \
+         --hostname pg-srv1 \
+         --cores 2 \
+         --memory 2 \
+         --create-boot-disk size=5G,type=network-ssd,image-folder-id=standard-images,image-family=ubuntu-2004-lts \
+         --network-interface subnet-name=default-ru-central1-b,nat-ip-version=ipv4,ipv4-address=10.129.0.21 \
+         --zone ru-central1-b \
+         --core-fraction 20 \
+         --preemptible \
+         --metadata-from-file ssh-keys=/home/eugink/.ssh/eugin_yandex_key.pub
        ```
-
-
+     * Создание ВМ `pg-srv2`
+       ```console
+       yc compute instance create \
+         --name pg-srv2 \
+         --hostname pg-srv2 \
+         --cores 2 \
+         --memory 2 \
+         --create-boot-disk size=5G,type=network-ssd,image-folder-id=standard-images,image-family=ubuntu-2004-lts \
+         --network-interface subnet-name=default-ru-central1-b,nat-ip-version=ipv4,ipv4-address=10.129.0.22 \
+         --zone ru-central1-b \
+         --core-fraction 20 \
+         --preemptible \
+         --metadata-from-file ssh-keys=/home/eugink/.ssh/eugin_yandex_key.pub
+       ```
+     * Создание ВМ `pg-mon`
+       ```console
+       yc compute instance create \
+         --name pg-mon \
+         --hostname pg-mon \
+         --cores 2 \
+         --memory 2 \
+         --create-boot-disk size=5G,type=network-ssd,image-folder-id=standard-images,image-family=ubuntu-2004-lts \
+         --network-interface subnet-name=default-ru-central1-b,nat-ip-version=ipv4,ipv4-address=10.129.0.23 \
+         --zone ru-central1-b \
+         --core-fraction 20 \
+         --preemptible \
+         --metadata-from-file ssh-keys=/home/eugink/.ssh/eugin_yandex_key.pub
+       ```
 
 
 ***
