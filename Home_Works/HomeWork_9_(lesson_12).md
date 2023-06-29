@@ -390,7 +390,7 @@
            Processing triggers for man-db (2.9.1-1) ...
            ubuntu@pg-mon:~$ 
            ```
-       * Создаем рабочий каталог+прописываем их в `~/.profile`+прминяем их
+       * Создаем рабочий каталог+прописываем их в `~/.profile`+применяем их
            ```console
            ubuntu@pg-mon:~$ 
            ubuntu@pg-mon:~$ sudo mkdir /pg_mon && sudo chown -R postgres:postgres /pg_mon
