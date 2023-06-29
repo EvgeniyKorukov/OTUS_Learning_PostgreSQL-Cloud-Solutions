@@ -414,30 +414,29 @@
            ```
        * Инициализируем `pg-auto-failover`
            ```console
-           postgres@pg-mon:~$ 
-           postgres@pg-mon:~$ pg_autoctl create monitor --auth trust --ssl-mode require --ssl-self-signed --pgport 5432 --hostname `hostname -a`
-           21:58:43 14091 INFO  Using --ssl-self-signed: pg_autoctl will create self-signed certificates, allowing for encrypted network traffic
-           21:58:43 14091 WARN  Self-signed certificates provide protection against eavesdropping; this setup does NOT protect against Man-In-The-Middle attacks nor Impersonation attacks.
-           21:58:43 14091 WARN  See https://www.postgresql.org/docs/current/libpq-ssl.html for details
-           21:58:43 14091 INFO  Initialising a PostgreSQL cluster at "/pg_mon"
-           21:58:43 14091 INFO  /usr/lib/postgresql/15/bin/pg_ctl initdb -s -D /pg_mon --option '--auth=trust'
-           21:58:46 14091 INFO   /usr/bin/openssl req -new -x509 -days 365 -nodes -text -out /pg_mon/server.crt -keyout /pg_mon/server.key -subj "/CN=pg-mon"
-           21:58:47 14091 INFO  Started pg_autoctl postgres service with pid 14111
-           21:58:47 14111 INFO   /usr/bin/pg_autoctl do service postgres --pgdata /pg_mon -v
-           21:58:47 14091 INFO  Started pg_autoctl monitor-init service with pid 14112
-           21:58:47 14117 INFO   /usr/lib/postgresql/15/bin/postgres -D /pg_mon -p 5432 -h *
-           21:58:47 14111 INFO  Postgres is now serving PGDATA "/pg_mon" on port 5432 with pid 14117
-           21:58:47 14112 WARN  NOTICE:  installing required extension "btree_gist"
-           21:58:47 14112 INFO  Granting connection privileges on 10.129.0.0/24
-           21:58:47 14112 WARN  Skipping HBA edits (per --skip-pg-hba) for rule: hostssl "pg_auto_failover" "autoctl_node" 10.129.0.0/24 trust
-           21:58:47 14112 INFO  Your pg_auto_failover monitor instance is now ready on port 5432.
-           21:58:47 14112 INFO  Monitor has been successfully initialized.
-           21:58:47 14091 WARN  pg_autoctl service monitor-init exited with exit status 0
-           21:58:47 14111 INFO  Postgres controller service received signal SIGTERM, terminating
-           21:58:47 14111 INFO  Stopping pg_autoctl postgres service
-           21:58:47 14111 INFO  /usr/lib/postgresql/15/bin/pg_ctl --pgdata /pg_mon --wait stop --mode fast
-           21:58:47 14091 INFO  Waiting for subprocesses to terminate.
-           21:58:48 14091 INFO  Stop pg_autoctl
+           postgres@pg-mon:~$ pg_autoctl create monitor --auth trust --ssl-mode require --ssl-self-signed --pgport 6000 --hostname `hostname --fqdn`
+           22:23:01 14522 INFO  Using --ssl-self-signed: pg_autoctl will create self-signed certificates, allowing for encrypted network traffic
+           22:23:01 14522 WARN  Self-signed certificates provide protection against eavesdropping; this setup does NOT protect against Man-In-The-Middle attacks nor Impersonation attacks.
+           22:23:01 14522 WARN  See https://www.postgresql.org/docs/current/libpq-ssl.html for details
+           22:23:01 14522 INFO  Initialising a PostgreSQL cluster at "/pg_mon"
+           22:23:01 14522 INFO  /usr/lib/postgresql/15/bin/pg_ctl initdb -s -D /pg_mon --option '--auth=trust'
+           22:23:05 14522 INFO   /usr/bin/openssl req -new -x509 -days 365 -nodes -text -out /pg_mon/server.crt -keyout /pg_mon/server.key -subj "/CN=pg-mon.ru-central1.internal"
+           22:23:05 14522 INFO  Started pg_autoctl postgres service with pid 14543
+           22:23:05 14543 INFO   /usr/bin/pg_autoctl do service postgres --pgdata /pg_mon -v
+           22:23:05 14522 INFO  Started pg_autoctl monitor-init service with pid 14544
+           22:23:05 14549 INFO   /usr/lib/postgresql/15/bin/postgres -D /pg_mon -p 6000 -h *
+           22:23:05 14543 INFO  Postgres is now serving PGDATA "/pg_mon" on port 6000 with pid 14549
+           22:23:06 14544 WARN  NOTICE:  installing required extension "btree_gist"
+           22:23:06 14544 INFO  Granting connection privileges on 10.129.0.0/24
+           22:23:06 14544 WARN  Skipping HBA edits (per --skip-pg-hba) for rule: hostssl "pg_auto_failover" "autoctl_node" 10.129.0.0/24 trust
+           22:23:06 14544 INFO  Your pg_auto_failover monitor instance is now ready on port 6000.
+           22:23:06 14544 INFO  Monitor has been successfully initialized.
+           22:23:06 14522 WARN  pg_autoctl service monitor-init exited with exit status 0
+           22:23:06 14543 INFO  Postgres controller service received signal SIGTERM, terminating
+           22:23:06 14543 INFO  Stopping pg_autoctl postgres service
+           22:23:06 14543 INFO  /usr/lib/postgresql/15/bin/pg_ctl --pgdata /pg_mon --wait stop --mode fast
+           22:23:06 14522 INFO  Waiting for subprocesses to terminate.
+           22:23:07 14522 INFO  Stop pg_autoctl
            postgres@pg-mon:~$ 
            ```
        * Создаем и запускаем сервис
@@ -473,11 +472,34 @@
            
        * Создаем пользователя для управления
            ```console
-           postgres@pg-mon:~$ psql -c "alter user autoctl_node password 'zxcasdqwe'"
+           postgres@pg-mon:~$ psql -p 6000 -c "alter user autoctl_node password 'zxcasdqwe'"
            ALTER ROLE
            postgres@pg-mon:~$ 
            ```
 
+       * Добавляем доступ для `10.129.0.0/24` в `pg_hba.conf`
+         * host    all             all             10.129.0.0/24            trust 
+           ```console
+           postgres@pg-mon:~$ vim /pg_mon/pg_hba.conf 
+           postgres@pg-mon:~$ 
+           postgres@pg-mon:~$ 
+           postgres@pg-mon:~$ psql -p 6000 -c "select pg_reload_conf()"
+            pg_reload_conf 
+           ----------------
+            t
+           (1 row)
+           
+           postgres@pg-mon:~$ 
+           ```           
+
        * С
            ```console
-           ```           
+           ```
+
+       * С
+           ```console
+           ```
+
+       * С
+           ```console
+           ```                       
