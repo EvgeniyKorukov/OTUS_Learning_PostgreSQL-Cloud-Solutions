@@ -555,10 +555,10 @@
              
        * Создаем рабочий каталог+прописываем их в `~/.profile`+применяем их
            ```console
-           sudo mkdir /pg_data && sudo chown -R postgres:postgres /pg_data
            sudo su - postgres
+           mkdir pg_data
            echo "export PATH=/usr/lib/postgresql/15/bin/:$PATH" >> .profile
-           echo "export PGDATA=/pg_data" >> .profile
+           echo "export PGDATA=/var/lib/postgresql/pg_data" >> .profile
            . ~/.profile 
            ```
        * Инициализируем кластер  `pg-auto-failover`
