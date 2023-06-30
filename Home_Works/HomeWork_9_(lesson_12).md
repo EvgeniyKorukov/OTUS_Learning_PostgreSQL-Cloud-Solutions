@@ -3,6 +3,7 @@
 ***
 
 > ### Вариант 2 Introducing pg_auto_failover: Open source extension for automated failover and high-availability in PostgreSQL
+***
   * Создаем 3 ВМ в YandexCloud (postgres*2+1 monitor)
     * Общие параметры для всех 3х ВМ с фиксированным внутренним IPv4. 
          :hammer_and_wrench: Параметр | :memo: Значение |
@@ -66,8 +67,9 @@
          --preemptible \
          --metadata-from-file ssh-keys=/home/eugink/.ssh/eugin_yandex_key.pub
        ```
+***
 
-     * Настройка ВМ `pg-mon`
+  * Настройка ВМ `pg-mon`
        * Устанавливаем PostgreSQL 15
          <pre><details><summary>Вывод терминала</summary>
          ubuntu@pg-mon:~$ sudo apt update && sudo apt upgrade -y && sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list' && wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add - && sudo apt-get update
@@ -503,7 +505,7 @@
            ```
 ***
 
-     * Настройка ВМ `pg-srv1` и `pg-srv2`
+  * Настройка ВМ `pg-srv1` и `pg-srv2`
        * Устанавливаем PostgreSQL 15
          ```console
          sudo apt update && sudo apt upgrade -y && sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list' && wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add - && sudo apt-get update && sudo apt-get -y install postgresql-15
