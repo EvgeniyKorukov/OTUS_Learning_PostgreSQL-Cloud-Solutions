@@ -391,9 +391,10 @@
            ubuntu@pg-mon:~$ 
            ```
        * Правим /etc/hosts
-         * 10.129.0.21 pg-srv1.ru-central1.internal pg-srv1
-         * 10.129.0.22 pg-srv2.ru-central1.internal pg-srv2
-         * 10.129.0.23 pg-mon.ru-central1.internal pg-mon
+         * `10.129.0.21 pg-srv1.ru-central1.internal pg-srv1`
+         * `10.129.0.22 pg-srv2.ru-central1.internal pg-srv2`
+         * `127.0.1.1. pg-mon.ru-central1.internal pg-mon` -> `10.129.0.23 pg-mon.ru-central1.internal pg-mon`
+
 
              
        * Создаем рабочий каталог+прописываем их в `~/.profile`+применяем их
@@ -414,29 +415,29 @@
            ```
        * Инициализируем `pg-auto-failover`
            ```console
-           postgres@pg-mon:~$ pg_autoctl create monitor --auth trust --ssl-mode require --ssl-self-signed --pgport 6000 --hostname `hostname --fqdn`
-           22:23:01 14522 INFO  Using --ssl-self-signed: pg_autoctl will create self-signed certificates, allowing for encrypted network traffic
-           22:23:01 14522 WARN  Self-signed certificates provide protection against eavesdropping; this setup does NOT protect against Man-In-The-Middle attacks nor Impersonation attacks.
-           22:23:01 14522 WARN  See https://www.postgresql.org/docs/current/libpq-ssl.html for details
-           22:23:01 14522 INFO  Initialising a PostgreSQL cluster at "/pg_mon"
-           22:23:01 14522 INFO  /usr/lib/postgresql/15/bin/pg_ctl initdb -s -D /pg_mon --option '--auth=trust'
-           22:23:05 14522 INFO   /usr/bin/openssl req -new -x509 -days 365 -nodes -text -out /pg_mon/server.crt -keyout /pg_mon/server.key -subj "/CN=pg-mon.ru-central1.internal"
-           22:23:05 14522 INFO  Started pg_autoctl postgres service with pid 14543
-           22:23:05 14543 INFO   /usr/bin/pg_autoctl do service postgres --pgdata /pg_mon -v
-           22:23:05 14522 INFO  Started pg_autoctl monitor-init service with pid 14544
-           22:23:05 14549 INFO   /usr/lib/postgresql/15/bin/postgres -D /pg_mon -p 6000 -h *
-           22:23:05 14543 INFO  Postgres is now serving PGDATA "/pg_mon" on port 6000 with pid 14549
-           22:23:06 14544 WARN  NOTICE:  installing required extension "btree_gist"
-           22:23:06 14544 INFO  Granting connection privileges on 10.129.0.0/24
-           22:23:06 14544 WARN  Skipping HBA edits (per --skip-pg-hba) for rule: hostssl "pg_auto_failover" "autoctl_node" 10.129.0.0/24 trust
-           22:23:06 14544 INFO  Your pg_auto_failover monitor instance is now ready on port 6000.
-           22:23:06 14544 INFO  Monitor has been successfully initialized.
-           22:23:06 14522 WARN  pg_autoctl service monitor-init exited with exit status 0
-           22:23:06 14543 INFO  Postgres controller service received signal SIGTERM, terminating
-           22:23:06 14543 INFO  Stopping pg_autoctl postgres service
-           22:23:06 14543 INFO  /usr/lib/postgresql/15/bin/pg_ctl --pgdata /pg_mon --wait stop --mode fast
-           22:23:06 14522 INFO  Waiting for subprocesses to terminate.
-           22:23:07 14522 INFO  Stop pg_autoctl
+           postgres@pg-mon:~$ pg_autoctl create monitor --auth trust --ssl-mode require --ssl-self-signed --pgport 6000 --hostname `hostname -s` --pgdata /pg_mon --pgctl /usr/lib/postgresql/15/bin/pg_ctl 
+           12:06:41 13946 INFO  Using --ssl-self-signed: pg_autoctl will create self-signed certificates, allowing for encrypted network traffic
+           12:06:41 13946 WARN  Self-signed certificates provide protection against eavesdropping; this setup does NOT protect against Man-In-The-Middle attacks nor Impersonation attacks.
+           12:06:41 13946 WARN  See https://www.postgresql.org/docs/current/libpq-ssl.html for details
+           12:06:41 13946 INFO  Initialising a PostgreSQL cluster at "/pg_mon"
+           12:06:41 13946 INFO  /usr/lib/postgresql/15/bin/pg_ctl initdb -s -D /pg_mon --option '--auth=trust'
+           12:06:45 13946 INFO   /usr/bin/openssl req -new -x509 -days 365 -nodes -text -out /pg_mon/server.crt -keyout /pg_mon/server.key -subj "/CN=pg-mon"
+           12:06:45 13946 INFO  Started pg_autoctl postgres service with pid 13968
+           12:06:45 13968 INFO   /usr/bin/pg_autoctl do service postgres --pgdata /pg_mon -v
+           12:06:45 13946 INFO  Started pg_autoctl monitor-init service with pid 13969
+           12:06:45 13974 INFO   /usr/lib/postgresql/15/bin/postgres -D /pg_mon -p 6000 -h *
+           12:06:45 13968 INFO  Postgres is now serving PGDATA "/pg_mon" on port 6000 with pid 13974
+           12:06:45 13969 WARN  NOTICE:  installing required extension "btree_gist"
+           12:06:45 13969 INFO  Granting connection privileges on 10.129.0.0/24
+           12:06:45 13969 WARN  Skipping HBA edits (per --skip-pg-hba) for rule: hostssl "pg_auto_failover" "autoctl_node" 10.129.0.0/24 trust
+           12:06:45 13969 INFO  Your pg_auto_failover monitor instance is now ready on port 6000.
+           12:06:45 13969 INFO  Monitor has been successfully initialized.
+           12:06:45 13946 WARN  pg_autoctl service monitor-init exited with exit status 0
+           12:06:45 13968 INFO  Postgres controller service received signal SIGTERM, terminating
+           12:06:45 13968 INFO  Stopping pg_autoctl postgres service
+           12:06:45 13968 INFO  /usr/lib/postgresql/15/bin/pg_ctl --pgdata /pg_mon --wait stop --mode fast
+           12:06:46 13946 INFO  Waiting for subprocesses to terminate.
+           12:06:46 13946 INFO  Stop pg_autoctl
            postgres@pg-mon:~$ 
            ```
        * Создаем и запускаем сервис
@@ -477,7 +478,7 @@
            postgres@pg-mon:~$ 
            ```
 
-       * Добавляем доступ для `10.129.0.0/24` в `pg_hba.conf`
+       * ?Добавляем доступ для `10.129.0.0/24` в `pg_hba.conf`
          * host    all             all             10.129.0.0/24            trust 
            ```console
            postgres@pg-mon:~$ vim /pg_mon/pg_hba.conf 
@@ -500,7 +501,7 @@
            
            postgres@pg-mon:~$ 
            ```
-
+***
 
      * Настройка ВМ `pg-srv1` и `pg-srv2`
        * Устанавливаем PostgreSQL 15
