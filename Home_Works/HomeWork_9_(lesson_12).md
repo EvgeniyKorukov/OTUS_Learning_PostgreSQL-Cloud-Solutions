@@ -503,6 +503,17 @@
            
            postgres@pg-mon:~$ 
            ```
+       * Получаем строку подключения к монитору
+           ```console
+           postgres@pg-mon:~$ pg_autoctl show uri 
+                   Type |    Name | Connection String
+           -------------+---------+-------------------------------
+                monitor | monitor | postgres://autoctl_node@pg-mon:6000/pg_auto_failover?sslmode=require
+              formation | default | 
+           
+           postgres@pg-mon:~$ 
+           ```           
+           
 ***
 
   * Настройка ВМ `pg-srv1` и `pg-srv2`
@@ -511,6 +522,7 @@
          ```console
          sudo apt update && sudo apt upgrade -y && sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list' && wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add - && sudo apt-get update && sudo apt-get -y install postgresql-15
          ```
+         
        * Удаляем кластер, который создавался автоматически
          ```console
          sudo pg_dropcluster 15 main --stop
@@ -521,9 +533,9 @@
          sudo apt-get install postgresql-15-auto-failover -y
          ```
        * Правим /etc/hosts
-         * 10.129.0.21 pg-srv1.ru-central1.internal pg-srv1
-         * 10.129.0.22 pg-srv2.ru-central1.internal pg-srv2
-         * 10.129.0.23 pg-mon.ru-central1.internal pg-mon
+         * `127.0.1.1 pg-srv1.ru-central1.internal pg-srv1` > `10.129.0.21 pg-srv1.ru-central1.internal pg-srv1`
+         * `127.0.1.1 pg-srv2.ru-central1.internal pg-srv2` > `10.129.0.22 pg-srv2.ru-central1.internal pg-srv2`
+         * `10.129.0.23 pg-mon.ru-central1.internal pg-mon`
 
              
        * Создаем рабочий каталог+прописываем их в `~/.profile`+применяем их
