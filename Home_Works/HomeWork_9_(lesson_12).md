@@ -72,30 +72,36 @@
   * Настройка ВМ `pg-mon`
        * Устанавливаем PostgreSQL 15
          <pre><details><summary>Вывод терминала</summary>
-         ubuntu@pg-mon:~$ sudo apt update && sudo apt upgrade -y && sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list' && wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add - && sudo apt-get update
+         ubuntu@pg-mon:~$ sudo apt update && sudo apt upgrade -y && sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list' && wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add - && sudo apt-get update && sudo apt-get -y install postgresql-15
          Hit:1 http://mirror.yandex.ru/ubuntu focal InRelease
          Get:2 http://mirror.yandex.ru/ubuntu focal-updates InRelease [114 kB]
          Get:3 http://mirror.yandex.ru/ubuntu focal-backports InRelease [108 kB]
-         Get:4 http://mirror.yandex.ru/ubuntu focal-updates/main amd64 Packages [2,678 kB]
-         Get:5 http://mirror.yandex.ru/ubuntu focal-updates/main i386 Packages [848 kB]
-         Get:6 http://mirror.yandex.ru/ubuntu focal-updates/main Translation-en [447 kB]
-         Get:7 http://mirror.yandex.ru/ubuntu focal-updates/main amd64 c-n-f Metadata [16.9 kB]
-         Get:8 http://mirror.yandex.ru/ubuntu focal-updates/restricted amd64 Packages [2,045 kB]
-         Get:9 http://mirror.yandex.ru/ubuntu focal-updates/restricted Translation-en [286 kB]
-         Get:10 http://mirror.yandex.ru/ubuntu focal-updates/universe amd64 Packages [1,079 kB]
-         Get:11 http://mirror.yandex.ru/ubuntu focal-updates/universe i386 Packages [734 kB]
-         Get:12 http://mirror.yandex.ru/ubuntu focal-updates/universe Translation-en [257 kB]
-         Get:13 http://security.ubuntu.com/ubuntu focal-security InRelease [114 kB]                    
-         Get:14 http://security.ubuntu.com/ubuntu focal-security/main amd64 Packages [2,296 kB]
-         Get:15 http://security.ubuntu.com/ubuntu focal-security/main i386 Packages [618 kB]           
-         Get:16 http://security.ubuntu.com/ubuntu focal-security/main Translation-en [365 kB]          
-         Get:17 http://security.ubuntu.com/ubuntu focal-security/main amd64 c-n-f Metadata [13.0 kB]   
-         Get:18 http://security.ubuntu.com/ubuntu focal-security/restricted amd64 Packages [1,937 kB]  
-         Get:19 http://security.ubuntu.com/ubuntu focal-security/restricted Translation-en [271 kB]    
-         Get:20 http://security.ubuntu.com/ubuntu focal-security/universe amd64 Packages [851 kB]      
-         Get:21 http://security.ubuntu.com/ubuntu focal-security/universe i386 Packages [603 kB]       
-         Get:22 http://security.ubuntu.com/ubuntu focal-security/universe Translation-en [176 kB]      
-         Fetched 15.9 MB in 32s (495 kB/s)                                                             
+         Get:4 http://security.ubuntu.com/ubuntu focal-security InRelease [114 kB]
+         Get:5 http://mirror.yandex.ru/ubuntu focal-updates/main amd64 Packages [2,678 kB]
+         Get:6 http://mirror.yandex.ru/ubuntu focal-updates/main i386 Packages [848 kB]
+         Get:7 http://mirror.yandex.ru/ubuntu focal-updates/main Translation-en [447 kB]
+         Get:8 http://mirror.yandex.ru/ubuntu focal-updates/main amd64 c-n-f Metadata [16.9 kB]
+         Get:9 http://mirror.yandex.ru/ubuntu focal-updates/restricted amd64 Packages [2,061 kB]
+         Get:10 http://mirror.yandex.ru/ubuntu focal-updates/restricted i386 Packages [32.2 kB]
+         Get:11 http://mirror.yandex.ru/ubuntu focal-updates/restricted Translation-en [288 kB]
+         Get:12 http://mirror.yandex.ru/ubuntu focal-updates/restricted amd64 c-n-f Metadata [524 B]
+         Get:13 http://mirror.yandex.ru/ubuntu focal-updates/universe i386 Packages [734 kB]
+         Get:14 http://mirror.yandex.ru/ubuntu focal-updates/universe amd64 Packages [1,079 kB]
+         Get:15 http://mirror.yandex.ru/ubuntu focal-updates/universe Translation-en [257 kB]
+         Get:16 http://mirror.yandex.ru/ubuntu focal-updates/multiverse i386 Packages [8,700 B]
+         Get:17 http://mirror.yandex.ru/ubuntu focal-updates/multiverse amd64 Packages [31.1 kB]
+         Get:18 http://mirror.yandex.ru/ubuntu focal-updates/multiverse Translation-en [8,088 B]
+         Get:19 http://mirror.yandex.ru/ubuntu focal-updates/multiverse amd64 c-n-f Metadata [688 B]
+         Get:20 http://security.ubuntu.com/ubuntu focal-security/main amd64 Packages [2,296 kB]
+         Get:21 http://security.ubuntu.com/ubuntu focal-security/main i386 Packages [618 kB]
+         Get:22 http://security.ubuntu.com/ubuntu focal-security/main Translation-en [365 kB]
+         Get:23 http://security.ubuntu.com/ubuntu focal-security/main amd64 c-n-f Metadata [13.0 kB]
+         Get:24 http://security.ubuntu.com/ubuntu focal-security/restricted amd64 Packages [1,937 kB]
+         Get:25 http://security.ubuntu.com/ubuntu focal-security/restricted Translation-en [271 kB]
+         Get:26 http://security.ubuntu.com/ubuntu focal-security/universe amd64 Packages [851 kB]
+         Get:27 http://security.ubuntu.com/ubuntu focal-security/universe i386 Packages [603 kB]
+         Get:28 http://security.ubuntu.com/ubuntu focal-security/universe Translation-en [176 kB]
+         Fetched 16.0 MB in 3s (5,107 kB/s)                                
          Reading package lists... Done
          Building dependency tree       
          Reading state information... Done
@@ -105,8 +111,8 @@
          Reading state information... Done
          Calculating upgrade... Done
          The following NEW packages will be installed:
-           linux-headers-5.4.0-153 linux-headers-5.4.0-153-generic linux-image-5.4.0-153-generic
-           linux-modules-5.4.0-153-generic linux-modules-extra-5.4.0-153-generic
+           linux-headers-5.4.0-153 linux-headers-5.4.0-153-generic linux-image-5.4.0-153-generic linux-modules-5.4.0-153-generic
+           linux-modules-extra-5.4.0-153-generic
          The following packages will be upgraded:
            accountsservice libaccountsservice0 linux-generic linux-headers-generic linux-image-generic
          5 upgraded, 5 newly installed, 0 to remove and 0 not upgraded.
@@ -117,13 +123,13 @@
          Get:2 http://mirror.yandex.ru/ubuntu focal-updates/main amd64 libaccountsservice0 amd64 0.6.55-0ubuntu12~20.04.6 [72.7 kB]
          Get:3 http://mirror.yandex.ru/ubuntu focal-updates/main amd64 linux-modules-5.4.0-153-generic amd64 5.4.0-153.170 [15.0 MB]
          Get:4 http://mirror.yandex.ru/ubuntu focal-updates/main amd64 linux-image-5.4.0-153-generic amd64 5.4.0-153.170 [10.5 MB]
-         Get:5 http://mirror.yandex.ru/ubuntu focal-updates/main amd64 linux-modules-extra-5.4.0-153-generic amd64 5.4.0-153.170 [39.2 MB]
-         Get:6 http://mirror.yandex.ru/ubuntu focal-updates/main amd64 linux-generic amd64 5.4.0.153.150 [1,904 B]          
-         Get:7 http://mirror.yandex.ru/ubuntu focal-updates/main amd64 linux-image-generic amd64 5.4.0.153.150 [2,604 B]    
-         Get:8 http://mirror.yandex.ru/ubuntu focal-updates/main amd64 linux-headers-5.4.0-153 all 5.4.0-153.170 [11.0 MB]  
-         Get:9 http://mirror.yandex.ru/ubuntu focal-updates/main amd64 linux-headers-5.4.0-153-generic amd64 5.4.0-153.170 [1,363 kB]
-         Get:10 http://mirror.yandex.ru/ubuntu focal-updates/main amd64 linux-headers-generic amd64 5.4.0.153.150 [2,464 B] 
-         Fetched 77.3 MB in 21s (3,629 kB/s)                                                                                
+         Get:5 http://mirror.yandex.ru/ubuntu focal-updates/main amd64 linux-modules-extra-5.4.0-153-generic amd64 5.4.0-153.170 [39.2 MB]                 
+         Get:6 http://mirror.yandex.ru/ubuntu focal-updates/main amd64 linux-generic amd64 5.4.0.153.150 [1,904 B]                                         
+         Get:7 http://mirror.yandex.ru/ubuntu focal-updates/main amd64 linux-image-generic amd64 5.4.0.153.150 [2,604 B]                                   
+         Get:8 http://mirror.yandex.ru/ubuntu focal-updates/main amd64 linux-headers-5.4.0-153 all 5.4.0-153.170 [11.0 MB]                                 
+         Get:9 http://mirror.yandex.ru/ubuntu focal-updates/main amd64 linux-headers-5.4.0-153-generic amd64 5.4.0-153.170 [1,363 kB]                      
+         Get:10 http://mirror.yandex.ru/ubuntu focal-updates/main amd64 linux-headers-generic amd64 5.4.0.153.150 [2,464 B]                                
+         Fetched 77.3 MB in 15s (5,142 kB/s)                                                                                                               
          (Reading database ... 102594 files and directories currently installed.)
          Preparing to unpack .../0-accountsservice_0.6.55-0ubuntu12~20.04.6_amd64.deb ...
          Unpacking accountsservice (0.6.55-0ubuntu12~20.04.6) over (0.6.55-0ubuntu12~20.04.5) ...
@@ -182,46 +188,44 @@
          done
          OK
          Hit:1 http://mirror.yandex.ru/ubuntu focal InRelease
-         Hit:2 http://mirror.yandex.ru/ubuntu focal-updates InRelease                              
-         Hit:3 http://mirror.yandex.ru/ubuntu focal-backports InRelease                            
-         Get:4 http://apt.postgresql.org/pub/repos/apt focal-pgdg InRelease [117 kB]                              
-         Get:5 http://security.ubuntu.com/ubuntu focal-security InRelease [114 kB]                                
+         Hit:2 http://mirror.yandex.ru/ubuntu focal-updates InRelease                                           
+         Hit:3 http://mirror.yandex.ru/ubuntu focal-backports InRelease                                         
+         Get:4 http://apt.postgresql.org/pub/repos/apt focal-pgdg InRelease [123 kB]                            
+         Hit:5 http://security.ubuntu.com/ubuntu focal-security InRelease                                       
          Get:6 http://apt.postgresql.org/pub/repos/apt focal-pgdg/main amd64 Packages [265 kB]
-         Fetched 496 kB in 1s (632 kB/s)   
+         Fetched 388 kB in 1s (504 kB/s)   
          Reading package lists... Done
          N: Skipping acquire of configured file 'main/binary-i386/Packages' as repository 'http://apt.postgresql.org/pub/repos/apt focal-pgdg InRelease' doesn't support architecture 'i386'
-         ubuntu@pg-mon:~$ sudo apt-get -y install postgresql-15
          Reading package lists... Done
          Building dependency tree       
          Reading state information... Done
          The following packages were automatically installed and are no longer required:
-           linux-headers-5.4.0-42 linux-headers-5.4.0-42-generic linux-image-5.4.0-42-generic
-           linux-modules-5.4.0-42-generic linux-modules-extra-5.4.0-42-generic
+           linux-headers-5.4.0-42 linux-headers-5.4.0-42-generic linux-image-5.4.0-42-generic linux-modules-5.4.0-42-generic
+           linux-modules-extra-5.4.0-42-generic
          Use 'sudo apt autoremove' to remove them.
          The following additional packages will be installed:
-           libcommon-sense-perl libgdbm-compat4 libjson-perl libjson-xs-perl libllvm10 libperl5.30 libpq5 libsensors-config
-           libsensors5 libtypes-serialiser-perl libxslt1.1 perl perl-modules-5.30 postgresql-client-15
-           postgresql-client-common postgresql-common ssl-cert sysstat
+           libcommon-sense-perl libgdbm-compat4 libjson-perl libjson-xs-perl libllvm10 libperl5.30 libpq5 libsensors-config libsensors5
+           libtypes-serialiser-perl libxslt1.1 perl perl-modules-5.30 postgresql-client-15 postgresql-client-common postgresql-common ssl-cert sysstat
          Suggested packages:
-           lm-sensors perl-doc libterm-readline-gnu-perl | libterm-readline-perl-perl make libb-debug-perl
-           liblocale-codes-perl postgresql-doc-15 openssl-blacklist isag
+           lm-sensors perl-doc libterm-readline-gnu-perl | libterm-readline-perl-perl make libb-debug-perl liblocale-codes-perl postgresql-doc-15
+           openssl-blacklist isag
          The following NEW packages will be installed:
-           libcommon-sense-perl libgdbm-compat4 libjson-perl libjson-xs-perl libllvm10 libperl5.30 libpq5 libsensors-config
-           libsensors5 libtypes-serialiser-perl libxslt1.1 perl perl-modules-5.30 postgresql-15 postgresql-client-15
-           postgresql-client-common postgresql-common ssl-cert sysstat
+           libcommon-sense-perl libgdbm-compat4 libjson-perl libjson-xs-perl libllvm10 libperl5.30 libpq5 libsensors-config libsensors5
+           libtypes-serialiser-perl libxslt1.1 perl perl-modules-5.30 postgresql-15 postgresql-client-15 postgresql-client-common postgresql-common
+           ssl-cert sysstat
          0 upgraded, 19 newly installed, 0 to remove and 0 not upgraded.
          Need to get 41.6 MB of archives.
          After this operation, 186 MB of additional disk space will be used.
          Get:1 http://mirror.yandex.ru/ubuntu focal-updates/main amd64 perl-modules-5.30 all 5.30.0-9ubuntu0.4 [2,739 kB]
-         Get:2 http://apt.postgresql.org/pub/repos/apt focal-pgdg/main amd64 postgresql-client-common all 250.pgdg20.04+1 [93.3 kB]
-         Get:3 http://mirror.yandex.ru/ubuntu focal/main amd64 libgdbm-compat4 amd64 1.18.1-5 [6,244 B] 
-         Get:4 http://mirror.yandex.ru/ubuntu focal-updates/main amd64 libperl5.30 amd64 5.30.0-9ubuntu0.4 [3,959 kB]
+         Get:2 http://mirror.yandex.ru/ubuntu focal/main amd64 libgdbm-compat4 amd64 1.18.1-5 [6,244 B]
+         Get:3 http://mirror.yandex.ru/ubuntu focal-updates/main amd64 libperl5.30 amd64 5.30.0-9ubuntu0.4 [3,959 kB]
+         Get:4 http://apt.postgresql.org/pub/repos/apt focal-pgdg/main amd64 postgresql-client-common all 250.pgdg20.04+1 [93.3 kB]
          Get:5 http://mirror.yandex.ru/ubuntu focal-updates/main amd64 perl amd64 5.30.0-9ubuntu0.4 [224 kB]
          Get:6 http://mirror.yandex.ru/ubuntu focal/main amd64 libjson-perl all 4.02000-2 [80.9 kB]
-         Get:7 http://mirror.yandex.ru/ubuntu focal/main amd64 ssl-cert all 1.0.39 [17.0 kB]      
+         Get:7 http://mirror.yandex.ru/ubuntu focal/main amd64 ssl-cert all 1.0.39 [17.0 kB]
          Get:8 http://mirror.yandex.ru/ubuntu focal/main amd64 libcommon-sense-perl amd64 3.74-2build6 [20.1 kB]
          Get:9 http://mirror.yandex.ru/ubuntu focal/main amd64 libtypes-serialiser-perl all 1.0-1 [12.1 kB]
-         Get:10 http://mirror.yandex.ru/ubuntu focal/main amd64 libjson-xs-perl amd64 4.020-1build1 [83.7 kB] 
+         Get:10 http://mirror.yandex.ru/ubuntu focal/main amd64 libjson-xs-perl amd64 4.020-1build1 [83.7 kB]
          Get:11 http://mirror.yandex.ru/ubuntu focal/main amd64 libllvm10 amd64 1:10.0.0-4ubuntu1 [15.3 MB]
          Get:12 http://apt.postgresql.org/pub/repos/apt focal-pgdg/main amd64 postgresql-common all 250.pgdg20.04+1 [239 kB]
          Get:13 http://apt.postgresql.org/pub/repos/apt focal-pgdg/main amd64 libpq5 amd64 15.3-1.pgdg20.04+1 [184 kB]
@@ -231,7 +235,7 @@
          Get:17 http://mirror.yandex.ru/ubuntu focal-updates/main amd64 libsensors5 amd64 1:3.6.0-2ubuntu1.1 [27.2 kB]
          Get:18 http://mirror.yandex.ru/ubuntu focal-updates/main amd64 libxslt1.1 amd64 1.1.34-4ubuntu0.20.04.1 [151 kB]
          Get:19 http://mirror.yandex.ru/ubuntu focal-updates/main amd64 sysstat amd64 12.2.0-2ubuntu0.3 [448 kB]
-         Fetched 41.6 MB in 2s (18.5 MB/s) 
+         Fetched 41.6 MB in 2s (18.6 MB/s) 
          Preconfiguring packages ...
          Selecting previously unselected package perl-modules-5.30.
          (Reading database ... 139024 files and directories currently installed.)
@@ -347,6 +351,7 @@
          Processing triggers for systemd (245.4-4ubuntu3.22) ...
          Processing triggers for man-db (2.9.1-1) ...
          Processing triggers for libc-bin (2.31-0ubuntu9.9) ...
+         ubuntu@pg-mon:~$ 
          </details></pre> 
        
        * Удаляем кластер, который создавался автоматически
