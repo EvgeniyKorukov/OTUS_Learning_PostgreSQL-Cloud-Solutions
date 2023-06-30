@@ -406,61 +406,57 @@
              
        * Создаем рабочий каталог+прописываем их в `~/.profile`+применяем их
            ```console
-           ubuntu@pg-mon:~$ 
-           ubuntu@pg-mon:~$ sudo mkdir /pg_mon && sudo chown -R postgres:postgres /pg_mon
-           ubuntu@pg-mon:~$ 
            ubuntu@pg-mon:~$ sudo su - postgres
-           postgres@pg-mon:~$ 
+           postgres@pg-mon:~$ mkdir pg_mon
            postgres@pg-mon:~$ echo "export PATH=/usr/lib/postgresql/15/bin/:$PATH" >> .profile
-           postgres@pg-mon:~$ echo "export PGDATA=/pg_mon" >> .profile
+           postgres@pg-mon:~$ echo "export PGDATA=/var/lib/postgresql/pg_mon" >> .profile
            postgres@pg-mon:~$ cat .profile 
            export PATH=/usr/lib/postgresql/15/bin/:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin
-           export PGDATA=/pg_mon
-           postgres@pg-mon:~$ 
+           export PGDATA=/var/lib/postgresql/pg_mon
            postgres@pg-mon:~$ . ~/.profile 
            postgres@pg-mon:~$ 
            ```
        * Инициализируем `pg-auto-failover`
            ```console
-           postgres@pg-mon:~$ pg_autoctl create monitor --auth trust --ssl-mode require --ssl-self-signed --pgport 6000 --hostname `hostname -s` --pgdata /pg_mon --pgctl /usr/lib/postgresql/15/bin/pg_ctl 
-           12:06:41 13946 INFO  Using --ssl-self-signed: pg_autoctl will create self-signed certificates, allowing for encrypted network traffic
-           12:06:41 13946 WARN  Self-signed certificates provide protection against eavesdropping; this setup does NOT protect against Man-In-The-Middle attacks nor Impersonation attacks.
-           12:06:41 13946 WARN  See https://www.postgresql.org/docs/current/libpq-ssl.html for details
-           12:06:41 13946 INFO  Initialising a PostgreSQL cluster at "/pg_mon"
-           12:06:41 13946 INFO  /usr/lib/postgresql/15/bin/pg_ctl initdb -s -D /pg_mon --option '--auth=trust'
-           12:06:45 13946 INFO   /usr/bin/openssl req -new -x509 -days 365 -nodes -text -out /pg_mon/server.crt -keyout /pg_mon/server.key -subj "/CN=pg-mon"
-           12:06:45 13946 INFO  Started pg_autoctl postgres service with pid 13968
-           12:06:45 13968 INFO   /usr/bin/pg_autoctl do service postgres --pgdata /pg_mon -v
-           12:06:45 13946 INFO  Started pg_autoctl monitor-init service with pid 13969
-           12:06:45 13974 INFO   /usr/lib/postgresql/15/bin/postgres -D /pg_mon -p 6000 -h *
-           12:06:45 13968 INFO  Postgres is now serving PGDATA "/pg_mon" on port 6000 with pid 13974
-           12:06:45 13969 WARN  NOTICE:  installing required extension "btree_gist"
-           12:06:45 13969 INFO  Granting connection privileges on 10.129.0.0/24
-           12:06:45 13969 WARN  Skipping HBA edits (per --skip-pg-hba) for rule: hostssl "pg_auto_failover" "autoctl_node" 10.129.0.0/24 trust
-           12:06:45 13969 INFO  Your pg_auto_failover monitor instance is now ready on port 6000.
-           12:06:45 13969 INFO  Monitor has been successfully initialized.
-           12:06:45 13946 WARN  pg_autoctl service monitor-init exited with exit status 0
-           12:06:45 13968 INFO  Postgres controller service received signal SIGTERM, terminating
-           12:06:45 13968 INFO  Stopping pg_autoctl postgres service
-           12:06:45 13968 INFO  /usr/lib/postgresql/15/bin/pg_ctl --pgdata /pg_mon --wait stop --mode fast
-           12:06:46 13946 INFO  Waiting for subprocesses to terminate.
-           12:06:46 13946 INFO  Stop pg_autoctl
+           postgres@pg-mon:~$ pg_autoctl create monitor --auth trust --ssl-mode require --ssl-self-signed --pgport 6000 --hostname `hostname -s`
+           20:14:45 13392 INFO  Using --ssl-self-signed: pg_autoctl will create self-signed certificates, allowing for encrypted network traffic
+           20:14:45 13392 WARN  Self-signed certificates provide protection against eavesdropping; this setup does NOT protect against Man-In-The-Middle attacks nor Impersonation attacks.
+           20:14:45 13392 WARN  See https://www.postgresql.org/docs/current/libpq-ssl.html for details
+           20:14:45 13392 INFO  Initialising a PostgreSQL cluster at "/var/lib/postgresql/pg_mon"
+           20:14:45 13392 INFO  /usr/lib/postgresql/15/bin/pg_ctl initdb -s -D /var/lib/postgresql/pg_mon --option '--auth=trust'
+           20:14:49 13392 INFO   /usr/bin/openssl req -new -x509 -days 365 -nodes -text -out /var/lib/postgresql/pg_mon/server.crt -keyout /var/lib/postgresql/pg_mon/server.key -subj "/CN=pg-mon"
+           20:14:49 13392 INFO  Started pg_autoctl postgres service with pid 13412
+           20:14:49 13412 INFO   /usr/bin/pg_autoctl do service postgres --pgdata /var/lib/postgresql/pg_mon -v
+           20:14:49 13392 INFO  Started pg_autoctl monitor-init service with pid 13413
+           20:14:49 13418 INFO   /usr/lib/postgresql/15/bin/postgres -D /var/lib/postgresql/pg_mon -p 6000 -h *
+           20:14:49 13412 INFO  Postgres is now serving PGDATA "/var/lib/postgresql/pg_mon" on port 6000 with pid 13418
+           20:14:50 13413 WARN  NOTICE:  installing required extension "btree_gist"
+           20:14:50 13413 INFO  Granting connection privileges on 10.129.0.0/24
+           20:14:50 13413 INFO  Reloading Postgres configuration and HBA rules
+           20:14:50 13413 INFO  Your pg_auto_failover monitor instance is now ready on port 6000.
+           20:14:50 13413 INFO  Monitor has been successfully initialized.
+           20:14:50 13392 WARN  pg_autoctl service monitor-init exited with exit status 0
+           20:14:50 13412 INFO  Postgres controller service received signal SIGTERM, terminating
+           20:14:50 13412 INFO  Stopping pg_autoctl postgres service
+           20:14:50 13412 INFO  /usr/lib/postgresql/15/bin/pg_ctl --pgdata /var/lib/postgresql/pg_mon --wait stop --mode fast
+           20:14:50 13392 INFO  Waiting for subprocesses to terminate.
+           20:14:51 13392 INFO  Stop pg_autoctl
            postgres@pg-mon:~$ 
            ```
        * Создаем и запускаем сервис
            ```console
-           root@pg-mon:~# pg_autoctl show systemd --pgdata /pg_mon
-           22:09:25 14317 INFO  HINT: to complete a systemd integration, run the following commands (as root):
-           22:09:25 14317 INFO  pg_autoctl -q show systemd --pgdata "/pg_mon" | tee /etc/systemd/system/pgautofailover.service
-           22:09:25 14317 INFO  systemctl daemon-reload
-           22:09:25 14317 INFO  systemctl enable pgautofailover
-           22:09:25 14317 INFO  systemctl start pgautofailover
+           root@pg-mon:~# pg_autoctl show systemd --pgdata /var/lib/postgresql/pg_mon
+           20:16:13 13454 INFO  HINT: to complete a systemd integration, run the following commands (as root):
+           20:16:13 13454 INFO  pg_autoctl -q show systemd --pgdata "/var/lib/postgresql/pg_mon" | tee /etc/systemd/system/pgautofailover.service
+           20:16:13 13454 INFO  systemctl daemon-reload
+           20:16:13 13454 INFO  systemctl enable pgautofailover
+           20:16:13 13454 INFO  systemctl start pgautofailover
            [Unit]
            Description = pg_auto_failover
            
            [Service]
            WorkingDirectory = /var/lib/postgresql
-           Environment = 'PGDATA=/pg_mon'
+           Environment = 'PGDATA=/var/lib/postgresql/pg_mon'
            User = postgres
            ExecStart = /usr/bin/pg_autoctl run
            Restart = always
@@ -469,13 +465,27 @@
            
            [Install]
            WantedBy = multi-user.target
-           root@pg-mon:~#
+           root@pg-mon:~# pg_autoctl -q show systemd --pgdata "/var/lib/postgresql/pg_mon" | tee /etc/systemd/system/pgautofailover.service
+           [Unit]
+           Description = pg_auto_failover
+           
+           [Service]
+           WorkingDirectory = /var/lib/postgresql
+           Environment = 'PGDATA=/var/lib/postgresql/pg_mon'
+           User = postgres
+           ExecStart = /usr/bin/pg_autoctl run
+           Restart = always
+           StartLimitBurst = 0
+           ExecReload = /usr/bin/pg_autoctl reload
+           
+           [Install]
+           WantedBy = multi-user.target
            root@pg-mon:~# vim /etc/systemd/system/pgautofailover.service
-           root@pg-mon:~# 
            root@pg-mon:~# systemctl daemon-reload
            root@pg-mon:~# systemctl enable pgautofailover
            Created symlink /etc/systemd/system/multi-user.target.wants/pgautofailover.service → /etc/systemd/system/pgautofailover.service.
            root@pg-mon:~# systemctl start pgautofailover
+           root@pg-mon:~# 
            ```
            
        * Создаем пользователя для управления
@@ -488,7 +498,7 @@
        * Добавляем доступ для `10.129.0.0/24` в `pg_hba.conf`
          * host    all             all             10.129.0.0/24            trust 
            ```console
-           postgres@pg-mon:~$ vim /pg_mon/pg_hba.conf 
+           postgres@pg-mon:~$ vim ~/pg_mon/pg_hba.conf 
            postgres@pg-mon:~$ 
            postgres@pg-mon:~$ 
            postgres@pg-mon:~$ psql -p 6000 -c "select pg_reload_conf()"
