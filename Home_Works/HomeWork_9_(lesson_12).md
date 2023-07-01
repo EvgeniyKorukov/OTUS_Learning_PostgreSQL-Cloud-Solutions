@@ -397,15 +397,12 @@
            Processing triggers for man-db (2.9.1-1) ...
            ubuntu@pg-mon:~$ 
            ```
-       * Правим /etc/hosts
-         * `10.129.0.21 pg-srv1.ru-central1.internal pg-srv1`
-         * `10.129.0.22 pg-srv2.ru-central1.internal pg-srv2`
-         * `127.0.1.1. pg-mon.ru-central1.internal pg-mon` -> `10.129.0.23 pg-mon.ru-central1.internal pg-mon`
-
-
-             
+           
        * Создаем рабочий каталог+прописываем их в `~/.profile`+применяем их
            ```console
+           ubuntu@pg-mon:~$ sudo mkdir /pg_mon
+           ubuntu@pg-mon:~$ sudo chown postgres:postgres /pg_mon
+
            ubuntu@pg-mon:~$ sudo su - postgres
            postgres@pg-mon:~$ mkdir pg_mon
            postgres@pg-mon:~$ echo "export PATH=/usr/lib/postgresql/15/bin/:$PATH" >> .profile
