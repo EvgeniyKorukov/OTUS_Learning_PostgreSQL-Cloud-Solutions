@@ -558,32 +558,108 @@
 ***
   * Проверяем кастер и отказоустойчивость
     * Смотрим статус кластера
-    ```console
-    postgres@pg-mon:~$ pg_autoctl show state
-       Name |  Node |        Host:Port |       TLI: LSN |   Connection |      Reported State |      Assigned State
-    --------+-------+------------------+----------------+--------------+---------------------+--------------------
-    pg-srv1 |     1 | 10.129.0.21:6001 |   1: 0/3081070 |   read-write |             primary |             primary
-    pg-srv2 |     2 | 10.129.0.22:6002 |   1: 0/3081070 |    read-only |           secondary |           secondary
+      ```console
+      postgres@pg-mon:~$ pg_autoctl show state
+         Name |  Node |        Host:Port |       TLI: LSN |   Connection |      Reported State |      Assigned State
+      --------+-------+------------------+----------------+--------------+---------------------+--------------------
+      pg-srv1 |     1 | 10.129.0.21:6001 |   1: 0/3081070 |   read-write |             primary |             primary
+      pg-srv2 |     2 | 10.129.0.22:6002 |   1: 0/3081070 |    read-only |           secondary |           secondary
+      
+      postgres@pg-mon:~$ 
+      ``` 
+
+   * Выполняем `switchover`
+      ```console
+      postgres@pg-mon:~$ pg_autoctl perform switchover 
+      16:42:55 28015 INFO  Waiting 60 secs for a notification with state "primary" in formation "default" and group 0
+      16:42:55 28015 INFO  Listening monitor notifications about state changes in formation "default" and group 0
+      16:42:55 28015 INFO  Following table displays times when notifications are received
+          Time |    Name |  Node |        Host:Port |       Current State |      Assigned State
+      ---------+---------+-------+------------------+---------------------+--------------------
+      16:42:55 | pg-srv1 |     1 | 10.129.0.21:6001 |             primary |            draining
+      16:42:55 | pg-srv2 |     2 | 10.129.0.22:6002 |           secondary |   prepare_promotion
+      16:42:55 | pg-srv2 |     2 | 10.129.0.22:6002 |   prepare_promotion |   prepare_promotion
+      16:42:55 | pg-srv2 |     2 | 10.129.0.22:6002 |   prepare_promotion |    stop_replication
+      16:42:55 | pg-srv1 |     1 | 10.129.0.21:6001 |             primary |      demote_timeout
+      16:42:55 | pg-srv1 |     1 | 10.129.0.21:6001 |            draining |      demote_timeout
+      16:42:55 | pg-srv1 |     1 | 10.129.0.21:6001 |      demote_timeout |      demote_timeout
+      16:42:58 | pg-srv2 |     2 | 10.129.0.22:6002 |    stop_replication |    stop_replication
+      16:42:58 | pg-srv2 |     2 | 10.129.0.22:6002 |    stop_replication |        wait_primary
+      16:42:58 | pg-srv1 |     1 | 10.129.0.21:6001 |      demote_timeout |             demoted
+      16:42:58 | pg-srv1 |     1 | 10.129.0.21:6001 |             demoted |             demoted
+      16:42:58 | pg-srv2 |     2 | 10.129.0.22:6002 |        wait_primary |        wait_primary
+      16:42:58 | pg-srv1 |     1 | 10.129.0.21:6001 |             demoted |          catchingup
+      16:43:05 | pg-srv1 |     1 | 10.129.0.21:6001 |             demoted |          catchingup
+      16:43:05 | pg-srv1 |     1 | 10.129.0.21:6001 |             demoted |          catchingup
+      16:43:05 | pg-srv1 |     1 | 10.129.0.21:6001 |          catchingup |          catchingup
+      16:43:05 | pg-srv1 |     1 | 10.129.0.21:6001 |          catchingup |           secondary
+      16:43:05 | pg-srv1 |     1 | 10.129.0.21:6001 |           secondary |           secondary
+      16:43:05 | pg-srv2 |     2 | 10.129.0.22:6002 |        wait_primary |             primary
+      16:43:06 | pg-srv2 |     2 | 10.129.0.22:6002 |             primary |             primary
+      postgres@pg-mon:~$ 
+      ```
+
+   * Смотрим статус кластера
+      ```console
+      postgres@pg-mon:~$ pg_autoctl show state
+         Name |  Node |        Host:Port |       TLI: LSN |   Connection |      Reported State |      Assigned State
+      --------+-------+------------------+----------------+--------------+---------------------+--------------------
+      pg-srv1 |     1 | 10.129.0.21:6001 |   4: 0/34A4DD8 |    read-only |           secondary |           secondary
+      pg-srv2 |     2 | 10.129.0.22:6002 |   4: 0/34A4DD8 |   read-write |             primary |             primary
+      
+      postgres@pg-mon:~$ 
+      ```
+      
+   * Выполняем `failover`
+      ```console
+      postgres@pg-mon:~$ pg_autoctl perform failover 
+      16:44:32 29274 INFO  Waiting 60 secs for a notification with state "primary" in formation "default" and group 0
+      16:44:32 29274 INFO  Listening monitor notifications about state changes in formation "default" and group 0
+      16:44:32 29274 INFO  Following table displays times when notifications are received
+          Time |    Name |  Node |        Host:Port |       Current State |      Assigned State
+      ---------+---------+-------+------------------+---------------------+--------------------
+      16:44:32 | pg-srv2 |     2 | 10.129.0.22:6002 |             primary |            draining
+      16:44:32 | pg-srv1 |     1 | 10.129.0.21:6001 |           secondary |   prepare_promotion
+      16:44:32 | pg-srv1 |     1 | 10.129.0.21:6001 |   prepare_promotion |   prepare_promotion
+      16:44:32 | pg-srv1 |     1 | 10.129.0.21:6001 |   prepare_promotion |    stop_replication
+      16:44:32 | pg-srv2 |     2 | 10.129.0.22:6002 |             primary |      demote_timeout
+      16:44:33 | pg-srv2 |     2 | 10.129.0.22:6002 |            draining |      demote_timeout
+      16:44:33 | pg-srv2 |     2 | 10.129.0.22:6002 |      demote_timeout |      demote_timeout
+      16:44:35 | pg-srv1 |     1 | 10.129.0.21:6001 |    stop_replication |    stop_replication
+      16:44:35 | pg-srv1 |     1 | 10.129.0.21:6001 |    stop_replication |        wait_primary
+      16:44:35 | pg-srv2 |     2 | 10.129.0.22:6002 |      demote_timeout |             demoted
+      16:44:35 | pg-srv2 |     2 | 10.129.0.22:6002 |             demoted |             demoted
+      16:44:35 | pg-srv1 |     1 | 10.129.0.21:6001 |        wait_primary |        wait_primary
+      16:44:36 | pg-srv2 |     2 | 10.129.0.22:6002 |             demoted |          catchingup
+      16:44:36 | pg-srv2 |     2 | 10.129.0.22:6002 |          catchingup |          catchingup
+      16:44:37 | pg-srv2 |     2 | 10.129.0.22:6002 |          catchingup |           secondary
+      16:44:37 | pg-srv2 |     2 | 10.129.0.22:6002 |           secondary |           secondary
+      16:44:37 | pg-srv1 |     1 | 10.129.0.21:6001 |        wait_primary |             primary
+      16:44:37 | pg-srv1 |     1 | 10.129.0.21:6001 |             primary |             primary
+      postgres@pg-mon:~$ 
+      ```
+   * Смотрим статус кластера
+      ```console
+      postgres@pg-mon:~$ pg_autoctl show state
+         Name |  Node |        Host:Port |       TLI: LSN |   Connection |      Reported State |      Assigned State
+      --------+-------+------------------+----------------+--------------+---------------------+--------------------
+      pg-srv1 |     1 | 10.129.0.21:6001 |   5: 0/34A5100 |   read-write |             primary |             primary
+      pg-srv2 |     2 | 10.129.0.22:6002 |   5: 0/34A5100 |    read-only |           secondary |           secondary
+      
+      postgres@pg-mon:~$ 
+      ```
+      
+   * Удаление процесса postgres(pg_autoctl) не приводит к переключению primary. Тут надо как минимум 3 ВМ с postgres настраивать параметры кворума и таймауты
     
-    postgres@pg-mon:~$ 
-    ``` 
-
-       * Смотрим статус кластера
-           ```console
-           ```
-       * С
-           ```console
-           ```
-
 ***
-* Заметки:
-  * В YandexCloud:
-    * Не получается запустить экземпляры postgres на порту `6010`. Но нормально запускается на: 6000, 6001, 6002.  Видимо это фишки от YC
-    * Не получилось сделать через доменные имена т.к. после загрузки ВМ сбрасываются настройки `/etc/hosts`. Раньше такого не было, но видимо что-то поменялось.
-  * После удаления ноды через `pg_autoctl drop node --name xxx` надо почистить эти каталоги:
-    * rm -rf /u01/backup
-    * rm -rf /u01/pg_data/*
-    * rm -rf ~/.config
-    * rm -rf ~/.local/
-  * Не возможно разместить данные postgres в корневомом разделе типа `/pg_mon`. Фишка в том, что при добавлении ноды-он пытается создать каталог `backup` в корне, но у него нет для этого прав. Поэтому делаем каталог с данными-вложенным `/u01/pg_mon`
+ * Заметки:
+   * В YandexCloud:
+     * Не получается запустить экземпляры postgres на порту `6010`. Но нормально запускается на: 6000, 6001, 6002.  Видимо это фишки от YC
+     * Не получилось сделать через доменные имена т.к. после загрузки ВМ сбрасываются настройки `/etc/hosts`. Раньше такого не было, но видимо что-то поменялось.
+   * После удаления ноды через `pg_autoctl drop node --name xxx` надо почистить эти каталоги:
+     * rm -rf /u01/backup
+     * rm -rf /u01/pg_data/*
+     * rm -rf ~/.config
+     * rm -rf ~/.local/
+   * Не возможно разместить данные postgres в корневомом разделе типа `/pg_mon`. Фишка в том, что при добавлении ноды-он пытается создать каталог `backup` в корне, но у него нет для этого прав. Поэтому делаем каталог с данными-вложенным `/u01/pg_mon`
                                 
