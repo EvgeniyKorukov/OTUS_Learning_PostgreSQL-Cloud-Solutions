@@ -529,7 +529,6 @@
 ***
 
   * Настройка ВМ `pg-srv1` и `pg-srv2`
-  * 
        * Устанавливаем PostgreSQL 15
          ```console
          sudo apt update && sudo apt upgrade -y && sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list' && wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add - && sudo apt-get update && sudo apt-get -y install postgresql-15
@@ -544,18 +543,15 @@
          ```console
          sudo apt-get install postgresql-15-auto-failover -y
          ```
-       * Правим /etc/hosts
-         * `127.0.1.1 pg-srv1.ru-central1.internal pg-srv1` > `10.129.0.21 pg-srv1.ru-central1.internal pg-srv1`
-         * `127.0.1.1 pg-srv2.ru-central1.internal pg-srv2` > `10.129.0.22 pg-srv2.ru-central1.internal pg-srv2`
-         * `10.129.0.23 pg-mon.ru-central1.internal pg-mon`
-
              
        * Создаем рабочий каталог+прописываем их в `~/.profile`+применяем их
            ```console
+           sudo mkdir -p /u01/pg_data
+           sudo chown -R postgres:postgres /u01
            sudo su - postgres
-           mkdir pg_data
            echo "export PATH=/usr/lib/postgresql/15/bin/:$PATH" >> .profile
-           echo "export PGDATA=/var/lib/postgresql/pg_data" >> .profile
+           echo "export PGDATA=/u01/pg_data" >> .profile
+           cat .profile
            . ~/.profile 
            ```
        * Инициализируем кластер  `pg-auto-failover`
