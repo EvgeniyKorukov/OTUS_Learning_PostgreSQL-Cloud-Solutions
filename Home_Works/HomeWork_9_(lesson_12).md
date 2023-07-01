@@ -492,21 +492,6 @@
            root@pg-mon:~# 
            ```
 
-       * ?Добавляем доступ для `10.129.0.0/24` в `pg_hba.conf`
-         * host    all             all             10.129.0.0/24            trust 
-           ```console
-           postgres@pg-mon:~$ vim ~/pg_mon/pg_hba.conf 
-           postgres@pg-mon:~$ 
-           postgres@pg-mon:~$ 
-           postgres@pg-mon:~$ psql -p 6000 -c "select pg_reload_conf()"
-            pg_reload_conf 
-           ----------------
-            t
-           (1 row)
-           
-           postgres@pg-mon:~$ 
-           ```           
-
        * Смотрим статус кластера
            ```console
            postgres@pg-mon:~$ pg_autoctl show state
@@ -528,7 +513,7 @@
            
 ***
 
-  * Настройка ВМ `pg-srv1` и `pg-srv2`
+  * Настройка ВМ `pg-srv1` и `pg-srv2`. 
        * Устанавливаем PostgreSQL 15
          ```console
          sudo apt update && sudo apt upgrade -y && sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list' && wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add - && sudo apt-get update && sudo apt-get -y install postgresql-15
@@ -554,23 +539,34 @@
            cat .profile
            . ~/.profile 
            ```
-       * Инициализируем кластер  `pg-auto-failover`
+       * Инициализируем кластер  `pg-auto-failover`. Разница только в `--pgport` или 6001 или 6002
            ```console
-           pg_autoctl create postgres --pgctl /usr/lib/postgresql/15/bin/pg_ctl --pgdata /pg_data --pgport 6010 --pghost `hostname -s` --hostname `hostname -s` --monitor postgres://autoctl_node@pg-mon:6000/pg_auto_failover?sslmode=require --auth trust --ssl-mode require --ssl-self-signed
+           pg_autoctl create postgres \
+             --pgdata /u01/pg_data \
+             --pgport 6001 \
+             --hostname `hostname -I` \
+             --name `hostname -s` \
+             --auth trust \
+             --no-ssl \
+             --monitor postgres://autoctl_node@10.129.0.23:6000/pg_auto_failover?sslmode=prefer
+           ```
+       * Запускаем кластер на нодах `pg-srv1` и `pg-srv2`
+           ```console
+           pg_autoctl run postgres &
+           ```
 
-           ```
-       * Создаем и запускаем сервис
-           ```console
-           ```
-           
-       * Создаем пользователя для управления
-           ```console
-           ```
-
-       * Добавляем доступ для `10.129.0.0/24` в `pg_hba.conf`
-         * host    all             all             10.129.0.0/24            trust 
-           ```console
-           ```           
+***
+  * Проверяем кастер и отказоустойчивость
+    * Смотрим статус кластера
+    ```console
+    postgres@pg-mon:~$ pg_autoctl show state
+       Name |  Node |        Host:Port |       TLI: LSN |   Connection |      Reported State |      Assigned State
+    --------+-------+------------------+----------------+--------------+---------------------+--------------------
+    pg-srv1 |     1 | 10.129.0.21:6001 |   1: 0/3081070 |   read-write |             primary |             primary
+    pg-srv2 |     2 | 10.129.0.22:6002 |   1: 0/3081070 |    read-only |           secondary |           secondary
+    
+    postgres@pg-mon:~$ 
+    ``` 
 
        * Смотрим статус кластера
            ```console
@@ -579,6 +575,15 @@
            ```console
            ```
 
-       * С
-           ```console
-           ```                       
+***
+* Заметки:
+  * В YandexCloud:
+    * Не получается запустить экземпляры postgres на порту `6010`. Но нормально запускается на: 6000, 6001, 6002.  Видимо это фишки от YC
+    * Не получилось сделать через доменные имена т.к. после загрузки ВМ сбрасываются настройки `/etc/hosts`. Раньше такого не было, но видимо что-то поменялось.
+  * После удаления ноды через `pg_autoctl drop node --name xxx` надо почистить эти каталоги:
+    * rm -rf /u01/backup
+    * rm -rf /u01/pg_data/*
+    * rm -rf ~/.config
+    * rm -rf ~/.local/
+  * Не возможно разместить данные postgres в корневомом разделе типа `/pg_mon`. Фишка в том, что при добавлении ноды-он пытается создать каталог `backup` в корне, но у него нет для этого прав. Поэтому делаем каталог с данными-вложенным `/u01/pg_mon`
+                                
