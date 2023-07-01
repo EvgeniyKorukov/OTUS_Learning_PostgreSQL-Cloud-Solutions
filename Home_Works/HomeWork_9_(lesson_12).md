@@ -446,7 +446,7 @@
            postgres@pg-mon:~$ 
            ```
        * Создаем и запускаем сервис.
-         * Можно было не создавать сервис, а просто запустить его `pg_autoctl run monitor`, но мы делаем по феншую
+         * ❗️Можно было не создавать сервис, а просто запустить его `pg_autoctl run monitor`, но мы делаем по феншую
            ```console
            root@pg-mon:~# pg_autoctl show systemd --pgdata /u01/pg_mon
            14:23:51 14669 INFO  HINT: to complete a systemd integration, run the following commands (as root):
