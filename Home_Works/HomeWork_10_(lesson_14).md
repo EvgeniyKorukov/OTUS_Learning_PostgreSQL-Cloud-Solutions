@@ -3,7 +3,7 @@
 ***
 
 > ### Развернуть CockroachDB в GKE или GCE
-  * Создаем 4 ВМ в YandexCloud (postgresx1 + CocroachDBx3)
+  * Создаем 4 ВМ в YandexCloud (postgresx1 + CockroachDBx3)
       * Общие параметры для всех 4х ВМ с фиксированным внутренним IPv4.   
          :hammer_and_wrench: Параметр | :memo: Значение |
         --------------:|---------------| 
@@ -22,9 +22,9 @@
         :hammer_and_wrench: Название ВМ | :memo: Внутренний IPv4 | Описание |
         --------------:|---------------|---------------|
         | **`pg-srv1`** | `10.129.0.20` | Сервер с СУБД PostgreSQL 15 |
-        | **`pg-cdb1`** | `10.129.0.21` | Сервер с CocroachDB |      
-        | **`pg-cdb2`** | `10.129.0.22` | Сервер с CocroachDB |  
-        | **`pg-cdb3`** | `10.129.0.23` | Сервер с CocroachDB |          
+        | **`pg-cdb1`** | `10.129.0.21` | Сервер с CockroachDB |      
+        | **`pg-cdb2`** | `10.129.0.22` | Сервер с CockroachDB |  
+        | **`pg-cdb3`** | `10.129.0.23` | Сервер с CockroachDB |          
 
      * Создание ВМ `pg-srv`
        ```console
@@ -76,7 +76,40 @@
          --preemptible \
          --metadata-from-file ssh-keys=/home/eugink/.ssh/eugin_yandex_key.pub
        ```
-
+  * Разворачиваем и запускаем CockroachDB
+    * Скачиваем, меняем права. Делаем на всех 3х ВМ
+    ```console
+    wget -qO- https://binaries.cockroachdb.com/cockroach-v21.1.6.linux-amd64.tgz | tar  xvz && sudo cp -i cockroach-v21.1.6.linux-amd64/cockroach /usr/local/bin/ && sudo mkdir -p /opt/cockroach && sudo chown ubuntu:ubuntu /opt/cockroach
+    ```
+    * Генерируем сертикаты. ❗️Только на одной ноде
+    ```console
+    mkdir certs my-safe-directory
+    cockroach cert create-ca --certs-dir=certs --ca-key=my-safe-directory/ca.key
+    cockroach cert create-node localhost pg-cdb1 pg-cdb2 pg-cdb3 --certs-dir=certs --ca-key=my-safe-directory/ca.key --overwrite
+    cockroach cert create-client root --certs-dir=certs --ca-key=my-safe-directory/ca.key
+    ```
+    * Проверяем статус сертикатов там, где их генерировали.
+    ```console    
+    cockroach cert list --certs-dir=certs
+    ```
+    * Копируем сертикаты на остальные ноды. Сначала изменив пароль на пользователя `ubuntu`. По умолчанию мы его не знаем, но нам ничего не мешает зайти в root `sudo su -` и там поменять его
+    ```console
+    scp -r /home/ubuntu/certs ubuntu@10.129.0.22:/home/ubuntu
+    scp -r /home/ubuntu/certs ubuntu@10.129.0.23:/home/ubuntu
+    ```
+    * Стартуем `CockroachDB` на всех ВМ, разница только параметре `--advertise-addr=pg-cdb*`
+    ```console
+    cockroach start --certs-dir=certs --advertise-addr=pg-cdb1 --join=pg-cdb1,pg-cdb2,pg-cdb3 --cache=.25 --max-sql-memory=.25 --background
+    ```
+    * Выполняем инициализацию. ❗️Только на одной ноде
+    ```console
+    cockroach init --certs-dir=certs --host=pg-cdb1
+    ```
+    * Смотрим статус
+    ```console
+    cockroach node status --certs-dir=certs
+    ```    
+  * 
 ***      
 > ### Потесировать dataset с чикагскими такси
 > ### Или залить 10Гб данных и протестировать скорость запросов в сравнении с 1 инстансом PostgreSQL
