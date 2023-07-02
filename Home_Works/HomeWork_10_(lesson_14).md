@@ -243,12 +243,99 @@
       Operation completed over 40 objects/10.0 GiB.                                    
       ubuntu@pg-cdb1:/gset$ 
       ```
-
-
-
+***      
+> ### Или залить 10Гб данных и протестировать скорость запросов в сравнении с 1 инстансом PostgreSQL
+ * Создаем базу
+   ```console
+   ubuntu@pg-cdb1:~$ cockroach sql --certs-dir=certs
+   #
+   # Welcome to the CockroachDB SQL shell.
+   # All statements must be terminated by a semicolon.
+   # To exit, type: \q.
+   #
+   # Server version: CockroachDB CCL v21.1.6 (x86_64-unknown-linux-gnu, built 2021/07/20 15:30:39, go1.15.11) (same version as client)
+   # Cluster ID: 30351012-bf45-4551-9d58-fc462e21d3d0
+   No entry for terminal type "xterm-256color";
+   using dumb terminal settings.
+   #
+   # Enter \? for a brief introduction.
+   #
+   root@:26257/defaultdb> \l
+     database_name | owner | primary_region | regions | survival_goal
+   ----------------+-------+----------------+---------+----------------
+     defaultdb     | root  | NULL           | {}      | NULL
+     postgres      | root  | NULL           | {}      | NULL
+     system        | node  | NULL           | {}      | NULL
+   (3 rows)
+   
+   Time: 5ms total (execution 4ms / network 0ms)
+   
+   root@:26257/defaultdb> create database otus;
+   CREATE DATABASE
+   
+   Time: 53ms total (execution 53ms / network 0ms)
+   
+   root@:26257/defaultdb> \l
+     database_name | owner | primary_region | regions | survival_goal
+   ----------------+-------+----------------+---------+----------------
+     defaultdb     | root  | NULL           | {}      | NULL
+     otus          | root  | NULL           | {}      | NULL
+     postgres      | root  | NULL           | {}      | NULL
+     system        | node  | NULL           | {}      | NULL
+   (4 rows)
+   
+   Time: 4ms total (execution 4ms / network 0ms)
+   
+   root@:26257/defaultdb> 
+   ```
+ * Создаем таблицу
+   ```console
+   ubuntu@pg-cdb1:~$ cockroach sql --certs-dir=certs -d otus
+   #
+   # Welcome to the CockroachDB SQL shell.
+   # All statements must be terminated by a semicolon.
+   # To exit, type: \q.
+   #
+   # Server version: CockroachDB CCL v21.1.6 (x86_64-unknown-linux-gnu, built 2021/07/20 15:30:39, go1.15.11) (same version as client)
+   # Cluster ID: 30351012-bf45-4551-9d58-fc462e21d3d0
+   No entry for terminal type "xterm-256color";
+   using dumb terminal settings.
+   #
+   # Enter \? for a brief introduction.
+   #
+   root@:26257/otus> create table taxi_trips (
+   unique_key text,
+   taxi_id text,
+   trip_start_timestamp TIMESTAMP,
+   trip_end_timestamp TIMESTAMP,
+   trip_seconds bigint,
+   trip_miles numeric,
+   pickup_census_tract bigint,
+   dropoff_census_tract bigint,
+   pickup_community_area bigint,
+   dropoff_community_area bigint,
+   fare numeric,
+   tips numeric,
+   tolls numeric,
+   extras numeric,
+   trip_total numeric,
+   payment_type text,
+   company text,
+   pickup_latitude numeric,
+   pickup_longitude numeric,
+   pickup_location text,
+   dropoff_latitude numeric,
+   dropoff_longitude numeric,
+   dropoff_location text
+   );
+   CREATE TABLE
+   
+   Time: 69ms total (execution 69ms / network 0ms)
+   
+   root@:26257/otus> 
+   ```    
 ***      
 
-> ### Или залить 10Гб данных и протестировать скорость запросов в сравнении с 1 инстансом PostgreSQL
 > ### Описать что и как делали и с какими проблемами столкнулись
 ***
 
