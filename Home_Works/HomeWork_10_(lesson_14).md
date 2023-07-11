@@ -333,7 +333,35 @@
    Time: 69ms total (execution 69ms / network 0ms)
    
    root@:26257/otus> 
-   ```    
+   ```
+ * Загружать данные в `cockroach` используя [IMPORT INTO](https://www.cockroachlabs.com/docs/stable/import-into.html) через [cockroach nodelocal upload](https://www.cockroachlabs.com/docs/v21.1/cockroach-nodelocal-upload#upload-a-file)
+   * Скрипт для загрузки `taxi_trips`
+     ```bash
+     ubuntu@pg-cdb1:~$ cat loader.sh 
+     clear 
+     
+     #Upload into localnode
+     time for f in /gset/taxi.csv.*
+       do
+         # sf - short file name or name without full path
+         sf=`echo $f | sed "s/.*\///"`
+         echo -e "Processing $sf file..."
+         cockroach --certs-dir=/home/ubuntu/certs nodelocal upload $f $sf 
+       done
+     
+     #Import CSV's into taxi_trips
+     time for f in /home/ubuntu/cockroach-data/extern/taxi.csv.*
+       do
+         sf=`echo $f | sed "s/.*\///"`
+         echo -e "Processing $sf file..."
+         cockroach --certs-dir=/home/ubuntu/certs sql -d otus -e "IMPORT INTO taxi_trips (unique_key, taxi_id, trip_start_timestamp, trip_end_timestamp, trip_seconds, trip_miles, pickup_census_tract, dropoff_census_tract, pickup_community_area, dropoff_community_area, fare, tips, tolls, extras, trip_total, payment_type, company, pickup_latitude, pickup_longitude, pickup_location, dropoff_latitude, dropoff_longitude, dropoff_location) CSV DATA ('nodelocal://1/$sf') WITH DELIMITER=',', skip='1',nullif = '';" 
+       done
+     ubuntu@pg-cdb1:~$ 
+     ```
+     ```console
+     result
+     ```
+   
 ***      
 
 > ### Описать что и как делали и с какими проблемами столкнулись
