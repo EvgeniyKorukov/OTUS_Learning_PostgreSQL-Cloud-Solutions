@@ -163,7 +163,7 @@
        ubuntu@pg-cdb1:~$ cockroach init --certs-dir=certs --host=pg-cdb1
        Cluster successfully initialized
        ubuntu@pg-cdb1:~$       
-       ```
+       ```x
     * Смотрим статус
       ```console
       cockroach node status --certs-dir=certs
@@ -864,8 +864,10 @@
       sys     0m0.013s
       ubuntu@test-srv:~$
       ```
-    
-
-> ### Описать что и как делали и с какими проблемами столкнулись
 ***
 
+> ### Описать что и как делали и с какими проблемами столкнулись
+ * Для меня оказалась загрузка данных в cockroachdb не тривиальной. Развернул я ее быстро, но вот на заливках застрал.
+ * Была ошибка "ERROR:  parsing as type timestamp: could not parse "trip_start_timestamp"", пришлось поразбираться с парамметрами with
+ * Пробовал загрузку через клиента postgres, там не поддерживался метод with head.
+ * Короче, сделал и забыл)
