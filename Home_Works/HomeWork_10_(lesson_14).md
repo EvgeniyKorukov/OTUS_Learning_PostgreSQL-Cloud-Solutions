@@ -359,7 +359,418 @@
      ubuntu@pg-cdb1:~$ 
      ```
      ```console
-     result
+     ubuntu@pg-cdb1:~$ . loader.sh 
+     Processing taxi.csv.000000000000 file...
+     successfully uploaded to nodelocal://1/taxi.csv.000000000000
+     Processing taxi.csv.000000000001 file...
+     successfully uploaded to nodelocal://1/taxi.csv.000000000001
+     Processing taxi.csv.000000000002 file...
+     successfully uploaded to nodelocal://1/taxi.csv.000000000002
+     Processing taxi.csv.000000000003 file...
+     successfully uploaded to nodelocal://1/taxi.csv.000000000003
+     Processing taxi.csv.000000000004 file...
+     successfully uploaded to nodelocal://1/taxi.csv.000000000004
+     Processing taxi.csv.000000000005 file...
+     successfully uploaded to nodelocal://1/taxi.csv.000000000005
+     Processing taxi.csv.000000000006 file...
+     successfully uploaded to nodelocal://1/taxi.csv.000000000006
+     Processing taxi.csv.000000000007 file...
+     successfully uploaded to nodelocal://1/taxi.csv.000000000007
+     Processing taxi.csv.000000000008 file...
+     successfully uploaded to nodelocal://1/taxi.csv.000000000008
+     Processing taxi.csv.000000000009 file...
+     successfully uploaded to nodelocal://1/taxi.csv.000000000009
+     Processing taxi.csv.000000000010 file...
+     successfully uploaded to nodelocal://1/taxi.csv.000000000010
+     Processing taxi.csv.000000000011 file...
+     successfully uploaded to nodelocal://1/taxi.csv.000000000011
+     Processing taxi.csv.000000000012 file...
+     successfully uploaded to nodelocal://1/taxi.csv.000000000012
+     Processing taxi.csv.000000000013 file...
+     successfully uploaded to nodelocal://1/taxi.csv.000000000013
+     Processing taxi.csv.000000000014 file...
+     successfully uploaded to nodelocal://1/taxi.csv.000000000014
+     Processing taxi.csv.000000000015 file...
+     successfully uploaded to nodelocal://1/taxi.csv.000000000015
+     Processing taxi.csv.000000000016 file...
+     successfully uploaded to nodelocal://1/taxi.csv.000000000016
+     Processing taxi.csv.000000000017 file...
+     successfully uploaded to nodelocal://1/taxi.csv.000000000017
+     Processing taxi.csv.000000000018 file...
+     successfully uploaded to nodelocal://1/taxi.csv.000000000018
+     Processing taxi.csv.000000000019 file...
+     successfully uploaded to nodelocal://1/taxi.csv.000000000019
+     Processing taxi.csv.000000000020 file...
+     successfully uploaded to nodelocal://1/taxi.csv.000000000020
+     Processing taxi.csv.000000000021 file...
+     successfully uploaded to nodelocal://1/taxi.csv.000000000021
+     Processing taxi.csv.000000000022 file...
+     successfully uploaded to nodelocal://1/taxi.csv.000000000022
+     Processing taxi.csv.000000000023 file...
+     successfully uploaded to nodelocal://1/taxi.csv.000000000023
+     Processing taxi.csv.000000000024 file...
+     successfully uploaded to nodelocal://1/taxi.csv.000000000024
+     Processing taxi.csv.000000000025 file...
+     successfully uploaded to nodelocal://1/taxi.csv.000000000025
+     Processing taxi.csv.000000000026 file...
+     successfully uploaded to nodelocal://1/taxi.csv.000000000026
+     Processing taxi.csv.000000000027 file...
+     successfully uploaded to nodelocal://1/taxi.csv.000000000027
+     Processing taxi.csv.000000000028 file...
+     successfully uploaded to nodelocal://1/taxi.csv.000000000028
+     Processing taxi.csv.000000000029 file...
+     successfully uploaded to nodelocal://1/taxi.csv.000000000029
+     Processing taxi.csv.000000000030 file...
+     successfully uploaded to nodelocal://1/taxi.csv.000000000030
+     Processing taxi.csv.000000000031 file...
+     successfully uploaded to nodelocal://1/taxi.csv.000000000031
+     Processing taxi.csv.000000000032 file...
+     successfully uploaded to nodelocal://1/taxi.csv.000000000032
+     Processing taxi.csv.000000000033 file...
+     successfully uploaded to nodelocal://1/taxi.csv.000000000033
+     Processing taxi.csv.000000000034 file...
+     successfully uploaded to nodelocal://1/taxi.csv.000000000034
+     Processing taxi.csv.000000000035 file...
+     successfully uploaded to nodelocal://1/taxi.csv.000000000035
+     Processing taxi.csv.000000000036 file...
+     successfully uploaded to nodelocal://1/taxi.csv.000000000036
+     Processing taxi.csv.000000000037 file...
+     successfully uploaded to nodelocal://1/taxi.csv.000000000037
+     Processing taxi.csv.000000000038 file...
+     successfully uploaded to nodelocal://1/taxi.csv.000000000038
+     Processing taxi.csv.000000000039 file...
+     successfully uploaded to nodelocal://1/taxi.csv.000000000039
+     
+     real    19m54.853s
+     user    1m20.522s
+     sys     0m36.579s
+     
+     
+     Processing taxi.csv.000000000000 file...
+             job_id       |  status   | fraction_completed |  rows  | index_entries |   bytes
+     ---------------------+-----------+--------------------+--------+---------------+------------
+       881730314503782401 | succeeded |                  1 | 668818 |             0 | 243990434
+     (1 row)
+     
+     Time: 31.349s
+     
+     Processing taxi.csv.000000000001 file...
+             job_id       |  status   | fraction_completed |  rows  | index_entries |   bytes
+     ---------------------+-----------+--------------------+--------+---------------+------------
+       881730417792581633 | succeeded |                  1 | 669331 |             0 | 244070640
+     (1 row)
+     
+     Time: 29.101s
+     
+     Processing taxi.csv.000000000002 file...
+             job_id       |  status   | fraction_completed |  rows  | index_entries |   bytes
+     ---------------------+-----------+--------------------+--------+---------------+------------
+       881730513654284289 | succeeded |                  1 | 668352 |             0 | 243995091
+     (1 row)
+     
+     Time: 29.131s
+     
+     Processing taxi.csv.000000000003 file...
+             job_id       |  status   | fraction_completed |  rows  | index_entries |   bytes
+     ---------------------+-----------+--------------------+--------+---------------+------------
+       881730609696374785 | succeeded |                  1 | 669666 |             0 | 244137027
+     (1 row)
+     
+     Time: 33.895s
+     
+     Processing taxi.csv.000000000004 file...
+             job_id       |  status   | fraction_completed |  rows  | index_entries |   bytes
+     ---------------------+-----------+--------------------+--------+---------------+------------
+       881730721297661953 | succeeded |                  1 | 667789 |             0 | 247225345
+     (1 row)
+     
+     Time: 29.814s
+     
+     Processing taxi.csv.000000000005 file...
+             job_id       |  status   | fraction_completed |  rows  | index_entries |   bytes
+     ---------------------+-----------+--------------------+--------+---------------+------------
+       881730819476226049 | succeeded |                  1 | 628731 |             0 | 246075934
+     (1 row)
+     
+     Time: 35.760s
+     
+     Processing taxi.csv.000000000006 file...
+             job_id       |  status   | fraction_completed |  rows  | index_entries |   bytes
+     ---------------------+-----------+--------------------+--------+---------------+------------
+       881730937171902465 | succeeded |                  1 | 635790 |             0 | 245463528
+     (1 row)
+     
+     Time: 39.047s
+     
+     Processing taxi.csv.000000000007 file...
+             job_id       |  status   | fraction_completed |  rows  | index_entries |   bytes
+     ---------------------+-----------+--------------------+--------+---------------+------------
+       881731065634291713 | succeeded |                  1 | 669381 |             0 | 243913294
+     (1 row)
+     
+     Time: 41.837s
+     
+     Processing taxi.csv.000000000008 file...
+             job_id       |  status   | fraction_completed |  rows  | index_entries |   bytes
+     ---------------------+-----------+--------------------+--------+---------------+------------
+       881731203268476929 | succeeded |                  1 | 670047 |             0 | 243988176
+     (1 row)
+     
+     Time: 34.642s
+     
+     Processing taxi.csv.000000000009 file...
+             job_id       |  status   | fraction_completed |  rows  | index_entries |   bytes
+     ---------------------+-----------+--------------------+--------+---------------+------------
+       881731317273001985 | succeeded |                  1 | 672486 |             0 | 244308572
+     (1 row)
+     
+     Time: 29.092s
+     
+     Processing taxi.csv.000000000010 file...
+             job_id       |  status   | fraction_completed |  rows  | index_entries |   bytes
+     ---------------------+-----------+--------------------+--------+---------------+------------
+       881731413098561537 | succeeded |                  1 | 669053 |             0 | 243862287
+     (1 row)
+     
+     Time: 32.095s
+     
+     Processing taxi.csv.000000000011 file...
+             job_id       |  status   | fraction_completed |  rows  | index_entries |   bytes
+     ---------------------+-----------+--------------------+--------+---------------+------------
+       881731518857281537 | succeeded |                  1 | 681872 |             0 | 244005898
+     (1 row)
+     
+     Time: 28.325s
+     
+     Processing taxi.csv.000000000012 file...
+             job_id       |  status   | fraction_completed |  rows  | index_entries |   bytes
+     ---------------------+-----------+--------------------+--------+---------------+------------
+       881731612166258689 | succeeded |                  1 | 662644 |             0 | 243582979
+     (1 row)
+     
+     Time: 34.399s
+     
+     Processing taxi.csv.000000000013 file...
+             job_id       |  status   | fraction_completed |  rows  | index_entries |   bytes
+     ---------------------+-----------+--------------------+--------+---------------+------------
+       881731725457129473 | succeeded |                  1 | 669215 |             0 | 243835921
+     (1 row)
+     
+     Time: 34.784s
+     
+     Processing taxi.csv.000000000014 file...
+             job_id       |  status   | fraction_completed |  rows  | index_entries |   bytes
+     ---------------------+-----------+--------------------+--------+---------------+------------
+       881731839976767489 | succeeded |                  1 | 919506 |             0 | 248963706
+     (1 row)
+     
+     Time: 31.233s
+     
+     Processing taxi.csv.000000000015 file...
+             job_id       |  status   | fraction_completed |  rows  | index_entries |   bytes
+     ---------------------+-----------+--------------------+--------+---------------+------------
+       881731942815301633 | succeeded |                  1 | 671838 |             0 | 243854536
+     (1 row)
+     
+     Time: 30.642s
+     
+     Processing taxi.csv.000000000016 file...
+             job_id       |  status   | fraction_completed |  rows  | index_entries |   bytes
+     ---------------------+-----------+--------------------+--------+---------------+------------
+       881732043724324865 | succeeded |                  1 | 671997 |             0 | 243910744
+     (1 row)
+     
+     Time: 33.621s
+     
+     Processing taxi.csv.000000000017 file...
+             job_id       |  status   | fraction_completed |  rows  | index_entries |   bytes
+     ---------------------+-----------+--------------------+--------+---------------+------------
+       881732154396016641 | succeeded |                  1 | 672941 |             0 | 243840376
+     (1 row)
+     
+     Time: 28.396s
+     
+     Processing taxi.csv.000000000018 file...
+             job_id       |  status   | fraction_completed |  rows  | index_entries |   bytes
+     ---------------------+-----------+--------------------+--------+---------------+------------
+       881732247959568385 | succeeded |                  1 | 669019 |             0 | 243887799
+     (1 row)
+     
+     Time: 32.867s
+     
+     Processing taxi.csv.000000000019 file...
+             job_id       |  status   | fraction_completed |  rows  | index_entries |   bytes
+     ---------------------+-----------+--------------------+--------+---------------+------------
+       881732356157046785 | succeeded |                  1 | 669107 |             0 | 243837378
+     (1 row)
+     
+     Time: 36.695s
+     
+     Processing taxi.csv.000000000020 file...
+             job_id       |  status   | fraction_completed |  rows  | index_entries |   bytes
+     ---------------------+-----------+--------------------+--------+---------------+------------
+       881732476878782465 | succeeded |                  1 | 668928 |             0 | 243829342
+     (1 row)
+     
+     Time: 29.515s
+     
+     Processing taxi.csv.000000000021 file...
+             job_id       |  status   | fraction_completed |  rows  | index_entries |   bytes
+     ---------------------+-----------+--------------------+--------+---------------+------------
+       881732574097473537 | succeeded |                  1 | 669285 |             0 | 243853441
+     (1 row)
+     
+     Time: 32.702s
+     
+     Processing taxi.csv.000000000022 file...
+             job_id       |  status   | fraction_completed |  rows  | index_entries |   bytes
+     ---------------------+-----------+--------------------+--------+---------------+------------
+       881732681733046273 | succeeded |                  1 | 670989 |             0 | 243866465
+     (1 row)
+     
+     Time: 34.993s
+     
+     Processing taxi.csv.000000000023 file...
+             job_id       |  status   | fraction_completed |  rows  | index_entries |   bytes
+     ---------------------+-----------+--------------------+--------+---------------+------------
+       881732796937535489 | succeeded |                  1 | 671264 |             0 | 243934166
+     (1 row)
+     
+     Time: 34.753s
+     
+     Processing taxi.csv.000000000024 file...
+             job_id       |  status   | fraction_completed |  rows  | index_entries |   bytes
+     ---------------------+-----------+--------------------+--------+---------------+------------
+       881732911396356097 | succeeded |                  1 | 669396 |             0 | 243839239
+     (1 row)
+     
+     Time: 37.543s
+     
+     Processing taxi.csv.000000000025 file...
+             job_id       |  status   | fraction_completed |  rows  | index_entries |   bytes
+     ---------------------+-----------+--------------------+--------+---------------+------------
+       881733034913497089 | succeeded |                  1 | 670978 |             0 | 243911613
+     (1 row)
+     
+     Time: 30.176s
+     
+     Processing taxi.csv.000000000026 file...
+             job_id       |  status   | fraction_completed |  rows  | index_entries |   bytes
+     ---------------------+-----------+--------------------+--------+---------------+------------
+       881733134365556737 | succeeded |                  1 | 680867 |             0 | 244041048
+     (1 row)
+     
+     Time: 41.058s
+     
+     Processing taxi.csv.000000000027 file...
+             job_id       |  status   | fraction_completed |  rows  | index_entries |   bytes
+     ---------------------+-----------+--------------------+--------+---------------+------------
+       881733269489778689 | succeeded |                  1 | 682085 |             0 | 244126765
+     (1 row)
+     
+     Time: 35.411s
+     
+     Processing taxi.csv.000000000028 file...
+             job_id       |  status   | fraction_completed |  rows  | index_entries |   bytes
+     ---------------------+-----------+--------------------+--------+---------------+------------
+       881733386294427649 | succeeded |                  1 | 629646 |             0 | 246176382
+     (1 row)
+     
+     Time: 35.882s
+     
+     Processing taxi.csv.000000000029 file...
+             job_id       |  status   | fraction_completed |  rows  | index_entries |   bytes
+     ---------------------+-----------+--------------------+--------+---------------+------------
+       881733504736493569 | succeeded |                  1 | 670200 |             0 | 243834923
+     (1 row)
+     
+     Time: 28.818s
+     
+     Processing taxi.csv.000000000030 file...
+             job_id       |  status   | fraction_completed |  rows  | index_entries |   bytes
+     ---------------------+-----------+--------------------+--------+---------------+------------
+       881733599755567105 | succeeded |                  1 | 679909 |             0 | 244281952
+     (1 row)
+     
+     Time: 32.571s
+     
+     Processing taxi.csv.000000000031 file...
+             job_id       |  status   | fraction_completed |  rows  | index_entries |   bytes
+     ---------------------+-----------+--------------------+--------+---------------+------------
+       881733707098685441 | succeeded |                  1 | 673360 |             0 | 243895674
+     (1 row)
+     
+     Time: 33.198s
+     
+     Processing taxi.csv.000000000032 file...
+             job_id       |  status   | fraction_completed |  rows  | index_entries |   bytes
+     ---------------------+-----------+--------------------+--------+---------------+------------
+       881733816392646657 | succeeded |                  1 | 629327 |             0 | 246153220
+     (1 row)
+     
+     Time: 31.558s
+     
+     Processing taxi.csv.000000000033 file...
+             job_id       |  status   | fraction_completed |  rows  | index_entries |   bytes
+     ---------------------+-----------+--------------------+--------+---------------+------------
+       881733920324517889 | succeeded |                  1 | 630228 |             0 | 246215221
+     (1 row)
+     
+     Time: 29.118s
+     
+     Processing taxi.csv.000000000034 file...
+             job_id       |  status   | fraction_completed |  rows  | index_entries |   bytes
+     ---------------------+-----------+--------------------+--------+---------------+------------
+       881734016252444673 | succeeded |                  1 | 631065 |             0 | 246327369
+     (1 row)
+     
+     Time: 34.045s
+     
+     Processing taxi.csv.000000000035 file...
+             job_id       |  status   | fraction_completed |  rows  | index_entries |   bytes
+     ---------------------+-----------+--------------------+--------+---------------+------------
+       881734128330375169 | succeeded |                  1 | 631470 |             0 | 246382250
+     (1 row)
+     
+     Time: 34.490s
+     
+     Processing taxi.csv.000000000036 file...
+             job_id       |  status   | fraction_completed |  rows  | index_entries |   bytes
+     ---------------------+-----------+--------------------+--------+---------------+------------
+       881734241879228417 | succeeded |                  1 | 670630 |             0 | 244037752
+     (1 row)
+     
+     Time: 34.299s
+     
+     Processing taxi.csv.000000000037 file...
+             job_id       |  status   | fraction_completed |  rows  | index_entries |   bytes
+     ---------------------+-----------+--------------------+--------+---------------+------------
+       881734355040043009 | succeeded |                  1 | 688140 |             0 | 244239156
+     (1 row)
+     
+     Time: 30.536s
+     
+     Processing taxi.csv.000000000038 file...
+             job_id       |  status   | fraction_completed |  rows  | index_entries |   bytes
+     ---------------------+-----------+--------------------+--------+---------------+------------
+       881734455767367681 | succeeded |                  1 | 628478 |             0 | 246058457
+     (1 row)
+     
+     Time: 30.968s
+     
+     Processing taxi.csv.000000000039 file...
+             job_id       |  status   | fraction_completed |  rows  | index_entries |   bytes
+     ---------------------+-----------+--------------------+--------+---------------+------------
+       881734558032789505 | succeeded |                  1 | 629855 |             0 | 246219602
+     (1 row)
+     
+     Time: 31.439s
+     
+     
+     real    22m6.629s
+     user    0m5.333s
+     sys     0m2.789s
+     ubuntu@pg-cdb1:~$ 
      ```
    
 ***      
