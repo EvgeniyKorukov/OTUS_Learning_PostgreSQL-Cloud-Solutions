@@ -774,6 +774,91 @@
      ```
    
 ***      
+> ### Сравнить скорость выполнения запросов на PosgreSQL и CockroachDB
+  * Данные по загрузке по PostgreSQL взял из [своей ДЗ](https://github.com/EvgeniyKorukov/OTUS_Learning_PostgreSQL-Cloud-Solutions/blob/main/Home_Works/HomeWork_8_(lesson_10).md)
+  * Результы тестов
+    | Тест | CockroachDB | PostgreSQL |
+    |--------------|---------------|---------------| 
+    | Загрузка через консоль | `---` | `578395.630 ms (09:38.396)` |
+    | Загрузка через bash-скрипт | `22m6.629s` | `13m2.157s` |
+    | Запрос количества записей | `x` | `3m21.361s` |
+    | Запрос из BigQuery | `x` | `3m20.996s` |
+    * Запрос из BigQuery
+      ```sql
+      SELECT payment_type, round(sum(tips)/sum(trip_total)*100, 0) + 0 as tips_percent, count(*) as c 
+      FROM taxi_trips
+      group by payment_type
+      order by 3;
+      ```
+    * Логи замеров
+      ```console
+      ubuntu@test-srv:~$ time sudo mysql -u root -D otus -e "select count(*) from taxi_trips;"
+      +----------+
+      | count(*) |
+      +----------+
+      | 26753683 |
+      +----------+
+
+      real    3m12.111s
+      user    0m0.011s
+      sys     0m0.004s
+      ubuntu@test-srv:~$ time sudo -u postgres psql -d otus -c "select count(*) from taxi_trips;"
+        count
+      ----------
+       26753682
+      (1 row)
+
+
+      real    3m21.361s
+      user    0m0.032s
+      sys     0m0.027s
+      ubuntu@test-srv:~$
+
+      ubuntu@test-srv:~$ time sudo mysql -u root -D otus -e "SELECT payment_type, round(sum(tips)/sum(trip_total)*100, 0) + 0 as tips_percent, count(*) as c FROM taxi_trips group by payment_type order by 3;"
+      +--------------+--------------+----------+
+      | payment_type | tips_percent | c        |
+      +--------------+--------------+----------+
+      | Prepaid      |            0 |        6 |
+      | Way2ride     |           14 |       27 |
+      | Split        |           17 |      180 |
+      | Dispute      |            0 |     5596 |
+      | Pcard        |            2 |    13575 |
+      | No Charge    |            0 |    26294 |
+      | Mobile       |           16 |    61256 |
+      | Prcard       |            1 |    86053 |
+      | Unknown      |            0 |   103869 |
+      | Credit Card  |           17 |  9224956 |
+      | Cash         |            0 | 17231871 |
+      +--------------+--------------+----------+
+
+      real    4m35.598s
+      user    0m0.010s
+      sys     0m0.008s
+      ubuntu@test-srv:~$
+      ubuntu@test-srv:~$
+      ubuntu@test-srv:~$ time sudo -u postgres psql -d otus -c "SELECT payment_type, round(sum(tips)/sum(trip_total)*100, 0) + 0 as tips_percent, count(*) as c FROM taxi_trips group by payment_type order by 3;"
+      | payment_type | tips_percent |    c
+      --------------+--------------+----------
+       Prepaid      |            0 |        6
+       Way2ride     |           12 |       27
+       Split        |           17 |      180
+       Dispute      |            0 |     5596
+       Pcard        |            2 |    13575
+       No Charge    |            0 |    26294
+       Mobile       |           16 |    61256
+       Prcard       |            1 |    86053
+       Unknown      |            0 |   103869
+       Credit Card  |           17 |  9224956
+       Cash         |            0 | 17231870
+      (11 rows)
+
+
+      real    3m20.996s
+      user    0m0.048s
+      sys     0m0.013s
+      ubuntu@test-srv:~$
+      ```
+    
 
 > ### Описать что и как делали и с какими проблемами столкнулись
 ***
