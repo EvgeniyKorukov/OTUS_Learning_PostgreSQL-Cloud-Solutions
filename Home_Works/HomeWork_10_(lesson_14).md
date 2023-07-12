@@ -781,8 +781,8 @@
     |--------------|---------------|---------------| 
     | Загрузка через консоль | `---` | `578395.630 ms (09:38.396)` |
     | Загрузка через bash-скрипт | `22m6.629s` | `13m2.157s` |
-    | Запрос количества записей | `x` | `3m21.361s` |
-    | Запрос из BigQuery | `x` | `3m20.996s` |
+    | Запрос количества записей | `2m45.450s` | `3m21.361s` |
+    | Запрос из BigQuery | `2m45.842s` | `3m20.996s` |
     * Запрос из BigQuery
       ```sql
       SELECT payment_type, round(sum(tips)/sum(trip_total)*100, 0) + 0 as tips_percent, count(*) as c 
@@ -792,16 +792,20 @@
       ```
     * Логи замеров
       ```console
-      ubuntu@test-srv:~$ time sudo mysql -u root -D otus -e "select count(*) from taxi_trips;"
-      +----------+
-      | count(*) |
-      +----------+
-      | 26753683 |
-      +----------+
-
-      real    3m12.111s
-      user    0m0.011s
-      sys     0m0.004s
+      ubuntu@pg-cdb1:~$ time cockroach --certs-dir=/home/ubuntu/certs sql -d otus -e "select count(*) from taxi_trips;"  
+         count
+      ------------
+        26753683
+      (1 row)
+      
+      Time: 163.118s
+      
+      
+      real    2m45.450s
+      user    0m0.296s
+      sys     0m0.151s
+      ubuntu@pg-cdb1:~$ 
+      
       ubuntu@test-srv:~$ time sudo -u postgres psql -d otus -c "select count(*) from taxi_trips;"
         count
       ----------
@@ -814,28 +818,30 @@
       sys     0m0.027s
       ubuntu@test-srv:~$
 
-      ubuntu@test-srv:~$ time sudo mysql -u root -D otus -e "SELECT payment_type, round(sum(tips)/sum(trip_total)*100, 0) + 0 as tips_percent, count(*) as c FROM taxi_trips group by payment_type order by 3;"
-      +--------------+--------------+----------+
-      | payment_type | tips_percent | c        |
-      +--------------+--------------+----------+
-      | Prepaid      |            0 |        6 |
-      | Way2ride     |           14 |       27 |
-      | Split        |           17 |      180 |
-      | Dispute      |            0 |     5596 |
-      | Pcard        |            2 |    13575 |
-      | No Charge    |            0 |    26294 |
-      | Mobile       |           16 |    61256 |
-      | Prcard       |            1 |    86053 |
-      | Unknown      |            0 |   103869 |
-      | Credit Card  |           17 |  9224956 |
-      | Cash         |            0 | 17231871 |
-      +--------------+--------------+----------+
-
-      real    4m35.598s
-      user    0m0.010s
-      sys     0m0.008s
-      ubuntu@test-srv:~$
-      ubuntu@test-srv:~$
+      ubuntu@pg-cdb1:~$ time cockroach --certs-dir=/home/ubuntu/certs sql -d otus -e "SELECT payment_type, round(sum(tips)/sum(trip_total)*100, 0) + 0 as tips_percent, count(*) as c FROM taxi_trips group by payment_type order by 3;"
+        payment_type | tips_percent |    c
+      ---------------+--------------+-----------
+        Prepaid      |            0 |        6
+        Way2ride     |           12 |       27
+        Split        |           17 |      180
+        Dispute      |            0 |     5596
+        Pcard        |            2 |    13575
+        No Charge    |            0 |    26294
+        Mobile       |           16 |    61256
+        Prcard       |            1 |    86053
+        Unknown      |            0 |   103869
+        Credit Card  |           17 |  9224956
+        Cash         |            0 | 17231871
+      (11 rows)
+      
+      Time: 165.709s
+      
+      
+      real    2m45.842s
+      user    0m0.228s
+      sys     0m0.101s
+      ubuntu@pg-cdb1:~$ 
+      
       ubuntu@test-srv:~$ time sudo -u postgres psql -d otus -c "SELECT payment_type, round(sum(tips)/sum(trip_total)*100, 0) + 0 as tips_percent, count(*) as c FROM taxi_trips group by payment_type order by 3;"
       | payment_type | tips_percent |    c
       --------------+--------------+----------
