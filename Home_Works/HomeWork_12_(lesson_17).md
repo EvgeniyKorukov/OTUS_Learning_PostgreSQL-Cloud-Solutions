@@ -176,7 +176,103 @@
     
     postgres=> 
     ```
+  * Загружаем загружаем данные в Postgres через COPY в psql  
+      ```console
+      ubuntu@test-srv:~$ sudo -u postgres psql -d otus
+      
+      create table taxi_trips (
+      unique_key text, 
+      taxi_id text, 
+      trip_start_timestamp TIMESTAMP, 
+      trip_end_timestamp TIMESTAMP, 
+      trip_seconds bigint, 
+      trip_miles numeric, 
+      pickup_census_tract bigint, 
+      dropoff_census_tract bigint, 
+      pickup_community_area bigint, 
+      dropoff_community_area bigint, 
+      fare numeric, 
+      tips numeric, 
+      tolls numeric, 
+      extras numeric, 
+      trip_total numeric, 
+      payment_type text, 
+      company text, 
+      pickup_latitude numeric, 
+      pickup_longitude numeric, 
+      pickup_location text, 
+      dropoff_latitude numeric, 
+      dropoff_longitude numeric, 
+      dropoff_location text
+      );
+      CREATE TABLE
 
+      COPY taxi_trips(unique_key, 
+      taxi_id, 
+      trip_start_timestamp, 
+      trip_end_timestamp, 
+      trip_seconds, 
+      trip_miles, 
+      pickup_census_tract, 
+      dropoff_census_tract, 
+      pickup_community_area, 
+      dropoff_community_area, 
+      fare, 
+      tips, 
+      tolls, 
+      extras, 
+      trip_total, 
+      payment_type, 
+      company, 
+      pickup_latitude, 
+      pickup_longitude, 
+      pickup_location, 
+      dropoff_latitude, 
+      dropoff_longitude, 
+      dropoff_location)
+      FROM PROGRAM 'awk FNR-1 /gset/taxi.csv.* | cat' DELIMITER ',' CSV HEADER;
+      
+      COPY 26753682
+      Time: 578395.630 ms (09:38.396)
+      otus=#
+      ```
+  * Загружаем загружаем данные в GreenPlum через COPY и bash-скрипт 
+      ```bash
+      ubuntu@pg-client:~$ vim loader.sh && chmod +x loader.sh
+      
+      ubuntu@pg-client:~$ cat loader.sh 
+      time for f in /gset/taxi.csv.*
+        do
+          echo -e "Processing $f file..."
+          psql "host=rc1b-lentkjkk726l2qua.mdb.yandexcloud.net,rc1b-tj4tptft4opim2bd.mdb.yandexcloud.net \
+            port=6432 \
+            sslmode=verify-full \
+            dbname=postgres \
+            user=gpuser \
+                password=gpuser \
+            target_session_attrs=read-write" \
+            -c "\COPY taxi_trips FROM '$f' WITH (FORMAT csv, DELIMITER ',', HEADER 'true');"
+        done
+      ubuntu@pg-client:~$ 
+      ```
+      ```bash
+      time for f in /gset/taxi.csv.*
+        do
+          echo -e "Processing $f file..."
+          psql "host=rc1b-lentkjkk726l2qua.mdb.yandexcloud.net,rc1b-tj4tptft4opim2bd.mdb.yandexcloud.net \
+            port=6432 \
+            sslmode=verify-full \
+            dbname=postgres \
+            user=gpuser \
+                password=gpuser \
+            target_session_attrs=read-write" \
+            -c "\COPY taxi_trips FROM '$f' WITH (FORMAT csv, DELIMITER ',', HEADER 'true');"
+        done
+      ```
+      
+      ```console
+
+      ```
 
 
 ***
