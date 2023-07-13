@@ -271,9 +271,195 @@
       ```
       
       ```console
-
+      ubuntu@pg-client:~$ . loader.sh 
+      Processing /gset/taxi.csv.000000000000 file...
+      COPY 668818
+      Processing /gset/taxi.csv.000000000001 file...
+      COPY 669331
+      Processing /gset/taxi.csv.000000000002 file...
+      COPY 668352
+      Processing /gset/taxi.csv.000000000003 file...
+      COPY 669666
+      Processing /gset/taxi.csv.000000000004 file...
+      COPY 667789
+      Processing /gset/taxi.csv.000000000005 file...
+      COPY 628731
+      Processing /gset/taxi.csv.000000000006 file...
+      COPY 635790
+      Processing /gset/taxi.csv.000000000007 file...
+      COPY 669381
+      Processing /gset/taxi.csv.000000000008 file...
+      COPY 670047
+      Processing /gset/taxi.csv.000000000009 file...
+      COPY 672486
+      Processing /gset/taxi.csv.000000000010 file...
+      COPY 669053
+      Processing /gset/taxi.csv.000000000011 file...
+      COPY 681872
+      Processing /gset/taxi.csv.000000000012 file...
+      COPY 662644
+      Processing /gset/taxi.csv.000000000013 file...
+      COPY 669215
+      Processing /gset/taxi.csv.000000000014 file...
+      COPY 919506
+      Processing /gset/taxi.csv.000000000015 file...
+      COPY 671838
+      Processing /gset/taxi.csv.000000000016 file...
+      COPY 671997
+      Processing /gset/taxi.csv.000000000017 file...
+      COPY 672941
+      Processing /gset/taxi.csv.000000000018 file...
+      COPY 669019
+      Processing /gset/taxi.csv.000000000019 file...
+      COPY 669107
+      Processing /gset/taxi.csv.000000000020 file...
+      COPY 668928
+      Processing /gset/taxi.csv.000000000021 file...
+      COPY 669285
+      Processing /gset/taxi.csv.000000000022 file...
+      COPY 670989
+      Processing /gset/taxi.csv.000000000023 file...
+      COPY 671264
+      Processing /gset/taxi.csv.000000000024 file...
+      COPY 669396
+      Processing /gset/taxi.csv.000000000025 file...
+      COPY 670978
+      Processing /gset/taxi.csv.000000000026 file...
+      COPY 680867
+      Processing /gset/taxi.csv.000000000027 file...
+      COPY 682085
+      Processing /gset/taxi.csv.000000000028 file...
+      COPY 629646
+      Processing /gset/taxi.csv.000000000029 file...
+      COPY 670200
+      Processing /gset/taxi.csv.000000000030 file...
+      COPY 679909
+      Processing /gset/taxi.csv.000000000031 file...
+      COPY 673360
+      Processing /gset/taxi.csv.000000000032 file...
+      COPY 629327
+      Processing /gset/taxi.csv.000000000033 file...
+      COPY 630228
+      Processing /gset/taxi.csv.000000000034 file...
+      COPY 631065
+      Processing /gset/taxi.csv.000000000035 file...
+      COPY 631470
+      Processing /gset/taxi.csv.000000000036 file...
+      COPY 670630
+      Processing /gset/taxi.csv.000000000037 file...
+      COPY 688140
+      Processing /gset/taxi.csv.000000000038 file...
+      COPY 628478
+      Processing /gset/taxi.csv.000000000039 file...
+      COPY 629855
+      
+      real    11m43.367s
+      user    0m15.529s
+      sys     0m20.323s
+      ubuntu@pg-client:~$ 
       ```
+      
+***      
+> ### Сравнить скорость выполнения запросов на GreenPlum и PosgreSQL
+  * Данные по загрузке по PostgreSQL взял из [своей ДЗ](https://github.com/EvgeniyKorukov/OTUS_Learning_PostgreSQL-Cloud-Solutions/blob/main/Home_Works/HomeWork_8_(lesson_10).md)
+  * Результы тестов
+    | Тест | GreenPlum | PostgreSQL |
+    |--------------|---------------|---------------| 
+    | Загрузка через консоль | `---` | `578395.630 ms (09:38.396)` |
+    | Загрузка через bash-скрипт | `11m43.367s` | `13m2.157s` |
+    | Запрос количества записей | `0m2.509s` | `3m21.361s` |
+    | Запрос из BigQuery | `0m7.027ss` | `3m20.996s` |
+    * Запрос из BigQuery
+      ```sql
+      SELECT payment_type, round(sum(tips)/sum(trip_total)*100, 0) + 0 as tips_percent, count(*) as c 
+      FROM taxi_trips
+      group by payment_type
+      order by 3;
+      ```
+    * Логи замеров
+      ```console
+      ubuntu@pg-client:~$ time psql "host=rc1b-lentkjkk726l2qua.mdb.yandexcloud.net,rc1b-tj4tptft4opim2bd.mdb.yandexcloud.net \
+            port=6432 \
+            sslmode=verify-full \
+            dbname=postgres \
+            user=gpuser \
+        password=gpuser \
+            target_session_attrs=read-write" -c "select count(*) from taxi_trips;"
+        count   
+      ----------
+       26753683
+      (1 row)
+      
+      
+      real    0m2.509s
+      user    0m0.035s
+      sys     0m0.005s
+      ubuntu@pg-client:~$ 
+      
+      ubuntu@test-srv:~$ time sudo -u postgres psql -d otus -c "select count(*) from taxi_trips;"
+        count
+      ----------
+       26753682
+      (1 row)
 
+
+      real    3m21.361s
+      user    0m0.032s
+      sys     0m0.027s
+      ubuntu@test-srv:~$
+
+      ubuntu@pg-client:~$ time psql "host=rc1b-lentkjkk726l2qua.mdb.yandexcloud.net,rc1b-tj4tptft4opim2bd.mdb.yandexcloud.net \
+            port=6432 \
+            sslmode=verify-full \
+            dbname=postgres \
+            user=gpuser \
+        password=gpuser \
+            target_session_attrs=read-write" -c "SELECT payment_type, round(sum(tips)/sum(trip_total)*100, 0) + 0 as tips_percent, count(*) as c FROM taxi_trips group by payment_type order by 3;"
+       payment_type | tips_percent |    c     
+      --------------+--------------+----------
+       Prepaid      |            0 |        6
+       Way2ride     |           12 |       27
+       Split        |           17 |      180
+       Dispute      |            0 |     5596
+       Pcard        |            2 |    13575
+       No Charge    |            0 |    26294
+       Mobile       |           16 |    61256
+       Prcard       |            1 |    86053
+       Unknown      |            0 |   103869
+       Credit Card  |           17 |  9224956
+       Cash         |            0 | 17231871
+      (11 rows)
+      
+      
+      real    0m7.027s
+      user    0m0.028s
+      sys     0m0.012s
+      ubuntu@pg-client:~$ 
+
+      
+      ubuntu@test-srv:~$ time sudo -u postgres psql -d otus -c "SELECT payment_type, round(sum(tips)/sum(trip_total)*100, 0) + 0 as tips_percent, count(*) as c FROM taxi_trips group by payment_type order by 3;"
+      | payment_type | tips_percent |    c
+      --------------+--------------+----------
+       Prepaid      |            0 |        6
+       Way2ride     |           12 |       27
+       Split        |           17 |      180
+       Dispute      |            0 |     5596
+       Pcard        |            2 |    13575
+       No Charge    |            0 |    26294
+       Mobile       |           16 |    61256
+       Prcard       |            1 |    86053
+       Unknown      |            0 |   103869
+       Credit Card  |           17 |  9224956
+       Cash         |            0 | 17231870
+      (11 rows)
+
+
+      real    3m20.996s
+      user    0m0.048s
+      sys     0m0.013s
+      ubuntu@test-srv:~$
+      ```
+***
 
 ***
 > ### Описать что и как делали и с какими проблемами столкнулись      
