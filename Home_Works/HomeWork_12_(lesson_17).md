@@ -37,9 +37,6 @@
     sudo apt update && sudo apt upgrade -y && sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list' && wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add - && sudo apt-get update && sudo apt-get -y install postgresql-client
     ```
 
-
-***
-
   * Устанавливаем утилиту [gsutil](https://cloud.google.com/storage/docs/gsutil_install#deb) + [gsutil_GitHub](https://github.com/GoogleCloudPlatform/gsutil)  
       ```console
       sudo apt-get update
@@ -51,14 +48,14 @@
       ```
 
   * Загружаем DataSet для ДЗ размером 10 Гб   
-      ```console
-      ubuntu@test-srv:~$ sudo mkdir /gset
-      ubuntu@test-srv:~$ sudo chmod 777 /gset
-      ubuntu@test-srv:~$ cd /gset/
-      ubuntu@test-srv:/gset$ gsutil -m cp gs://chicago10/taxi.csv.* .
+      ```bash
+      ubuntu@pg-client:~$ sudo mkdir /gset
+      ubuntu@pg-client:~$ sudo chmod 777 /gset
+      ubuntu@pg-client:~$ cd /gset/
+      ubuntu@pg-client:/gset$ gsutil -m cp gs://chicago10/taxi.csv.* .
       ```
       ```console
-      ubuntu@test-srv:/gset$ gsutil -m cp gs://chicago10/taxi.csv.* .
+      ubuntu@pg-client:/gset$ gsutil -m cp gs://chicago10/taxi.csv.* .
       Copying gs://chicago10/taxi.csv.000000000000...
       Copying gs://chicago10/taxi.csv.000000000001...                                 
       Copying gs://chicago10/taxi.csv.000000000002...                                 
@@ -101,8 +98,12 @@
       Copying gs://chicago10/taxi.csv.000000000039... 50.6 MiB/s ETA 00:01:21         
       / [40/40 files][ 10.0 GiB/ 10.0 GiB] 100% Done  32.7 MiB/s ETA 00:00:00         
       Operation completed over 40 objects/10.0 GiB.                                    
-      ubuntu@test-srv:/gset$ 
+      ubuntu@pg-client:/gset$ 
       ```
+
+
+***
+
 
 Потесировать dataset с чикагскими такси
 Или залить 10Гб данных и протестировать скорость запросов в сравнении с 1 инстансом PostgreSQL
