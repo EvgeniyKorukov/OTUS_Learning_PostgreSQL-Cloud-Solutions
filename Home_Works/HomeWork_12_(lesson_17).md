@@ -176,7 +176,7 @@
     
     postgres=> 
     ```
-  * Загружаем загружаем данные в Postgres через COPY в psql  
+  * Загружаем загружаем данные в Postgres через [COPY](https://docs.vmware.com/en/VMware-Greenplum/7/greenplum-database/ref_guide-sql_commands-COPY.html?hWord=N4IghgNiBcIDpwMYHsAOBPEBfIA) в psql  
       ```console
       ubuntu@test-srv:~$ sudo -u postgres psql -d otus
       
@@ -461,5 +461,8 @@
       ```
 ***
 
-***
-> ### Описать что и как делали и с какими проблемами столкнулись      
+> ### Описать что и как делали и с какими проблемами столкнулись
+  * Трудностей, как таковых, не было. Тут скорее борьба с ограничениями YandexCloud
+  * GreenPlum хорош при правильном распределении данных по сегментным серверам (ключ дистрибуции [DISTRIBUTED BY](https://docs.vmware.com/en/VMware-Greenplum/7/greenplum-database/admin_guide-ddl-ddl-table.html?hWord=N4IghgNiBcICIEkDKAVASggQgVRQUTgAJMBNEAXyA)). В моем случае ключ дистрибуции `DISTRIBUTED RANDOMLY`, но у меня и два сегментных сервера-как раз самое то.
+  * В YandexCloud есть ограничения на то, что на мастере GreenPlum нельязя поставить утилиты для загрузки данных, такие как [gpfdist](https://docs.vmware.com/en/VMware-Greenplum/6/greenplum-database/utility_guide-ref-gpfdist.html) или [gpload](https://docs.vmware.com/en/VMware-Greenplum/6/greenplum-database/utility_guide-ref-gpload.html)
+  * Пять месяцев назад проходил курсы администраторов по ADB (ArenaData, GreenPlum) и сдавал сложный экзамен, чтобы дали сертификат. Плюс, поработал с ним на BareMetal и пощупал его в работе, поэтому было не сложно.
