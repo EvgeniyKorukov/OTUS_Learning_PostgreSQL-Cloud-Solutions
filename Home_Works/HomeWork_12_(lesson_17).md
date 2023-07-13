@@ -115,10 +115,69 @@
     | Менеджер подключений(Режим) | `SESSION` | 
 
 
+***
+> ### Потесировать dataset с чикагскими такси
+> ### Или залить 10Гб данных и протестировать скорость запросов в сравнении с 1 инстансом PostgreSQL
+  * Создаем таблицу
+    ```console
+    ubuntu@pg-client:~$ psql "host=rc1b-lentkjkk726l2qua.mdb.yandexcloud.net,rc1b-tj4tptft4opim2bd.mdb.yandexcloud.net \
+          port=6432 \
+          sslmode=verify-full \
+          dbname=postgres \
+          user=gpuser \
+          target_session_attrs=read-write"
+    Password for user gpuser: 
+    
+    psql (15.3 (Ubuntu 15.3-1.pgdg20.04+1), server 9.4.26)
+    SSL connection (protocol: TLSv1.3, cipher: TLS_AES_256_GCM_SHA384, compression: off)
+    Type "help" for help.
+    
+    postgres=> select version();
+                                                                                                          version                                                                                                      
+    -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+     PostgreSQL 9.4.26 (Greenplum Database 6.22.2-mdb+dev.2.g7e0a4f3ab0 build dev-oss) on x86_64-pc-linux-gnu, compiled by gcc-6 (Ubuntu 6.5.0-2ubuntu1~18.04) 6.5.0 20181026, 64-bit compiled on Mar  9 2023 13:06:19
+    (1 row)
+     
+    postgres=> 
+    postgres=> create table taxi_trips (
+    postgres(> unique_key text,
+    postgres(> taxi_id text,
+    postgres(> trip_start_timestamp TIMESTAMP,
+    postgres(> trip_end_timestamp TIMESTAMP,
+    postgres(> trip_seconds bigint,
+    postgres(> trip_miles numeric,
+    postgres(> pickup_census_tract bigint,
+    postgres(> dropoff_census_tract bigint,
+    postgres(> pickup_community_area bigint,
+    postgres(> dropoff_community_area bigint,
+    postgres(> fare numeric,
+    postgres(> tips numeric,
+    postgres(> tolls numeric,
+    postgres(> extras numeric,
+    postgres(> trip_total numeric,
+    postgres(> payment_type text,
+    postgres(> company text,
+    postgres(> pickup_latitude numeric,
+    postgres(> pickup_longitude numeric,
+    postgres(> pickup_location text,
+    postgres(> dropoff_latitude numeric,
+    postgres(> dropoff_longitude numeric,
+    postgres(> dropoff_location text
+    postgres(> );
+    NOTICE:  Table doesn't have 'DISTRIBUTED BY' clause -- Using column named 'unique_key' as the Greenplum Database data distribution key for this table.
+    HINT:  The 'DISTRIBUTED BY' clause determines the distribution of data. Make sure column(s) chosen are the optimal data distribution key to minimize skew.
+    CREATE TABLE
+    postgres=> \dt
+              List of relations
+     Schema |    Name    | Type  | Owner  
+    --------+------------+-------+--------
+     public | taxi_trips | table | gpuser
+    (1 row)
+    
+    postgres=> 
+    ```
+
+
 
 ***
-
-
-Потесировать dataset с чикагскими такси
-Или залить 10Гб данных и протестировать скорость запросов в сравнении с 1 инстансом PostgreSQL
-Описать что и как делали и с какими проблемами столкнулись      
+> ### Описать что и как делали и с какими проблемами столкнулись      
