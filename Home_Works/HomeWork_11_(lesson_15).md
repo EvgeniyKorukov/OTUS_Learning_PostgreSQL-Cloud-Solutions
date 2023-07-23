@@ -261,7 +261,7 @@
       ```         
     
 
-  * Установка [helm](https://helm.sh/docs/intro/install/) 
+  * Установка [helm v.2](https://helm.sh/docs/intro/install/) 
     ```bash
     curl -fsSL -o /tmp/helm-v2.17.0-linux-amd64.tar.gz https://get.helm.sh/helm-v2.17.0-linux-amd64.tar.gz
     tar -zxvf /tmp/helm-v2.17.0-linux-amd64.tar.gz -C /tmp
@@ -271,12 +271,74 @@
 
 
 
-  * Install 
+  * Установка `tiller`
     ```bash
-  
+    cat  > tiller-sa.yaml <<EOF
+    apiVersion: v1
+    kind: ServiceAccount
+    metadata:
+      name: tiller
+      namespace: kube-system
+    ---
+    apiVersion: rbac.authorization.k8s.io/v1
+    kind: ClusterRoleBinding
+    metadata:
+      name: tiller
+    roleRef:
+      apiGroup: rbac.authorization.k8s.io
+      kind: ClusterRole
+      name: cluster-admin
+    subjects:
+      - kind: ServiceAccount
+        name: tiller
+        namespace: kube-system
+    EOF
+    kubectl apply -f tiller-sa.yaml
+    helm init --service-account tiller  
     ```
     ```console
-  
+    user@comp-beelink ~ $ cat  > tiller-sa.yaml <<EOF
+    apiVersion: v1
+    kind: ServiceAccount
+    metadata:
+      name: tiller
+      namespace: kube-system
+    ---
+    apiVersion: rbac.authorization.k8s.io/v1
+    kind: ClusterRoleBinding
+    metadata:
+      name: tiller
+    roleRef:
+      apiGroup: rbac.authorization.k8s.io
+      kind: ClusterRole
+      name: cluster-admin
+    subjects:
+      - kind: ServiceAccount
+        name: tiller
+        namespace: kube-system
+    EOF
+    user@comp-beelink ~ $ kubectl apply -f tiller-sa.yaml
+    serviceaccount/tiller unchanged
+    clusterrolebinding.rbac.authorization.k8s.io/tiller unchanged
+    user@comp-beelink ~ $ helm init --service-account tiller
+    Creating /home/user/.helm 
+    Creating /home/user/.helm/repository 
+    Creating /home/user/.helm/repository/cache 
+    Creating /home/user/.helm/repository/local 
+    Creating /home/user/.helm/plugins 
+    Creating /home/user/.helm/starters 
+    Creating /home/user/.helm/cache/archive 
+    Creating /home/user/.helm/repository/repositories.yaml 
+    Adding stable repo with URL: https://charts.helm.sh/stable 
+    Adding local repo with URL: http://127.0.0.1:8879/charts 
+    $HELM_HOME has been configured at /home/user/.helm.
+    
+    Tiller (the Helm server-side component) has been installed into your Kubernetes Cluster.
+    
+    Please note: by default, Tiller is deployed with an insecure 'allow unauthenticated users' policy.
+    To prevent this, run `helm init` with the --tiller-tls-verify flag.
+    For more information on securing your installation see: https://v2.helm.sh/docs/securing_installation/
+    user@comp-beelink ~ $ 
     ```    
 
   * Text
