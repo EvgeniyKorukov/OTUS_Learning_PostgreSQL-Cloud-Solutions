@@ -146,13 +146,46 @@
     ```
 
 
-  * Создание группы узлов.  Дождаться создания кластера (статус Ready и состояние Healthy)
+  * Создание группы узлов.
+    * Дождаться создания кластера (статус Ready и состояние Healthy)
+    * исключаем публичный IP
     ```bash
-  
+    yc managed-kubernetes node-group create \
+     --name k8s-cluster-ng \
+     --cluster-name k8s-cluster \
+     --platform-id standard-v2 \
+     --cores 2 \
+     --memory 4 \
+     --core-fraction 50 \
+     --disk-type network-ssd \
+     --fixed-size 2 \
+     --location subnet-name=yc-auto-subnet-1,zone=ru-central1-b \
+     --async
     ```
     ```console
-  
+    user@comp-beelink ~ $ yc managed-kubernetes node-group create \
+     --name k8s-cluster-ng \
+     --cluster-name k8s-cluster \
+     --platform-id standard-v2 \
+     --cores 2 \
+     --memory 4 \
+     --core-fraction 50 \
+     --disk-type network-ssd \
+     --fixed-size 2 \
+     --location subnet-name=yc-auto-subnet-1,zone=ru-central1-b \
+     --async
+    id: catiuoaj4ouk13biogk0
+    description: Create node group
+    created_at: "2023-07-23T17:17:25.216233556Z"
+    created_by: ajego77nngodoio2bns5
+    modified_at: "2023-07-23T17:17:25.216233556Z"
+    metadata:
+      '@type': type.googleapis.com/yandex.cloud.k8s.v1.CreateNodeGroupMetadata
+      node_group_id: catmkpcc89oa1past7mj
+    
+    user@comp-beelink ~ $ 
     ```    
+
 
   * Text
     ```bash
