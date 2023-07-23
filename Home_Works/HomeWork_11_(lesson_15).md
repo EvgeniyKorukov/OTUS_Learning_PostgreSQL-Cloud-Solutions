@@ -187,12 +187,19 @@
     ```    
 
 
-  * Text
+  * Подключение к кластеру
     ```bash
-  
+    yc managed-kubernetes cluster get-credentials --external --name k8s-cluster  
     ```
     ```console
-  
+    user@comp-beelink ~ $ yc managed-kubernetes cluster get-credentials --external --name k8s-cluster --force
+    
+    Context 'yc-k8s-cluster' was added as default to kubeconfig '/home/user/.kube/config'.
+    Check connection to cluster using 'kubectl cluster-info --kubeconfig /home/user/.kube/config'.
+    
+    Note, that authentication depends on 'yc' and its config profile 'default'.
+    To access clusters using the Kubernetes API, please use Kubernetes Service Account.
+    user@comp-beelink ~ $ 
     ```
 
 
