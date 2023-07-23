@@ -203,14 +203,62 @@
     ```
 
 
-  * Text
-    ```bash
-  
-    ```
-    ```console
-  
-    ```    
-    
+  * Просомтр статусов
+    * Статус создания групп узлов
+      ```bash
+      watch kubectl get nodes
+      ```
+      ```console
+      Every 2,0s: kubectl get nodes                                                                                                                                                                                                                                                         comp-beelink: Sun Jul 23 20:34:34 2023
+       
+       NAME                        STATUS   ROLES    AGE   VERSION
+       cl19brbmpu4t6damncuu-edir   Ready    <none>   15m   v1.24.8
+       cl19brbmpu4t6damncuu-ydir   Ready    <none>   15m   v1.24.8
+      ```
+
+    * Информация о кластере
+      ```bash
+      yc container cluster list-node-groups k8s-cluster
+      ```
+      ```console
+      user@comp-beelink ~ $ yc container cluster list-node-groups k8s-cluster
+      +----------------------+----------------+----------------------+---------------------+---------+------+
+      |          ID          |      NAME      |  INSTANCE GROUP ID   |     CREATED AT      | STATUS  | SIZE |
+      +----------------------+----------------+----------------------+---------------------+---------+------+
+      | catmkpcc89oa1past7mj | k8s-cluster-ng | cl19brbmpu4t6damncuu | 2023-07-23 17:17:25 | RUNNING |    2 |
+      +----------------------+----------------+----------------------+---------------------+---------+------+
+      user@comp-beelink ~ $ 
+      ```
+
+    * Информация о группе узлов в кластере
+      ```bash
+      yc container cluster list-nodes k8s-cluster
+      ```
+      ```console
+      user@comp-beelink ~ $ yc container cluster list-nodes k8s-cluster
+      +--------------------------------+---------------------------+--------------------------------+-------------+--------+
+      |         CLOUD INSTANCE         |      KUBERNETES NODE      |           RESOURCES            |    DISK     | STATUS |
+      +--------------------------------+---------------------------+--------------------------------+-------------+--------+
+      | epdbmnkqvkb085106opg           | cl19brbmpu4t6damncuu-edir | 2 50% core(s), 4.0 GB of       | 96.0 GB ssd | READY  |
+      | RUNNING_ACTUAL                 |                           | memory                         |             |        |
+      | epdhs9j9gshman96a12q           | cl19brbmpu4t6damncuu-ydir | 2 50% core(s), 4.0 GB of       | 96.0 GB ssd | READY  |
+      | RUNNING_ACTUAL                 |                           | memory                         |             |        |
+      +--------------------------------+---------------------------+--------------------------------+-------------+--------+
+      
+      user@comp-beelink ~ $ 
+            ```      
+ 
+ 
+    * Информация о кластере
+      ```bash
+      kubectl get all
+      ```
+      ```console
+      user@comp-beelink ~ $ kubectl get all
+      NAME                 TYPE        CLUSTER-IP    EXTERNAL-IP   PORT(S)   AGE
+      service/kubernetes   ClusterIP   10.96.128.1   <none>        443/TCP   30m
+      user@comp-beelink ~ $ 
+            ```         
     
 
   * Text
