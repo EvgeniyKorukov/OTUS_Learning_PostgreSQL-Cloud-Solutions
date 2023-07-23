@@ -263,25 +263,15 @@
 
   * Установка [helm](https://helm.sh/docs/intro/install/) 
     ```bash
-    curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
-    chmod 700 get_helm.sh
-    ./get_helm.sh  
-    ```
-    ```console
-    user@comp-beelink ~ $ curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
-    user@comp-beelink ~ $ chmod 700 get_helm.sh
-    user@comp-beelink ~ $ ./get_helm.sh
-    user@comp-beelink ~ $ ./get_helm.sh
-    [WARNING] Could not find git. It is required for plugin installation.
-    Downloading https://get.helm.sh/helm-v3.12.2-linux-amd64.tar.gz
-    Verifying checksum... Done.
-    Preparing to install helm into /usr/local/bin
-    helm installed into /usr/local/bin/helm
-    user@comp-beelink   
+    curl -fsSL -o /tmp/helm-v2.17.0-linux-amd64.tar.gz https://get.helm.sh/helm-v2.17.0-linux-amd64.tar.gz
+    tar -zxvf /tmp/helm-v2.17.0-linux-amd64.tar.gz -C /tmp
+    sudo mv /tmp/linux-amd64/helm /usr/local/bin/helm
+    sudo mv /tmp/linux-amd64/tiller /usr/local/bin/tiller
     ```
 
 
-  * Text
+
+  * Install 
     ```bash
   
     ```
