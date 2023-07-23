@@ -29,6 +29,8 @@
     
     user@comp-beelink ~ $ 
     ```
+
+
   * Создаем подсети в трех зонах доступности для работы группы виртуальных машин
     ```bash
     zones=(a b c)
@@ -86,6 +88,72 @@
     ```
 
 
+  * Создадим сервисный аккаунт для кластера
+    ```bash
+    FOLDER_ID=$(yc config get folder-id)
+    yc iam service-account create --name k8s-sa-${FOLDER_ID}
+    SA_ID=$(yc iam service-account get --name k8s-sa-${FOLDER_ID} --format json | jq .id -r)
+    yc resource-manager folder add-access-binding --id $FOLDER_ID --role admin --subject serviceAccount:$SA_ID
+    ```
+    ```console
+    user@comp-beelink ~ $ 
+    user@comp-beelink ~ $ FOLDER_ID=$(yc config get folder-id)
+    user@comp-beelink ~ $ yc iam service-account create --name k8s-sa-${FOLDER_ID}
+    id: ajeqtiiktfo4o90jb34i
+    folder_id: b1g59qc1dbgj9fu1qp9t
+    created_at: "2023-07-23T16:55:45.768364206Z"
+    name: k8s-sa-b1g59qc1dbgj9fu1qp9t
+    user@comp-beelink ~ $ 
+    user@comp-beelink ~ $ SA_ID=$(yc iam service-account get --name k8s-sa-${FOLDER_ID} --format json | jq .id -r)
+    user@comp-beelink ~ $ yc resource-manager folder add-access-binding --id $FOLDER_ID --role admin --subject serviceAccount:$SA_ID
+    done (1s)
+    effective_deltas:
+      - action: ADD
+        access_binding:
+          role_id: admin
+          subject:
+            id: ajeqtiiktfo4o90jb34i
+            type: serviceAccount
+    
+    user@comp-beelink ~ $ 
+    ```
+
+
+  * Создадим мастер
+    ```bash
+    yc managed-kubernetes cluster create \
+     --name k8s-cluster --network-name yc-auto-network \
+     --zone ru-central1-a  --subnet-name yc-auto-subnet-0 \
+     --public-ip \
+     --service-account-id ${SA_ID} --node-service-account-id ${SA_ID} --async  
+    ```
+    ```console
+    user@comp-beelink ~ $ yc managed-kubernetes cluster create \
+     --name k8s-cluster --network-name yc-auto-network \
+     --zone ru-central1-a  --subnet-name yc-auto-subnet-0 \
+     --public-ip \
+     --service-account-id ${SA_ID} --node-service-account-id ${SA_ID} --async
+    id: catt7dm4a8o6acup4a95
+    description: Create cluster
+    created_at: "2023-07-23T17:00:59.159478908Z"
+    created_by: ajego77nngodoio2bns5
+    modified_at: "2023-07-23T17:00:59.159478908Z"
+    metadata:
+      '@type': type.googleapis.com/yandex.cloud.k8s.v1.CreateClusterMetadata
+      cluster_id: catdndm4bgt5ihmcb9o6
+    
+    user@comp-beelink ~ $ 
+    ```
+
+
+  * Создание группы узлов.  Дождаться создания кластера (статус Ready и состояние Healthy)
+    ```bash
+  
+    ```
+    ```console
+  
+    ```    
+
   * Text
     ```bash
   
@@ -94,6 +162,16 @@
   
     ```
 
+
+  * Text
+    ```bash
+  
+    ```
+    ```console
+  
+    ```    
+    
+    
 
   * Text
     ```bash
@@ -112,6 +190,19 @@
   
     ```    
 
+  * Text
+    ```bash
+  
+    ```
+    ```console
+  
+    ```
 
-    
-    
+
+  * Text
+    ```bash
+  
+    ```
+    ```console
+  
+    ```    
