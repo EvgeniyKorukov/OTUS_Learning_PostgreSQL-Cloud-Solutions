@@ -246,7 +246,7 @@
       +--------------------------------+---------------------------+--------------------------------+-------------+--------+
       
       user@comp-beelink ~ $ 
-            ```      
+      ```      
  
  
     * Информация о кластере
@@ -258,7 +258,7 @@
       NAME                 TYPE        CLUSTER-IP    EXTERNAL-IP   PORT(S)   AGE
       service/kubernetes   ClusterIP   10.96.128.1   <none>        443/TCP   30m
       user@comp-beelink ~ $ 
-            ```         
+      ```         
     
 
   * Text
