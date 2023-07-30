@@ -133,14 +133,56 @@
      --zone ru-central1-a  --subnet-name yc-auto-subnet-0 \
      --public-ip \
      --service-account-id ${SA_ID} --node-service-account-id ${SA_ID} --async
-    id: catt7dm4a8o6acup4a95
-    description: Create cluster
-    created_at: "2023-07-23T17:00:59.159478908Z"
-    created_by: ajego77nngodoio2bns5
-    modified_at: "2023-07-23T17:00:59.159478908Z"
-    metadata:
-      '@type': type.googleapis.com/yandex.cloud.k8s.v1.CreateClusterMetadata
-      cluster_id: catdndm4bgt5ihmcb9o6
+     done (7m25s)
+     id: catk45uvebrfarkprv13
+     folder_id: b1g59qc1dbgj9fu1qp9t
+     created_at: "2023-07-30T15:09:02Z"
+     name: k8s-cluster
+     status: RUNNING
+     health: HEALTHY
+     network_id: enpdrc6d9pcuoed3inbk
+     master:
+       zonal_master:
+         zone_id: ru-central1-a
+         internal_v4_address: 192.168.0.27
+         external_v4_address: 158.160.117.178
+       version: "1.24"
+       endpoints:
+         internal_v4_endpoint: https://192.168.0.27
+         external_v4_endpoint: https://158.160.117.178
+       master_auth:
+         cluster_ca_certificate: |
+           -----BEGIN CERTIFICATE-----
+           MIIC5zCCAc+gAwIBAgIBADANBgkqhkiG9w0BAQsFADAVMRMwEQYDVQQDEwprdWJl
+           cm5ldGVzMB4XDTIzMDczMDE1MDkwNVoXDTMzMDcyNzE1MDkwNVowFTETMBEGA1UE
+           AxMKa3ViZXJuZXRlczCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAJ9I
+           dnIWD3hqjynFf6miYTBoZjD+ccHxCMaOCnUbzSP4sgYCsjBM52kyjFbeOyC6Z0G2
+           yl+ZYD7v1GMBeprWIBooxjZksQD+JFfsE505NNruQb7ApaR1i2jvyW3nZMHY19Wt
+           T7vFVcgLfU5gDCMVFEEGC0IXdwt2tyxAfTzTVvfjfg71AWm7w6iYzLapH3Wp9LF1
+           aL1XahNP7pSQS81RmdvRtVFKb99TMLcvmx5diilfVQSDYO7JEWON55jqVfSeeGak
+           rQ/I/L6RLEB2eFWq3kaplYVqRq3KHr011SRMaeconor9R43KN4pm1rqnbr+gwzv4
+           yNuupoIomj8FA6IRelsCAwEAAaNCMEAwDgYDVR0PAQH/BAQDAgKkMA8GA1UdEwEB
+           /wQFMAMBAf8wHQYDVR0OBBYEFM6hO6ORvazHrQBLL743XVTlEgUaMA0GCSqGSIb3
+           DQEBCwUAA4IBAQB4Ne/zLS01KZHr707Ge79Hl95FcWlLBYf+08QDIOceQw/+GDsu
+           koTWN//ovZ5nZRdmN9pqngZV0HCsNZvZWp4ZI8zrxjh/5sV0TrVCq2PrsN/1RkKG
+           q2IePGpvoHXH1ANDEPUB6WFH6VktTvmJmKw71aGQFCm7iHD/c2asECJkdXyAiw1O
+           pp1unGcq9/al2aRoQAQmoU0+EZyb+FLfyWgdaXcOfU8onWspODW6kogGp2zk05Rb
+           QCbQyaZDerK1Cl7+NuQErXKgIsvoJDIwQ75+UAaREhTMynEUb0ZOPuBXnb5l5ona
+           Q9718IMVxnwcQnSKa7oMZyvNFc+LkV5x+FTa
+           -----END CERTIFICATE-----
+       version_info:
+         current_version: "1.24"
+       maintenance_policy:
+         auto_upgrade: true
+         maintenance_window:
+           anytime: {}
+     ip_allocation_policy:
+       cluster_ipv4_cidr_block: 10.112.0.0/16
+       node_ipv4_cidr_mask_size: "24"
+       service_ipv4_cidr_block: 10.96.0.0/16
+     service_account_id: aje4fcq3sh1crv24coqb
+     node_service_account_id: aje4fcq3sh1crv24coqb
+     release_channel: REGULAR
     
     user@comp-beelink ~ $ 
     ```
