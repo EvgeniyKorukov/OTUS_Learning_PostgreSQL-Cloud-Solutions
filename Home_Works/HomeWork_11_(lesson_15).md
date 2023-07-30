@@ -447,7 +447,7 @@
         user@comp-beelink ~ $ 
         ```
 
-       * Качаем Docker-образ из репозитория [DockerHub](https://hub.docker.com/). 
+      * Качаем Docker-образ из репозитория [DockerHub](https://hub.docker.com/). 
         ```bash
         docker pull postgres:14
         ```
