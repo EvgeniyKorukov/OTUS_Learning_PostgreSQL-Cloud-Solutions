@@ -418,21 +418,89 @@
 
   * Yandex Cloud не умеет брать образы с [DockerHub](https://hub.docker.com/) и чтобы работать с образами внутри K8s от YC надо использовать `Container Registry`
     * [Как начать работать с Container Registry](https://cloud.yandex.ru/docs/container-registry/quickstart/)
-    * [Пошаговые инструкции для Container Registry](https://cloud.yandex.ru/docs/container-registry/operations/) 
-    ```bash
-  
-    ```
-    ```console
-  
-    ```
+    * [Пошаговые инструкции для Container Registry](https://cloud.yandex.ru/docs/container-registry/operations/)
+      * Создаем реестр в `Container Registry`
+        ```bash
+        yc container registry create --name my-first-registry
+        ```
+        ```console
+        user@comp-beelink ~ $ yc container registry create --name my-first-registry
+        done (1s)
+        id: crpe7qnn5mr8hn92376k
+        folder_id: b1g59qc1dbgj9fu1qp9t
+        name: my-first-registry
+        status: ACTIVE
+        created_at: "2023-07-30T15:39:10.114Z"
+        
+        user@comp-beelink ~ $ 
+        ```
+        
+      * Аутентифицирумся в `Container Registry` с помощью [Docker Credential helper](https://cloud.yandex.ru/docs/container-registry/operations/authentication#cred-helper)
+      * Сконфигурируем `Docker` для использования `docker-credential-yc`
+        ```bash
+        yc container registry configure-docker
+        ```
+        ```console
+        user@comp-beelink ~ $ yc container registry configure-docker
+        docker configured to use yc --profile "default" for authenticating "cr.yandex" container registries
+        Credential helper is configured in '/home/user/.docker/config.json'
+        user@comp-beelink ~ $ 
+        ```
+
+       * Качаем Docker-образ из репозитория [DockerHub](https://hub.docker.com/). 
+        ```bash
+        docker pull postgres:14
+        ```
+        ```console
+        user@comp-beelink ~ $ docker pull postgres:14
+        14: Pulling from library/postgres
+        648e0aadf75a: Already exists 
+        f715c8c55756: Already exists 
+        b11a1dc32c8c: Already exists 
+        f29e8ba9d17c: Already exists 
+        78af88a8afb0: Already exists 
+        b74279c188d9: Already exists 
+        6e3e5bf64fd2: Already exists 
+        b62a2c2d2ce5: Already exists 
+        765629a1b92d: Already exists 
+        365d9a245882: Already exists 
+        aeb308034f5e: Already exists 
+        ddb205754449: Already exists 
+        d403994c1833: Already exists 
+        Digest: sha256:eecfb2ab484dadaae790866c9e5090a67deeee76417f072786569bea03f53e3f
+        Status: Downloaded newer image for postgres:14
+        docker.io/library/postgres:14
+        user@comp-beelink ~ $ 
+        ```       
+
+      * Присваиваем скачанному Docker-образу тег вида cr.yandex/<ID реестра>/<имя Docker-образа>:<тег>
+        ```bash
+        docker tag postgres:14 cr.yandex/crpe7qnn5mr8hn92376k/postgres:14        
+        ```
+        ```console
+        user@comp-beelink ~ $ 
+        user@comp-beelink ~ $ docker tag postgres:14 cr.yandex/crpe7qnn5mr8hn92376k/postgres:14  
+        user@comp-beelink ~ $ 
+        ```
+
+      * texxt
+        ```bash
+        
+        ```
+        ```console
+
+        ```
+      * texxt
+        ```bash
+        
+        ```
+        ```console
+
+        ```
 
 
-  * Text
-    ```bash
-  
-    ```
-    ```console
-  
-    ```
+
+
+
 
     https://github.com/bakdata/citus-k8s-membership-manager
