@@ -54,31 +54,31 @@
     done
     
     Creating subnet yc-auto-subnet-0
-    id: e9brprdm5oo4orje8mue
+    id: e9b7u63em26t6bunev8p
     folder_id: b1g59qc1dbgj9fu1qp9t
-    created_at: "2023-07-23T16:47:35Z"
+    created_at: "2023-07-30T15:04:48Z"
     name: yc-auto-subnet-0
-    network_id: enph3p1bgr4c8p9klt6d
+    network_id: enpdrc6d9pcuoed3inbk
     zone_id: ru-central1-a
     v4_cidr_blocks:
       - 192.168.0.0/24
     
     Creating subnet yc-auto-subnet-1
-    id: e2lqefc3hik3mfucqjlp
+    id: e2lhl3c2fmcufr0hth9v
     folder_id: b1g59qc1dbgj9fu1qp9t
-    created_at: "2023-07-23T16:47:36Z"
+    created_at: "2023-07-30T15:04:49Z"
     name: yc-auto-subnet-1
-    network_id: enph3p1bgr4c8p9klt6d
+    network_id: enpdrc6d9pcuoed3inbk
     zone_id: ru-central1-b
     v4_cidr_blocks:
       - 192.168.1.0/24
     
     Creating subnet yc-auto-subnet-2
-    id: b0cgqjdma4hqccge1o24
+    id: b0c7kd92k2n9hko1t7ts
     folder_id: b1g59qc1dbgj9fu1qp9t
-    created_at: "2023-07-23T16:47:37Z"
+    created_at: "2023-07-30T15:04:50Z"
     name: yc-auto-subnet-2
-    network_id: enph3p1bgr4c8p9klt6d
+    network_id: enpdrc6d9pcuoed3inbk
     zone_id: ru-central1-c
     v4_cidr_blocks:
       - 192.168.2.0/24
@@ -98,22 +98,23 @@
     user@comp-beelink ~ $ 
     user@comp-beelink ~ $ FOLDER_ID=$(yc config get folder-id)
     user@comp-beelink ~ $ yc iam service-account create --name k8s-sa-${FOLDER_ID}
-    id: ajeqtiiktfo4o90jb34i
+    id: aje4fcq3sh1crv24coqb
     folder_id: b1g59qc1dbgj9fu1qp9t
-    created_at: "2023-07-23T16:55:45.768364206Z"
+    created_at: "2023-07-30T15:06:44.452804344Z"
     name: k8s-sa-b1g59qc1dbgj9fu1qp9t
+
     user@comp-beelink ~ $ 
     user@comp-beelink ~ $ SA_ID=$(yc iam service-account get --name k8s-sa-${FOLDER_ID} --format json | jq .id -r)
     user@comp-beelink ~ $ yc resource-manager folder add-access-binding --id $FOLDER_ID --role admin --subject serviceAccount:$SA_ID
-    done (1s)
+    done (3s)
     effective_deltas:
       - action: ADD
         access_binding:
           role_id: admin
           subject:
-            id: ajeqtiiktfo4o90jb34i
+            id: aje4fcq3sh1crv24coqb
             type: serviceAccount
-    
+
     user@comp-beelink ~ $ 
     ```
 
