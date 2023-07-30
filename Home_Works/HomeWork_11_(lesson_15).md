@@ -419,6 +419,7 @@
   * Yandex Cloud не умеет брать образы с [DockerHub](https://hub.docker.com/) и чтобы работать с образами внутри K8s от YC надо использовать `Container Registry`
     * [Как начать работать с Container Registry](https://cloud.yandex.ru/docs/container-registry/quickstart/)
     * [Пошаговые инструкции для Container Registry](https://cloud.yandex.ru/docs/container-registry/operations/)
+    * [Example from YC](https://github.com/nar3k/yc-public-tasks/blob/master/k8s/README.md)
       * Создаем реестр в `Container Registry`
         ```bash
         yc container registry create --name my-first-registry
@@ -475,20 +476,21 @@
 
       * Присваиваем скачанному Docker-образу тег вида cr.yandex/<ID реестра>/<имя Docker-образа>:<тег>
         ```bash
-        docker tag postgres:14 cr.yandex/crpe7qnn5mr8hn92376k/postgres:14        
+        REGISTRY_ID=$(yc container registry get --name my-first-registry  --format json | jq .id -r)
+        docker tag postgres:14 cr.yandex/$REGISTRY_ID/postgres:14        
         ```
         ```console
         user@comp-beelink ~ $ 
-        user@comp-beelink ~ $ docker tag postgres:14 cr.yandex/crpe7qnn5mr8hn92376k/postgres:14  
+        user@comp-beelink ~ $ docker tag postgres:14 cr.yandex/$REGISTRY_ID/postgres:14  
         user@comp-beelink ~ $ 
         ```
 
       * Загружаем Docker-образ в репозиторий `Container Registry`
         ```bash
-        docker push  cr.yandex/crpe7qnn5mr8hn92376k/postgres:14
+        docker push cr.yandex/$REGISTRY_ID/postgres:14
         ```
         ```console
-        user@comp-beelink ~ $ docker push  cr.yandex/crpe7qnn5mr8hn92376k/postgres:14        
+        user@comp-beelink ~ $ docker push  cr.yandex/$REGISTRY_ID/postgres:14        
         The push refers to repository [cr.yandex/crpe7qnn5mr8hn92376k/postgres]
         5c3930591e04: Pushed 
         c07097663ecd: Pushed 
