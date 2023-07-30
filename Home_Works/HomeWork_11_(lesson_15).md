@@ -483,13 +483,47 @@
         user@comp-beelink ~ $ 
         ```
 
-      * texxt
+      * Загружаем Docker-образ в репозиторий `Container Registry`
         ```bash
-        
+        docker push  cr.yandex/crpe7qnn5mr8hn92376k/postgres:14
         ```
         ```console
-
+        user@comp-beelink ~ $ docker push  cr.yandex/crpe7qnn5mr8hn92376k/postgres:14        
+        The push refers to repository [cr.yandex/crpe7qnn5mr8hn92376k/postgres]
+        5c3930591e04: Pushed 
+        c07097663ecd: Pushed 
+        e69910c04ba4: Pushed 
+        4a3d39be60d2: Pushed 
+        22d1c656babb: Pushed 
+        84186af28e30: Pushed 
+        9f1d5955e197: Pushed 
+        e49f832d248f: Pushed 
+        adab9cb10294: Pushed 
+        b9dd30974b55: Pushed 
+        aabef479524d: Pushed 
+        a014511bc8c2: Pushed 
+        c6e34807c2d5: Pushed 
+        14: digest: sha256:55247e19106a3998b54d8f06d0c5070285a7f47b20f34a56c23ed9a75573d0e5 size: 3040
+        user@comp-beelink ~ $ 
         ```
+
+      * Посмотреть имеющиеся образы 
+        ```bash
+        yc container image list
+        ```
+        ```console
+        user@comp-beelink ~ $ yc container image list
+        +----------------------+---------------------+-------------------------------+------+-----------------+
+        |          ID          |       CREATED       |             NAME              | TAGS | COMPRESSED SIZE |
+        +----------------------+---------------------+-------------------------------+------+-----------------+
+        | crpk7strd7g40mj8tjau | 2023-07-30 16:15:37 | crpe7qnn5mr8hn92376k/postgres |   14 | 141.1 MB        |
+        +----------------------+---------------------+-------------------------------+------+-----------------+
+        
+        user@comp-beelink ~ $ 
+        ```
+        
+***
+
       * texxt
         ```bash
         
