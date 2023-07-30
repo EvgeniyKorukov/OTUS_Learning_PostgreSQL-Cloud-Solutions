@@ -216,14 +216,48 @@
      --fixed-size 2 \
      --location subnet-name=yc-auto-subnet-1,zone=ru-central1-b \
      --async
-    id: catiuoaj4ouk13biogk0
-    description: Create node group
-    created_at: "2023-07-23T17:17:25.216233556Z"
-    created_by: ajego77nngodoio2bns5
-    modified_at: "2023-07-23T17:17:25.216233556Z"
-    metadata:
-      '@type': type.googleapis.com/yandex.cloud.k8s.v1.CreateNodeGroupMetadata
-      node_group_id: catmkpcc89oa1past7mj
+     done (2m14s)
+     id: catiim1a2b7u3ntc0ccg
+     cluster_id: catk45uvebrfarkprv13
+     created_at: "2023-07-30T15:18:23Z"
+     name: k8s-cluster-ng
+     status: RUNNING
+     node_template:
+       platform_id: standard-v2
+       resources_spec:
+         memory: "4294967296"
+         cores: "2"
+         core_fraction: "50"
+       boot_disk_spec:
+         disk_type_id: network-ssd
+         disk_size: "103079215104"
+       v4_address_spec: {}
+       scheduling_policy: {}
+       network_interface_specs:
+         - subnet_ids:
+             - e2lhl3c2fmcufr0hth9v
+           primary_v4_address_spec: {}
+       network_settings: {}
+       container_runtime_settings: {}
+       container_network_settings: {}
+     scale_policy:
+       fixed_scale:
+         size: "2"
+     allocation_policy:
+       locations:
+         - zone_id: ru-central1-b
+           subnet_id: e2lhl3c2fmcufr0hth9v
+     deploy_policy:
+       max_expansion: "3"
+     instance_group_id: cl1uqmtaebo1f1an5r7b
+     node_version: "1.24"
+     version_info:
+       current_version: "1.24"
+     maintenance_policy:
+       auto_upgrade: true
+       auto_repair: true
+       maintenance_window:
+         anytime: {}
     
     user@comp-beelink ~ $ 
     ```    
@@ -251,11 +285,9 @@
       watch kubectl get nodes
       ```
       ```console
-      Every 2,0s: kubectl get nodes                                                                                                                                                                                                                                                         comp-beelink: Sun Jul 23 20:34:34 2023
-       
-       NAME                        STATUS   ROLES    AGE   VERSION
-       cl19brbmpu4t6damncuu-edir   Ready    <none>   15m   v1.24.8
-       cl19brbmpu4t6damncuu-ydir   Ready    <none>   15m   v1.24.8
+      NAME                        STATUS   ROLES    AGE     VERSION
+      cl1uqmtaebo1f1an5r7b-ecuf   Ready    <none>   2m30s   v1.24.8
+      cl1uqmtaebo1f1an5r7b-izoz   Ready    <none>   2m16s   v1.24.8
       ```
 
     * Информация о кластере
@@ -267,7 +299,7 @@
       +----------------------+----------------+----------------------+---------------------+---------+------+
       |          ID          |      NAME      |  INSTANCE GROUP ID   |     CREATED AT      | STATUS  | SIZE |
       +----------------------+----------------+----------------------+---------------------+---------+------+
-      | catmkpcc89oa1past7mj | k8s-cluster-ng | cl19brbmpu4t6damncuu | 2023-07-23 17:17:25 | RUNNING |    2 |
+      | catiim1a2b7u3ntc0ccg | k8s-cluster-ng | cl1uqmtaebo1f1an5r7b | 2023-07-30 15:18:23 | RUNNING |    2 |
       +----------------------+----------------+----------------------+---------------------+---------+------+
       user@comp-beelink ~ $ 
       ```
@@ -281,12 +313,11 @@
       +--------------------------------+---------------------------+--------------------------------+-------------+--------+
       |         CLOUD INSTANCE         |      KUBERNETES NODE      |           RESOURCES            |    DISK     | STATUS |
       +--------------------------------+---------------------------+--------------------------------+-------------+--------+
-      | epdbmnkqvkb085106opg           | cl19brbmpu4t6damncuu-edir | 2 50% core(s), 4.0 GB of       | 96.0 GB ssd | READY  |
+      | epdphr3ob22b675tp83a           | cl1uqmtaebo1f1an5r7b-ecuf | 2 50% core(s), 4.0 GB of       | 96.0 GB ssd | READY  |
       | RUNNING_ACTUAL                 |                           | memory                         |             |        |
-      | epdhs9j9gshman96a12q           | cl19brbmpu4t6damncuu-ydir | 2 50% core(s), 4.0 GB of       | 96.0 GB ssd | READY  |
+      | epd7r3nfbeauf83pi1q0           | cl1uqmtaebo1f1an5r7b-izoz | 2 50% core(s), 4.0 GB of       | 96.0 GB ssd | READY  |
       | RUNNING_ACTUAL                 |                           | memory                         |             |        |
       +--------------------------------+---------------------------+--------------------------------+-------------+--------+
-      
       user@comp-beelink ~ $ 
       ```      
  
@@ -298,12 +329,12 @@
       ```console
       user@comp-beelink ~ $ kubectl get all
       NAME                 TYPE        CLUSTER-IP    EXTERNAL-IP   PORT(S)   AGE
-      service/kubernetes   ClusterIP   10.96.128.1   <none>        443/TCP   30m
+      service/kubernetes   ClusterIP   10.96.128.1   <none>        443/TCP   10m
       user@comp-beelink ~ $ 
       ```         
     
 
-  * Установка [helm v.2](https://helm.sh/docs/intro/install/) 
+  * ?Установка [helm v.2](https://helm.sh/docs/intro/install/) 
     ```bash
     curl -fsSL -o /tmp/helm-v2.17.0-linux-amd64.tar.gz https://get.helm.sh/helm-v2.17.0-linux-amd64.tar.gz
     tar -zxvf /tmp/helm-v2.17.0-linux-amd64.tar.gz -C /tmp
@@ -313,7 +344,7 @@
 
 
 
-  * Установка `tiller`
+  * ?Установка `tiller`
     ```bash
     cat  > tiller-sa.yaml <<EOF
     apiVersion: v1
@@ -383,7 +414,11 @@
     user@comp-beelink ~ $ 
     ```    
 
-  * Text
+***
+
+  * Yandex Cloud не умеет брать образы с [DockerHub](https://hub.docker.com/) и чтобы работать с образами внутри K8s от YC надо использовать `Container Registry`
+    * [Как начать работать с Container Registry](https://cloud.yandex.ru/docs/container-registry/quickstart/)
+    * [Пошаговые инструкции для Container Registry](https://cloud.yandex.ru/docs/container-registry/operations/) 
     ```bash
   
     ```
