@@ -534,7 +534,16 @@
 
         ```
 
-
+yc managed-kubernetes node-group create \
+ --name k8s-cluster-ng \
+ --cluster-name k8s-cluster \
+ --platform-id standard-v3 \
+ --cores 2 \
+ --memory 4 \
+ --core-fraction 50 \
+ --disk-type network-ssd \
+ --fixed-size 2 \
+--network-interface subnets=yc-auto-subnet-0,ipv4-address=nat 
 
 
 
